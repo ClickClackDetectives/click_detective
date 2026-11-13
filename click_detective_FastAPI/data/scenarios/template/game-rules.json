@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "thirteenth-bell-v1",
+  "questionLimit": 25,
+  "findingTotal": 10,
+  "inferenceTotal": 10,
+  "evidenceTotal": 29,
+  "secondRound": {
+    "requirements": {
+      "inference": 2,
+      "findings": 2
+    },
+    "automaticEvidenceIds": [
+      "2-03"
+    ]
+  },
+  "accusation": {
+    "minimumInferences": 5,
+    "requiredInferenceIds": [
+      "derived-reset-impact-fit",
+      "derived-reset-observation-gap",
+      "derived-reset-deadline-pressure",
+      "derived-reset-disposal-materials",
+      "derived-reset-record-concealment"
+    ],
+    "requiredFindingFlags": [
+      "gang_drug",
+      "seo_forgery",
+      "seo_burn",
+      "weapon_fit",
+      "witness_gap"
+    ],
+    "coreEvidenceGroups": [
+      [
+        "1-03"
+      ],
+      [
+        "2-03"
+      ],
+      [
+        "2-02"
+      ],
+      [
+        "2-04"
+      ],
+      [
+        "2-07",
+        "2-11"
+      ]
+    ],
+    "evidenceSubmissionKind": "derived",
+    "progress100Required": false
+  },
+  "progress": {
+    "evidence": 29,
+    "findings": 10,
+    "inference": 10,
+    "total": 49,
+    "rounding": "Math.round",
+    "maximumPercent": 100
+  }
+}

@@ -1,0 +1,134 @@
+.wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 65px 6% 70px;
+}
+.page-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+.page-heading h1 {
+  font-size: 45px;
+  margin: 15px 0;
+}
+.page-heading p {
+  font-size: 13px;
+  color: var(--muted);
+}
+.counter {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted);
+}
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+.case-card {
+  border: 1px solid var(--line);
+  background: #181b16;
+}
+.case-art {
+  height: 190px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(0deg, #1c241bd9, #303c2b55),
+    url('/manor.jpg') center 54% / cover;
+}
+.case-art > .badge {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 1;
+}
+.case-art > svg {
+  position: absolute;
+  right: 30px;
+  color: #c2d0ac55;
+  transform: rotate(15deg);
+}
+.case-art-number {
+  font-size: 190px;
+  font-weight: 800;
+  letter-spacing: -20px;
+  color: #b8c99a23;
+  position: absolute;
+  left: 20px;
+  bottom: -45px;
+}
+.case-1 .case-art {
+  background: linear-gradient(30deg, #202a2c, #3e515063);
+}
+.case-2 .case-art {
+  background: linear-gradient(30deg, #25221f, #62584b63);
+}
+.case-3 .case-art {
+  background: linear-gradient(30deg, #22232a, #50536b63);
+}
+.badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  padding: 5px 9px;
+  border: 1px solid #6d73604d;
+  font-size: 9px;
+  color: #adb3a0;
+  background: #171b15b3;
+}
+.badge.green {
+  color: var(--accent);
+  border-color: #a4bf673f;
+  background: #29321f99;
+}
+.case-card-body {
+  padding: 26px;
+}
+.case-card-body .eyebrow {
+  font-size: 8px;
+  letter-spacing: 1.5px;
+}
+.case-card-body .eyebrow span {
+  color: var(--muted);
+}
+.case-card h2 {
+  font-size: 28px;
+  letter-spacing: -1px;
+  margin: 12px 0 7px;
+}
+.case-card h3 {
+  font-size: 12px;
+  font-weight: 500;
+  color: #bcc2ae;
+  margin-bottom: 20px;
+}
+.case-card p {
+  color: var(--muted);
+  font-size: 12px;
+  min-height: 44px;
+}
+.case-facts {
+  display: flex;
+  gap: 20px;
+  font-size: 9px;
+  color: #a3ab96;
+  margin: 25px 0 20px;
+  flex-wrap: wrap;
+}
+.case-facts span {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+.library-note {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 30px;
+}

@@ -1,0 +1,1086 @@
+@media (min-width: 1500px) {
+  .hero {
+    padding-left: max(8%, calc((100vw - 1250px) / 2));
+    padding-right: max(8%, calc((100vw - 1250px) / 2));
+    min-height: 740px;
+  }
+  .hero-file {
+    width: 350px;
+    height: 440px;
+  }
+  .hero h1 {
+    font-size: 74px;
+  }
+  .process,
+  .archive-teaser {
+    padding-left: max(8%, calc((100vw - 1250px) / 2));
+    padding-right: max(8%, calc((100vw - 1250px) / 2));
+  }
+}
+@media (max-width: 1150px) {
+  .topbar {
+    gap: 35px;
+    padding: 0 4%;
+  }
+  .edition {
+    display: none;
+  }
+  .hero {
+    padding-left: 6%;
+    padding-right: 6%;
+    min-height: 620px;
+  }
+  .hero-file {
+    width: 265px;
+    height: 360px;
+    margin-left: 20px;
+  }
+  .hero h1 {
+    font-size: 52px;
+  }
+  .hero-actions {
+    gap: 18px;
+  }
+  .sidebar {
+    width: 210px;
+  }
+  .desk {
+    padding: 0 25px 40px;
+  }
+  .brief-grid {
+    grid-template-columns: 1.2fr 1fr;
+    gap: 17px;
+  }
+  .paper {
+    padding: 23px;
+  }
+  .paper h2 {
+    font-size: 23px;
+  }
+  .panel {
+    padding: 20px;
+  }
+  .evidence-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .interrogation-grid {
+    grid-template-columns: 185px 1fr;
+    gap: 15px;
+  }
+  .suspect-list > button {
+    padding: 11px;
+    gap: 8px;
+  }
+  .suspect-list button strong {
+    font-size: 10px;
+  }
+  .suspect-list button > svg {
+    display: none;
+  }
+  .live-status {
+    font-size: 6px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .accusation {
+    padding: 24px;
+  }
+}
+@media (max-width: 800px) {
+  .topbar {
+    height: 75px;
+    gap: 28px;
+  }
+  .brand {
+    font-size: 18px;
+  }
+  .brand small {
+    font-size: 6px;
+  }
+  .brand-mark {
+    height: 33px;
+    width: 33px;
+    font-size: 21px;
+  }
+  .topbar nav {
+    gap: 20px;
+    font-size: 10px;
+  }
+  .top-right .outline {
+    padding: 8px;
+    font-size: 0;
+    min-height: 33px;
+  }
+  .top-right .outline svg {
+    width: 17px;
+  }
+  .hero {
+    padding-top: 65px;
+    padding-bottom: 85px;
+    min-height: 580px;
+  }
+  .hero-file {
+    width: 220px;
+    height: 325px;
+    margin-left: 10px;
+  }
+  .file-bottom {
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+  }
+  .file-bottom h2 {
+    font-size: 33px;
+  }
+  .hero h1 {
+    font-size: 45px;
+  }
+  .hero-content > p {
+    font-size: 11px;
+  }
+  .hero-actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .hero-actions .primary {
+    padding: 14px 16px;
+    font-size: 11px;
+    min-height: 44px;
+  }
+  .hero-meta {
+    gap: 12px;
+    font-size: 8px;
+  }
+  .hero-meta svg {
+    width: 10px;
+  }
+  .process {
+    padding: 35px 6%;
+  }
+  .process-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px 0;
+  }
+  .process-grid article:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .process-grid article:nth-child(2) {
+    padding-right: 0;
+  }
+  .section-label {
+    gap: 18px;
+  }
+  .section-label > span {
+    font-size: 7px;
+  }
+  .section-label p {
+    font-size: 11px;
+  }
+  .archive-teaser {
+    padding: 40px 6%;
+  }
+  .archive-teaser h2 {
+    font-size: 26px;
+  }
+  footer {
+    flex-wrap: wrap;
+    padding: 25px 6%;
+  }
+  footer > p {
+    order: 3;
+    width: 100%;
+    font-size: 9px;
+  }
+  .workspace {
+    min-height: calc(100vh - 75px);
+  }
+  .sidebar {
+    width: 185px;
+    padding: 28px 10px;
+  }
+  .sidebar-file {
+    padding: 0 10px 20px;
+  }
+  .sidebar-file h3 {
+    font-size: 14px;
+  }
+  .sidebar nav button {
+    font-size: 10px;
+    gap: 9px;
+    padding: 13px 10px;
+  }
+  .sidebar nav svg {
+    width: 14px;
+  }
+  .desk {
+    padding: 0 20px 35px;
+  }
+  .desk-top .live-status {
+    display: none;
+  }
+  .desk-heading {
+    margin: 30px 0 25px;
+  }
+  .desk-heading h1 {
+    font-size: 27px;
+  }
+  .desk-heading p {
+    font-size: 11px;
+  }
+  .brief-grid {
+    grid-template-columns: 1fr;
+  }
+  .brief-side {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .evidence-grid {
+    gap: 12px;
+  }
+  .evidence-card {
+    padding: 15px;
+  }
+  .evidence-card h3 {
+    font-size: 13px;
+  }
+  .evidence-card-top {
+    font-size: 8px;
+  }
+  .read-label {
+    font-size: 7px;
+  }
+  .interrogation-grid {
+    grid-template-columns: 1fr;
+  }
+  .suspect-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+  .suspect-list > button {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0;
+    padding: 12px 9px;
+    gap: 9px;
+  }
+  .avatar {
+    width: 28px;
+    height: 32px;
+    font-size: 10px;
+  }
+  .suspect-list button span {
+    font-size: 8px;
+    line-height: 1.8;
+  }
+  .suspect-bio {
+    display: none;
+  }
+  .contradiction-list {
+    grid-column: 1/-1;
+    padding: 10px 0;
+  }
+  .contradiction-list p {
+    margin: 9px 0;
+  }
+  .messages {
+    height: 330px;
+  }
+  .accusation-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .results h1 {
+    font-size: 25px;
+  }
+  .toolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .search {
+    width: 100%;
+  }
+  .search input {
+    flex: 1;
+  }
+  .page-heading h1 {
+    font-size: 36px;
+  }
+  .counter {
+    display: none;
+  }
+  .case-card h2 {
+    font-size: 22px;
+  }
+  .case-card-body {
+    padding: 22px;
+  }
+  .case-art {
+    height: 155px;
+  }
+  .case-card p {
+    min-height: 65px;
+  }
+  .case-grid {
+    gap: 17px;
+  }
+  .case-facts {
+    gap: 12px;
+  }
+}
+@media (max-width: 560px) {
+  .topbar {
+    padding: 0 20px;
+    gap: 20px;
+  }
+  .topbar nav {
+    gap: 15px;
+    margin-left: auto;
+  }
+  .top-right {
+    display: none;
+  }
+  .brand {
+    font-size: 17px;
+  }
+  .hero {
+    min-height: auto;
+    padding: 50px 25px 65px;
+    display: block;
+  }
+  .hero .eyebrow {
+    font-size: 6.5px;
+    letter-spacing: 2px;
+  }
+  .hero h1 {
+    font-size: 45px;
+    margin-top: 23px;
+  }
+  .hero-content > p {
+    font-size: 11px;
+  }
+  .hero-actions {
+    gap: 10px;
+  }
+  .hero-meta {
+    font-size: 8px;
+    gap: 14px;
+  }
+  .hero-file {
+    display: none;
+  }
+  .hero-bottom {
+    left: 25px;
+    right: 25px;
+    bottom: 22px;
+    font-size: 5.5px;
+    letter-spacing: 1.3px;
+  }
+  .process {
+    padding: 30px 25px;
+  }
+  .section-label {
+    display: block;
+  }
+  .section-label p {
+    margin-top: 12px;
+  }
+  .process-grid {
+    gap: 28px 0;
+    margin-top: 28px;
+  }
+  .process-grid article {
+    padding: 0 17px;
+  }
+  .process-grid h3 {
+    font-size: 13px;
+  }
+  .process-grid p {
+    font-size: 10px;
+  }
+  .process-number {
+    margin-bottom: 13px;
+    font-size: 10px;
+  }
+  .process-number svg {
+    width: 17px;
+  }
+  .archive-teaser {
+    padding: 35px 25px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 25px;
+  }
+  .archive-teaser h2 {
+    font-size: 28px;
+  }
+  .archive-teaser .outline {
+    font-size: 11px;
+  }
+  footer {
+    padding: 25px;
+  }
+  .wrap {
+    padding: 40px 22px;
+  }
+  .page-heading h1 {
+    font-size: 33px;
+  }
+  .page-heading p {
+    font-size: 11px;
+  }
+  .case-grid {
+    grid-template-columns: 1fr;
+  }
+  .case-card p {
+    min-height: auto;
+  }
+  .case-art {
+    height: 180px;
+  }
+  .case-card h2 {
+    font-size: 27px;
+  }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 75px;
+    bottom: 0;
+    width: 235px;
+    z-index: 30;
+    transform: translateX(-100%);
+    box-shadow: 20px 0 70px #0009;
+    transition: transform 0.2s;
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  .sidebar-file h3 {
+    font-size: 17px;
+  }
+  .sidebar nav button {
+    padding: 15px;
+    font-size: 12px;
+  }
+  .mobile-menu {
+    display: block;
+    padding: 0;
+  }
+  .desk {
+    padding: 0 20px 35px;
+  }
+  .desk-top {
+    justify-content: flex-start;
+    height: 55px;
+    gap: 15px;
+  }
+  .desk-heading {
+    margin: 28px 0;
+  }
+  .desk-heading h1 {
+    font-size: 28px;
+  }
+  .desk-heading > .eyebrow {
+    font-size: 8px;
+  }
+  .desk-heading p {
+    font-size: 10px;
+    line-height: 1.9;
+  }
+  .desk-heading .subtle {
+    display: block;
+    margin: 0;
+  }
+  .paper {
+    padding: 25px;
+  }
+  .paper h2 {
+    font-size: 24px;
+  }
+  .paper > p:not(.mono) {
+    font-size: 11px;
+  }
+  .evidence-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .evidence-card {
+    padding: 14px 12px;
+  }
+  .evidence-card-top {
+    font-size: 7px;
+  }
+  .read-label {
+    font-size: 0;
+  }
+  .read-label svg {
+    width: 12px;
+  }
+  .document-symbol {
+    gap: 7px;
+    margin: 23px 0 18px;
+  }
+  .document-symbol span {
+    font-size: 8px;
+  }
+  .document-symbol svg {
+    width: 24px;
+  }
+  .evidence-card h3 {
+    font-size: 12px;
+    line-height: 1.7;
+    min-height: 39px;
+  }
+  .evidence-card p {
+    font-size: 9px;
+    min-height: 36px;
+  }
+  .evidence-card-bottom {
+    font-size: 7px;
+  }
+  .evidence-card-bottom svg {
+    width: 13px;
+  }
+  .suspect-list > button {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 7px;
+    gap: 6px;
+  }
+  .suspect-list button strong {
+    font-size: 9px;
+    white-space: nowrap;
+  }
+  .suspect-list button span {
+    font-size: 7px;
+  }
+  .avatar {
+    width: 22px;
+    height: 31px;
+    font-size: 8px;
+  }
+  .chat-heading {
+    padding: 15px;
+  }
+  .messages {
+    padding: 15px;
+    height: 350px;
+  }
+  .message {
+    width: 94%;
+  }
+  .message p {
+    padding: 12px;
+    font-size: 11px;
+  }
+  .composer {
+    padding: 14px;
+  }
+  .composer-bottom > span {
+    font-size: 7px;
+  }
+  .composer-bottom .primary {
+    padding: 10px;
+    font-size: 10px;
+    gap: 7px;
+  }
+  .timeline article {
+    gap: 17px;
+  }
+  .timeline article:before {
+    left: 69px;
+  }
+  .timeline h3 {
+    font-size: 14px;
+  }
+  .timeline p {
+    font-size: 10px;
+  }
+  .timeline time {
+    font-size: 12px;
+  }
+  .timeline .eyebrow {
+    font-size: 6px;
+  }
+  .notebook-top {
+    padding: 15px;
+    font-size: 8px;
+    align-items: flex-start;
+  }
+  .notebook-top > span:last-child {
+    text-align: right;
+    max-width: 100px;
+    line-height: 1.7;
+  }
+  .notebook textarea {
+    padding: 18px;
+    font-size: 12px;
+  }
+  .notebook-bottom {
+    padding: 15px;
+    font-size: 8px;
+  }
+  .accusation {
+    padding: 20px;
+  }
+  .evidence-selection h3 small {
+    display: block;
+    margin: 8px 0 0;
+  }
+  .evidence-selection label {
+    gap: 8px;
+    font-size: 10px;
+  }
+  .evidence-selection .mono {
+    font-size: 8px;
+  }
+  .evidence-selection small {
+    font-size: 7px;
+  }
+  .accusation-bottom .primary {
+    width: 100%;
+  }
+  .results {
+    margin-top: 40px;
+  }
+  .results h1 {
+    font-size: 23px;
+  }
+  .results > p {
+    font-size: 10px;
+  }
+  .result-checks {
+    padding: 4px 15px;
+  }
+  .result-checks > details > summary {
+    font-size: 10px;
+  }
+  .solution p {
+    font-size: 11px;
+  }
+  .result-actions {
+    gap: 10px;
+  }
+  .result-actions button {
+    padding: 13px;
+    font-size: 10px;
+  }
+  .modal-backdrop {
+    padding: 17px;
+  }
+  .modal {
+    padding: 32px 24px;
+  }
+  .modal h2 {
+    font-size: 22px;
+  }
+  .modal p {
+    font-size: 11px;
+  }
+  .document-body {
+    font-size: 12px;
+  }
+  .modal-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .document-modal .modal-bottom .primary {
+    width: 100%;
+  }
+  .modal-actions button {
+    padding: 12px 15px;
+    font-size: 11px;
+  }
+  .error-toast {
+    font-size: 11px;
+    width: calc(100% - 35px);
+    top: 85px;
+  }
+  .notebook-bottom .text-button {
+    font-size: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 심문 인물 카드를 선택 목록보다 먼저, 사진은 크게 표시 */
+@media (min-width: 801px) and (max-width: 1200px) {
+  .interrogation-grid {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+}
+@media (max-width: 800px) {
+  .suspect-bio {
+    display: block;
+    grid-column: 1 / -1;
+  }
+  .suspect-portrait {
+    width: 100%;
+    max-width: 360px;
+  }
+}
+
+/* 읽기 편한 심문 기록과 수사 노트 */
+.interrogation-grid {
+  grid-template-columns: minmax(260px, 30%) minmax(0, 1fr);
+  align-items: start;
+}
+.chat {
+  background: #171f1e;
+  border-color: #45524b;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.chat-heading {
+  background: #222d29;
+  border-color: #4d5b50;
+  color: #e9e6d9;
+}
+.chat-heading > span:not(.live-dot) {
+  color: #aab9af;
+}
+.messages {
+  height: clamp(460px, 58vh, 680px);
+  min-height: 460px;
+  padding: 26px;
+  background: #171f1e;
+  scrollbar-color: #677c71 #171f1e;
+}
+.transcript-divider {
+  color: #8faaa0;
+  font-size: 9px;
+}
+.message {
+  width: 94%;
+  margin-bottom: 24px;
+}
+.message > span {
+  color: #b7c7bc;
+  font-size: 11px;
+}
+.message p {
+  background: #293732;
+  color: #e3e8de;
+  border-color: #4b6256;
+  border-radius: 5px;
+  font-size: 14px;
+  line-height: 1.9;
+  padding: 17px 20px;
+}
+.message.user p {
+  background: #393327;
+  color: #eee2c9;
+  border-color: #6b5b3c;
+}
+.composer {
+  padding: 16px 20px;
+  background: #202a25;
+}
+.composer textarea {
+  display: block;
+  box-sizing: border-box;
+  height: 104px;
+  min-height: 104px;
+  max-height: 104px;
+  resize: none;
+  font-size: 14px;
+  line-height: 26px;
+  padding: 12px 14px;
+}
+.composer-bottom {
+  margin-top: 10px;
+}
+
+.composer {
+  border-top-color: #516054;
+}
+.composer textarea {
+  background: #131c19;
+  color: #e5e9dd;
+  caret-color: #d4c08b;
+  border-color: #647565;
+  box-shadow: inset 0 2px 8px #0003;
+}
+.composer textarea::placeholder {
+  color: #9aab9f;
+}
+.composer textarea:focus-visible {
+  background: #19251f;
+  outline-color: #b6a575;
+}
+.composer .attachment,
+.composer .attachment select {
+  color: #c5cfb9;
+}
+.composer-bottom > span {
+  color: #a7b7aa;
+}
+.composer-bottom .primary {
+  background: #baaa7e;
+  border-color: #baaa7e;
+  color: #1d251d;
+}
+.composer-bottom .primary:hover:not(:disabled) {
+  background: #d0bf90;
+}
+.composer-bottom .primary:disabled {
+  background: #5e6652;
+  border-color: #5e6652;
+  color: #d0d4c4;
+}
+
+/* 가죽 커버 안의 제본된 수사 수첩 */
+.notebook {
+  position: relative;
+  max-width: 960px;
+  padding: 14px 14px 14px 28px;
+  border: 1px solid #66503b;
+  border-radius: 6px 12px 12px 6px;
+  background: repeating-linear-gradient(112deg, #30251d 0px, #35291f 2px, #2e231c 4px);
+  box-shadow:
+    0 16px 35px #0005,
+    inset 0 0 0 5px #221b15,
+    inset 0 0 0 7px #66503b55;
+}
+.notebook::before {
+  content: '';
+  position: absolute;
+  top: 30px;
+  bottom: 30px;
+  left: 12px;
+  width: 5px;
+  border-left: 1px dashed #aa8862;
+  opacity: 0.65;
+}
+.notebook-top {
+  position: relative;
+  background: #d0bd94;
+  color: #5a4630;
+  border-color: #aa936a;
+  padding: 24px 28px;
+  font-size: 11px;
+  box-shadow: inset 8px 0 16px #735c2920;
+}
+.notebook-top > span:first-child {
+  color: #443822;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.notebook textarea {
+  display: block;
+  min-height: 480px;
+  color: #3c3427;
+  caret-color: #473c29;
+  font-size: 15px;
+  line-height: 32px;
+  padding: 26px 28px 26px 54px;
+  border: 0;
+  border-radius: 0;
+  background-color: #ddcfac;
+  background-image:
+    linear-gradient(
+      to right,
+      transparent 40px,
+      #a46d5d66 40px,
+      #a46d5d66 41px,
+      transparent 41px
+    ),
+    linear-gradient(to right, #6b4c222b, transparent 30px, transparent 96%, #86602d14),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 31px,
+      #85755440 31px,
+      #85755440 32px
+    );
+  background-position:
+    0 0,
+    0 0,
+    0 26px;
+  box-shadow: inset 0 1px 20px #92723d1f;
+}
+.notebook textarea::placeholder {
+  color: #78684c;
+  opacity: 1;
+}
+.notebook textarea:focus-visible {
+  outline: 1px solid #9a7c47;
+  outline-offset: -1px;
+}
+.notebook-bottom {
+  background: #d0bd94;
+  color: #675337;
+  border-color: #aa936a;
+  padding: 18px 28px;
+  font-size: 11px;
+  box-shadow:
+    0 3px 0 #b5a27b,
+    0 6px 0 #c8b68f;
+}
+.notebook-bottom .text-button {
+  color: #493c26;
+  border: 1px solid #8b754f;
+  padding: 9px 13px;
+}
+@media (max-width: 800px) {
+  .interrogation-grid {
+    grid-template-columns: 1fr;
+  }
+  .messages {
+    height: 460px;
+    min-height: 460px;
+    padding: 18px;
+  }
+  .message p {
+    font-size: 14px;
+    padding: 14px 16px;
+  }
+  .composer {
+    padding: 14px;
+  }
+}
+
+/* 종이 섬유와 낡은 가장자리가 있는 실제 수사 수첩 */
+.notebook {
+  padding: 5px;
+  border: 1px solid #64401f;
+  border-radius: 22px 9px 9px 9px;
+  background: #3d281a;
+  box-shadow: 0 18px 45px #0006;
+}
+.notebook::before {
+  display: none;
+}
+.notebook-top,
+.notebook textarea,
+.notebook-bottom {
+  background-color: #ead0a0;
+  background-image: url('/assets/notebook-paper.png');
+  background-size: 100% 100%;
+  color: #53371e;
+  font-family: Georgia, 'Noto Serif KR', 'Batang', serif;
+}
+.notebook-top {
+  padding: 22px 32px;
+  min-height: 68px;
+  border-radius: 17px 6px 0 0;
+  border-bottom: 1px solid #a77c4566;
+  box-shadow:
+    inset 0 2px 5px #8a5c2930,
+    0 2px 5px #77501f25;
+}
+.notebook-top > span:first-child {
+  color: #53371e;
+  font-size: 15px;
+  letter-spacing: 0;
+}
+.notebook-top > span[role='status'] {
+  color: #694724;
+  font-size: 13px;
+}
+.notebook-emblem {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #936730;
+}
+.notebook-emblem::before,
+.notebook-emblem::after {
+  content: '';
+  width: 45px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #956734);
+}
+.notebook-emblem::after {
+  transform: rotate(180deg);
+}
+.notebook-emblem > span {
+  font-size: 28px;
+}
+.notebook-emblem > span:last-child {
+  transform: scaleX(-1);
+}
+.notebook textarea {
+  min-height: 500px;
+  padding: 24px 30px 24px 65px;
+  line-height: 33px;
+  font-size: 16px;
+  background-image:
+    linear-gradient(
+      to right,
+      transparent 49px,
+      #b65f4d99 49px,
+      #b65f4d99 50px,
+      transparent 50px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 32px,
+      #99764644 32px,
+      #99764644 33px
+    ),
+    url('/assets/notebook-paper.png');
+  background-size:
+    auto,
+    auto,
+    100% 100%;
+  background-position:
+    0 0,
+    0 24px,
+    0 0;
+  box-shadow: inset 4px 0 12px #8b5b2920;
+}
+.notebook textarea::placeholder {
+  color: #795735;
+}
+.notebook-bottom {
+  padding: 16px 30px;
+  border-top-color: #ad875a66;
+  border-radius: 0 0 5px 5px;
+  box-shadow: none;
+}
+@media (max-width: 650px) {
+  .notebook-emblem {
+    display: none;
+  }
+  .notebook-top {
+    padding: 18px;
+  }
+  .notebook-top > span:first-child {
+    font-size: 12px;
+  }
+  .notebook textarea {
+    font-size: 14px;
+    padding-left: 48px;
+    background-image:
+      linear-gradient(
+        to right,
+        transparent 33px,
+        #b65f4d99 33px,
+        #b65f4d99 34px,
+        transparent 34px
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 32px,
+        #99764644 32px,
+        #99764644 33px
+      ),
+      url('/assets/notebook-paper.png');
+  }
+}

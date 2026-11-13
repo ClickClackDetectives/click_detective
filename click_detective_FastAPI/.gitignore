@@ -1,0 +1,16 @@
+.venv/
+.env
+.data/
+.reports/
+__pycache__/
+.pytest_cache/
+models/*
+!models/README.md
+adapters/*
+!adapters/README.md
+.cd_venv/
+
+# 로컬 가중치와 LoRa adapter, editable 설치 메타데이터
+adapters
+Qwen2.5-7B-Instruct/
+*.egg-info/

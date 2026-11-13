@@ -1,0 +1,362 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "thirteenth-bell-v1",
+  "purpose": "현재 구현의 사건 데이터 스냅샷·새 시나리오 작성 참고",
+  "sourceOfTruth": "기존 lib/components/scenarios 소스. 런타임은 이 template 폴더를 읽도록 전환하지 않았다.",
+  "containsSpoilers": true,
+  "publicDistribution": false,
+  "regenerate": "npm run export:scenario",
+  "counts": {
+    "characters": 5,
+    "evidence": 29,
+    "findings": 10,
+    "inferences": 10,
+    "relationshipDirections": 20,
+    "movementVariants": 22,
+    "assets": 34
+  },
+  "excluded": [
+    ".data 개인 플레이 기록",
+    ".env 및 비밀 설정",
+    "node_modules와 빌드 산출물",
+    "이미지·영상 바이너리 본문",
+    "사용하지 않는 외부 PDF 원문"
+  ],
+  "limitations": [
+    "동적 분기·정규식은 TypeScript 표현으로 보존하며 별도 이식 없이 JSON만으로 실행되지 않는다.",
+    "플래그 조합별 진술은 후보 전체이며 플레이어에게 모두 공개하면 안 된다."
+  ],
+  "files": [
+    {
+      "file": "case.json",
+      "visibility": "public",
+      "sources": [
+        "lib/case.ts"
+      ],
+      "description": "공개 사건 개요·고발 선택지·초기 일정",
+      "sha256": "8f592e0af71c966bff3c937260c1982ec269debe3a4ebd82fbb6be2e1efbd83d"
+    },
+    {
+      "file": "characters.json",
+      "visibility": "public",
+      "sources": [
+        "lib/case.ts",
+        "lib/interview-topics.ts"
+      ],
+      "description": "다섯 인물 프로필·최초 진술·질문 주제",
+      "sha256": "39bed5bbb5655ba9da2b80183e474472526fee71c0ff1a35daafcb3ef6dd9966"
+    },
+    {
+      "file": "evidence.json",
+      "visibility": "phase-gated",
+      "sources": [
+        "lib/case.ts",
+        "lib/archive.ts",
+        "lib/evidence-illustrations.ts"
+      ],
+      "description": "원본 29개와 장소·소지품·집사 증언 분류",
+      "sha256": "fd4521d7758c97821d804c22e2d5e201761f4f16a1add82218b5bd3d79fdef58"
+    },
+    {
+      "file": "character-scripts.private.json",
+      "visibility": "server-only",
+      "sources": [
+        "scenarios/thirteenth-bell/character-scripts.server.json"
+      ],
+      "description": "현재 앱에서 사용하는 캐릭터 원문 두 섹션·출처",
+      "sha256": "6b4f22fe89954eacc6c7cc8a9e87f7e7ff780f6bb09ec5b7c8bcece60beedda5"
+    },
+    {
+      "file": "testimony-templates.private.json",
+      "visibility": "server-only",
+      "sources": [
+        "lib/character-scenario.server.ts",
+        "lib/reveal-rules.ts",
+        "lib/interview-topics.ts"
+      ],
+      "description": "모든 인정 플래그 조합의 동선·관계·실제 인정 응답 후보",
+      "sha256": "18033f7d4eb2e600c073c4aea840bcd4687dae2efa6c8b978e4ed2b2789a577d"
+    },
+    {
+      "file": "dialogue-rules.private.json",
+      "visibility": "server-only",
+      "sources": [
+        "lib/suspect-dialogue.ts",
+        "lib/character-scenario.server.ts"
+      ],
+      "description": "고정 대사와 주제 분기의 전체 조건·문구·원문",
+      "sha256": "317f121d147c0c133cf7d98c32a863583f0dc1dc35b2b28c1fbbdfa53407d8b3"
+    },
+    {
+      "file": "inferences.private.json",
+      "visibility": "server-only",
+      "sources": [
+        "lib/evidence-connections.ts"
+      ],
+      "description": "추론 10개·단계·연쇄 참조·결론",
+      "sha256": "65882f803b263623940559b2eccf37b7f4689cc610397bbdc800c1948a245846"
+    },
+    {
+      "file": "findings.private.json",
+      "visibility": "server-only",
+      "sources": [
+        "lib/reveal-rules.ts"
+      ],
+      "description": "쟁점 10개·인물·필요 원본·인정 응답",
+      "sha256": "53c807654dde7cc7527b1b1882b64346737660da007a3d5ba8db80bb89f4f9da"
+    },
+    {
+      "file": "game-rules.json",
+      "visibility": "server-authoritative",
+      "sources": [
+        "lib/case.ts",
+        "lib/investigation-stage.ts",
+        "lib/accusation-requirements.ts",
+        "lib/investigation-review.ts",
+        "lib/investigation-progress.ts"
+      ],
+      "description": "횟수·단계·검거·진행도 규칙",
+      "sha256": "e516b406825bc5409cbd5149a8f1321740666c5f817a35154194676aa40ef435"
+    },
+    {
+      "file": "solution.private.json",
+      "visibility": "server-only",
+      "sources": [
+        "lib/engine.ts"
+      ],
+      "description": "정답·판정 점수·종결 해설",
+      "sha256": "c015a80347279fc26accb89e2c1e8692504beee01aa30e251640c35ed79019f7"
+    },
+    {
+      "file": "initial-state.json",
+      "visibility": "template",
+      "sources": [
+        "lib/engine.ts",
+        "lib/case.ts"
+      ],
+      "description": "개인 플레이 기록이 아닌 신규 수사 초기 상태",
+      "sha256": "f8f7617cd614ffd520743be1c424013404f02b75b5ba8ef17d1414d975c3b65a"
+    },
+    {
+      "file": "application-data.json",
+      "visibility": "public",
+      "sources": [
+        "lib/case-library.ts",
+        "lib/inference-sources.ts",
+        "components/navigation.ts"
+      ],
+      "description": "사건 목록·자료 종류·내비게이션 참조",
+      "sha256": "243e872ee0cb84c3aa1f8c712a2bc048cad569aa6bb0634687f107195f4c436d"
+    },
+    {
+      "file": "story-presentation.json",
+      "visibility": "public-with-scenario-hints",
+      "sources": [
+        "components/screens/briefing-screen.tsx",
+        "components/case-opening.tsx",
+        "components/game-dialog.tsx",
+        "components/navigation.ts"
+      ],
+      "description": "브리핑·오프닝·안내창·메뉴를 읽기 쉬운 형태로 정리",
+      "sha256": "3ccdc8a2d5eb4707efa27d507c3fd2dcb2e415af1a47c112504b43062a480511"
+    },
+    {
+      "file": "screen-content.json",
+      "visibility": "mixed-spoilers",
+      "sources": [
+        "components/app-header.tsx",
+        "components/case-app.tsx",
+        "components/case-opening.tsx",
+        "components/evidence-dialog.tsx",
+        "components/game-dialog.tsx",
+        "components/investigation-sidebar.tsx",
+        "components/screens/accusation-screen.tsx",
+        "components/screens/briefing-screen.tsx",
+        "components/screens/cases-screen.tsx",
+        "components/screens/evidence-screen.tsx",
+        "components/screens/findings-screen.tsx",
+        "components/screens/home-screen.tsx",
+        "components/screens/inference-screen.tsx",
+        "components/screens/interrogation-screen.tsx",
+        "components/screens/notes-screen.tsx",
+        "components/screens/results-screen.tsx",
+        "components/screens/testimonies-screen.tsx",
+        "components/screens/timeline-screen.tsx"
+      ],
+      "description": "브리핑·오프닝·안내창·결과 해설 등 화면 내 문자열·분기",
+      "sha256": "3d537fb59a086e724eff41dac049075fbf1b0655469deb5297d2097b0fc2d7e7"
+    },
+    {
+      "file": "assets.json",
+      "visibility": "public-with-production-notes",
+      "sources": [
+        "lib/evidence-illustrations.ts",
+        "docs/evidence-illustration-prompts.json"
+      ],
+      "description": "이미지·영상 경로·크기·해시. 실물은 public을 참조",
+      "sha256": "8ac4aa2acaa406d879749b3c27530d90bf0f8258e9e98e6ac02ac08585d3c630"
+    }
+  ],
+  "sources": [
+    {
+      "path": "components/app-header.tsx",
+      "sha256": "4d8686f86c2e094df6ce1147c1d35dc6f80314858508ab8b950e74f7c931255e"
+    },
+    {
+      "path": "components/case-app.tsx",
+      "sha256": "4ab08c89c41fa89aad704d31e84c6d724567db57a9c2a296390ff1e36f2acc0a"
+    },
+    {
+      "path": "components/case-opening.tsx",
+      "sha256": "cd36f1222e37141c0c1a688ab949c75a41935a2ce9b35689ba62738541258eab"
+    },
+    {
+      "path": "components/evidence-dialog.tsx",
+      "sha256": "37ad9850877f2cfa2050f1c9d5aca3300fb0fc6966127363b35fcff438c70583"
+    },
+    {
+      "path": "components/game-dialog.tsx",
+      "sha256": "23fc22629d2ab86d7509ff222dc6805853903c8bde1ad2665002b5e10dee5317"
+    },
+    {
+      "path": "components/investigation-sidebar.tsx",
+      "sha256": "61cbcf88b9b1d106f066a887f6ce2dc690a0b97d64756d751e8906e92d731951"
+    },
+    {
+      "path": "components/navigation.ts",
+      "sha256": "9ef488e952665d396633a85d6285ed6ad477ac66680d51dd7e809984239540dc"
+    },
+    {
+      "path": "components/screens/accusation-screen.tsx",
+      "sha256": "e5d28e772477099824580bf4dec453ef1095656cb185e50fd653535bba790833"
+    },
+    {
+      "path": "components/screens/briefing-screen.tsx",
+      "sha256": "855f5801ca9633f641b64ea8c59c55c4678c995deb89b4375a1ffe785d1e0009"
+    },
+    {
+      "path": "components/screens/cases-screen.tsx",
+      "sha256": "1cf5393d1cbb3414f46ea7dd27be6d634632145847b527448698dedec2da6328"
+    },
+    {
+      "path": "components/screens/evidence-screen.tsx",
+      "sha256": "e68bd4c18f3c26949c05e0d9e0c5db85ce3cb5c4d6a783dfae3c8a18faf71083"
+    },
+    {
+      "path": "components/screens/findings-screen.tsx",
+      "sha256": "8c3bfd7453c025c34ced4b8cb17bcd725839d98229366903e67c6dd14858bed4"
+    },
+    {
+      "path": "components/screens/home-screen.tsx",
+      "sha256": "dd5ae7991bdf8db768d23e5f17bcfa1d5602e99af9a8e45bced411695420f289"
+    },
+    {
+      "path": "components/screens/inference-screen.tsx",
+      "sha256": "49a5fad64a353fd1b1b7ebdd62af738e8f0c73f3693736233404e6972daf2bc1"
+    },
+    {
+      "path": "components/screens/interrogation-screen.tsx",
+      "sha256": "456bbdd4ece2192bc34da595d7eea7d3348cc03073262e06418b3c000d8c375e"
+    },
+    {
+      "path": "components/screens/notes-screen.tsx",
+      "sha256": "db2c166baa9a79f8481644cc907ddd5a8758697b990176e85b670baa6546d50f"
+    },
+    {
+      "path": "components/screens/results-screen.tsx",
+      "sha256": "bc24f4ba73e3c29c07a558a757464d9a346609d1666be005fc8403586262e17b"
+    },
+    {
+      "path": "components/screens/testimonies-screen.tsx",
+      "sha256": "714b0e990a1d20222bddc1c03155be3f35bf8127be581d3a18003bb4ac151ea0"
+    },
+    {
+      "path": "components/screens/timeline-screen.tsx",
+      "sha256": "15920fe78761d620a0067854f94e945185b4578c3003250b09805a63fa5f9deb"
+    },
+    {
+      "path": "docs/evidence-illustration-prompts.json",
+      "sha256": "47038891fbcbcdc59b079060a6dd33df05408343fdb01c92d9eaf44c84079ae5"
+    },
+    {
+      "path": "lib/accusation-requirements.ts",
+      "sha256": "3d7fe83346ea05e3cdad3eb10f5c89d6f3f9397739bc769ea17e76b5ae25b999"
+    },
+    {
+      "path": "lib/archive.ts",
+      "sha256": "d97d73c147db67179ac313fe9b747c4dae023dcba164529202c0f45878f9b56d"
+    },
+    {
+      "path": "lib/case-library.ts",
+      "sha256": "ec4f013ed10e4a9d77f1a7b9e6e1148e495f3bd9d810cc52624b4f2950a1f200"
+    },
+    {
+      "path": "lib/case.ts",
+      "sha256": "19599a09c340b0a5f04702f7962276d667197566cb051fab122d524dbabcc93f"
+    },
+    {
+      "path": "lib/character-scenario.server.ts",
+      "sha256": "9cd918a990bb10bb2ceb275e035947b13196ce8494a26dbff3526230f9c84978"
+    },
+    {
+      "path": "lib/engine.ts",
+      "sha256": "fa8d5c43588a077b32ec74bed7782f0eeb0f37b2f4ca89d4ec98d77a2969e298"
+    },
+    {
+      "path": "lib/evidence-connections.ts",
+      "sha256": "8c99ba4a81ea2a7a9b2a0719de75f6f2eaa3c424c08887c003add7eab0ff02a8"
+    },
+    {
+      "path": "lib/evidence-illustrations.ts",
+      "sha256": "e6e7fb0b0e8bb4299296f5713c4f12b8cdd0353aca3c98c5990ae6d2891a948d"
+    },
+    {
+      "path": "lib/game-errors.ts",
+      "sha256": "b0a7f68364203123ec3e4668a96b5d18e729da78c04a6ecfe4b24007998bf9db"
+    },
+    {
+      "path": "lib/inference-sources.ts",
+      "sha256": "dcc799b254da85f001ffc6e6f0a09097687f0e8788a8ef21cd3f7f145c4478ed"
+    },
+    {
+      "path": "lib/interrogation.ts",
+      "sha256": "48cf096ab80b3c30e6e4231170d3b279618081c83a821ec3fc6e80ad66b3afa5"
+    },
+    {
+      "path": "lib/interview-topics.ts",
+      "sha256": "e0b0fb0ade81f7c9e86e231c364456c258cdb8fad027e03a3709dea0b1fa2030"
+    },
+    {
+      "path": "lib/investigation-progress.ts",
+      "sha256": "c1341476d380c5c352c28c74040a11f52f8b95e1d9bd0966a6534da8a39d50b5"
+    },
+    {
+      "path": "lib/investigation-review.ts",
+      "sha256": "de659936b968d6c50a7d01664a09ca553eddb3d02cfba791dbfe6de1261ba99d"
+    },
+    {
+      "path": "lib/investigation-stage.ts",
+      "sha256": "b3bd5612ae4fb4a3c4354cceb267aec2cc0ceca63a1b0839d45d6a3fea7b9f12"
+    },
+    {
+      "path": "lib/investigation-timeline.server.ts",
+      "sha256": "e4ff2f19bf180172876e54bb2c7dc25f438c319add06323d14a7fae2a4810ece"
+    },
+    {
+      "path": "lib/reveal-rules.ts",
+      "sha256": "23eac6ff79cdd85ada263d984b6d0185502130e535b2655db412d766ce5dd117"
+    },
+    {
+      "path": "lib/suspect-dialogue.ts",
+      "sha256": "02acfc54eb390bed0bc6719d9e5eac767465e200439a03afb671b10025dc966b"
+    },
+    {
+      "path": "scenarios/thirteenth-bell/character-scripts.server.json",
+      "sha256": "c0da805b3e374d08f56bbffd915a97bbaa14fc826182a1c3aa2ef974fef23cd0"
+    },
+    {
+      "path": "scripts/export-scenario-template.mjs",
+      "sha256": "98c22f4fa3d7251f7debad48bd6eb7264ff3e4711fd4dd97f6127ea0aacc5a8e"
+    }
+  ]
+}

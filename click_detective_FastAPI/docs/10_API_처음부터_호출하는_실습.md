@@ -1,0 +1,168 @@
+# 10. API를 처음부터 호출하는 실습
+
+[목차](README.md) · [전체 API 설명](API_상세/README.md)
+
+이 문서는 서버와 클라이언트를 별도 터미널에서 실행하는 예입니다. 코드 블록을 읽는 것만으로 서버 상태가 변경되지는 않지만, 실습 코드를 실행하면 실제 새 수사와 열람·심문 기록이 만들어집니다.
+
+## 1. 터미널 A: GPU 없이 서버부터 실행
+
+먼저 생성된 .env의 CLICK_API_KEY가 있어야 합니다. 다음은 프로세스 환경변수로 이번 실행만 fixture 모드를 사용하는 예입니다. .env 파일을 덮어쓰지 않습니다.
+
+```bash
+cd ~/reverse/click_detective
+source .cd_venv/bin/activate
+CLICK_GENERATION_MODE=fixture python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+```
+
+이 터미널은 서버 로그를 보여 주므로 켜 둡니다. Ctrl+C로 종료합니다. 다른 서버가 이미 8000번 포트를 쓰면 다른 포트를 지정하고 아래 클라이언트 주소도 바꿉니다.
+
+## 2. 터미널 B: 가상환경 준비
+
+```bash
+cd ~/reverse/click_detective
+source .cd_venv/bin/activate
+python
+```
+
+Python 프롬프트에서 아래 코드를 실행할 수 있습니다. 줄 수가 많다면 임시 실습 파일에 저장해 실행해도 됩니다. 설정은 공용 Settings에서 읽으며 서비스 키를 출력하지 않습니다.
+
+## 3. 카탈로그 → 수사 생성 → 복원
+
+```python
+from uuid import uuid4
+import httpx
+from app.config import Settings
+
+settings = Settings()
+client = httpx.Client(
+    base_url="http://127.0.0.1:8000",
+    headers={"Authorization": f"Bearer {settings.api_key}"},
+    timeout=settings.timeout_seconds + 5,
+    trust_env=False,
+)
+
+catalog_response = client.get("/v1/catalog")
+catalog_response.raise_for_status()
+catalog = catalog_response.json()
+print("사건:", catalog["case"]["title"])
+
+create_body = {
+    "request_id": str(uuid4()),
+    "case_id": catalog["caseId"],
+    "scenario_version": catalog["scenarioVersion"],
+}
+create_response = client.post("/v1/games", json=create_body)
+create_response.raise_for_status()
+created = create_response.json()
+
+# game_token은 해당 수사의 비밀값이므로 출력하거나 공유하지 않습니다.
+client.headers["X-Game-Token"] = created["game_token"]
+game_id = created["game_id"]
+state = created["state"]
+base = f"/v1/games/{game_id}"
+print("초기 상태 버전:", state["revision"])
+
+restore_response = client.get(base)
+restore_response.raise_for_status()
+state = restore_response.json()["state"]
+```
+
+`Settings()`를 클라이언트에서 만들었다고 모델이 로딩되는 것은 아닙니다. 모델 로딩은 FastAPI lifespan의 local 경로에서 일어납니다.
+
+## 4. 자료 목록 → 열람 → 상세
+
+```python
+list_response = client.get(base + "/materials", params={"kind": "evidence"})
+list_response.raise_for_status()
+materials = list_response.json()["materials"]
+print("현재 공개 자료 수:", len(materials))
+
+# 첫 자료 하나를 실제로 열람합니다.
+material = materials[0]
+examine_body = {
+    "request_id": str(uuid4()),
+    "expected_revision": state["revision"],
+    "evidence_id": material["id"],
+}
+examine_response = client.post(base + "/examinations", json=examine_body)
+examine_response.raise_for_status()
+state = examine_response.json()["state"]
+
+key = material["materialKey"]
+detail_response = client.get(base + "/materials/" + key)
+detail_response.raise_for_status()
+detail = detail_response.json()
+print(detail["title"])
+print(detail["body"])
+```
+
+목록은 읽었지만 상세를 열람하지 않은 원본이면 상세 API가 422로 거절할 수 있습니다. 열람 확정 뒤 상세를 요청하는 순서가 중요합니다.
+
+## 5. 심문 → 응답과 새 상태 적용
+
+```python
+person = catalog["characters"][0]
+question_body = {
+    "request_id": str(uuid4()),
+    "expected_revision": state["revision"],
+    "suspect_id": person["id"],
+    "question": "자기소개를 해주세요.",
+}
+reply_response = client.post(base + "/interrogations", json=question_body)
+reply_response.raise_for_status()
+reply_data = reply_response.json()
+state = reply_data["state"]
+print("대사:", reply_data["result"]["reply"])
+print("생성 방식:", reply_data["result"]["finish_reason"])
+print("소비한 질문:", state["questions"])
+```
+
+이번 서버 실행은 fixture이므로 finish_reason=fixed입니다. 실제 Qwen 결과가 아닙니다. local로 실행하면 모델 파일·어댑터·GPU가 준비되어야 하고 생성·검증 지연이 발생합니다.
+
+## 6. 같은 요청 재전송과 다른 질문
+
+```python
+# 같은 UUID와 같은 본문: 완료 응답을 재사용합니다.
+retry_response = client.post(base + "/interrogations", json=question_body)
+retry_response.raise_for_status()
+assert retry_response.json() == reply_data
+
+# 다른 질문: 반드시 새 UUID와 최신 revision을 사용합니다.
+next_question = {
+    "request_id": str(uuid4()),
+    "expected_revision": state["revision"],
+    "suspect_id": person["id"],
+    "question": "그날 밤의 동선을 말씀해 주세요.",
+    "topic_id": "movement",
+}
+next_response = client.post(base + "/interrogations", json=next_question)
+next_response.raise_for_status()
+state = next_response.json()["state"]
+```
+
+같은 request_id로 question만 바꾸면 409입니다. 여러 터미널에서 같은 수사를 변경해 revision이 바뀌었다면 상태를 재조회하고 새 행동으로 요청합니다. 자동으로 오래된 변경을 덮어쓰지 않습니다.
+
+## 7. 메모와 종료
+
+```python
+notes_response = client.put(base + "/notes", json={
+    "request_id": str(uuid4()),
+    "expected_revision": state["revision"],
+    "text": "자료와 진술의 차이를 다시 확인할 것.",
+})
+notes_response.raise_for_status()
+state = notes_response.json()["state"]
+print("메모 저장 후 revision:", state["revision"])
+print("진행률:", state["progress"]["percent"])
+client.close()
+```
+
+진행률과 다음 행동 가능 여부는 서버 응답을 표시합니다. 메모를 저장했다고 증거를 획득하거나 진행률이 증가하는 것은 아닙니다.
+
+## 8. 실습에서 확인할 경계
+
+이 예는 API를 이해하는 독립 클라이언트이며 기존 Next.js 화면을 자동 연결하지 않습니다. 이미지·영상에도 서비스 인증이 필요하므로 브라우저의 img/video 표시에는 별도 인증 프록시 등이 필요합니다. 전체 정답 플레이는 tests/test_game.py의 개발용 검사를 참고하세요.
+
+## 응답이 fallback이면 어떻게 읽는가
+
+기본 설정에서는 생성·검증 실패에도 승인 원문으로 복구하므로 HTTP 200일 수 있습니다. result.finish_reason=fallback은 LLM 생성 성공인 stop과 다르지만, 실제 대화·질문 1회·승인된 증언/쟁점은 저장된 응답입니다. fixed는 중립 또는 fixture입니다. [질문 응답 정책](12_질문_응답과_복구_정책.md)을 함께 읽으세요.

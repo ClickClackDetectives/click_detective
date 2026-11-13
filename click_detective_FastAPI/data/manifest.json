@@ -1,0 +1,341 @@
+{
+  "source": "share_project/public + share_project/scenarios",
+  "files": [
+    {
+      "path": "case/application-data.json",
+      "bytes": 4049,
+      "sha256": "243e872ee0cb84c3aa1f8c712a2bc048cad569aa6bb0634687f107195f4c436d"
+    },
+    {
+      "path": "case/assets.json",
+      "bytes": 16009,
+      "sha256": "8ac4aa2acaa406d879749b3c27530d90bf0f8258e9e98e6ac02ac08585d3c630"
+    },
+    {
+      "path": "case/case.json",
+      "bytes": 3022,
+      "sha256": "8f592e0af71c966bff3c937260c1982ec269debe3a4ebd82fbb6be2e1efbd83d"
+    },
+    {
+      "path": "case/character-scripts.private.json",
+      "bytes": 10994,
+      "sha256": "6b4f22fe89954eacc6c7cc8a9e87f7e7ff780f6bb09ec5b7c8bcece60beedda5"
+    },
+    {
+      "path": "case/characters.json",
+      "bytes": 8311,
+      "sha256": "39bed5bbb5655ba9da2b80183e474472526fee71c0ff1a35daafcb3ef6dd9966"
+    },
+    {
+      "path": "case/dialogue-rules.private.json",
+      "bytes": 104258,
+      "sha256": "317f121d147c0c133cf7d98c32a863583f0dc1dc35b2b28c1fbbdfa53407d8b3"
+    },
+    {
+      "path": "case/evidence.json",
+      "bytes": 19073,
+      "sha256": "fd4521d7758c97821d804c22e2d5e201761f4f16a1add82218b5bd3d79fdef58"
+    },
+    {
+      "path": "case/findings.private.json",
+      "bytes": 3500,
+      "sha256": "53c807654dde7cc7527b1b1882b64346737660da007a3d5ba8db80bb89f4f9da"
+    },
+    {
+      "path": "case/game-rules.json",
+      "bytes": 1160,
+      "sha256": "e516b406825bc5409cbd5149a8f1321740666c5f817a35154194676aa40ef435"
+    },
+    {
+      "path": "case/inferences.private.json",
+      "bytes": 7358,
+      "sha256": "65882f803b263623940559b2eccf37b7f4689cc610397bbdc800c1948a245846"
+    },
+    {
+      "path": "case/initial-state.json",
+      "bytes": 2548,
+      "sha256": "f8f7617cd614ffd520743be1c424013404f02b75b5ba8ef17d1414d975c3b65a"
+    },
+    {
+      "path": "case/manifest.json",
+      "bytes": 13001,
+      "sha256": "1c796059a6962ff18a8e94887530495a83f4ef83b4ba99fa309ce0a01201147d"
+    },
+    {
+      "path": "case/screen-content.json",
+      "bytes": 279863,
+      "sha256": "3d537fb59a086e724eff41dac049075fbf1b0655469deb5297d2097b0fc2d7e7"
+    },
+    {
+      "path": "case/solution.private.json",
+      "bytes": 983,
+      "sha256": "c015a80347279fc26accb89e2c1e8692504beee01aa30e251640c35ed79019f7"
+    },
+    {
+      "path": "case/story-presentation.json",
+      "bytes": 5778,
+      "sha256": "3ccdc8a2d5eb4707efa27d507c3fd2dcb2e415af1a47c112504b43062a480511"
+    },
+    {
+      "path": "case/testimony-templates.private.json",
+      "bytes": 55059,
+      "sha256": "18033f7d4eb2e600c073c4aea840bcd4687dae2efa6c8b978e4ed2b2789a577d"
+    },
+    {
+      "path": "public/assets/characters/baek-sera-live.png",
+      "bytes": 1902917,
+      "sha256": "bb793a71d550aeb28bb90e598f67417fef73d52539c0b8fd5cb2dfd83e67a644"
+    },
+    {
+      "path": "public/assets/characters/baek-sera.webp",
+      "bytes": 66728,
+      "sha256": "207b50c973d77a00112ecf0a84c97973fda4d5a8a0650f836227aaa14ee10050"
+    },
+    {
+      "path": "public/assets/characters/cha-doyoon-live.png",
+      "bytes": 1970710,
+      "sha256": "5b3833f158d143b867e1d71f62b1d6223041038b55fb82d93d6ba156eb32796c"
+    },
+    {
+      "path": "public/assets/characters/cha-doyoon.webp",
+      "bytes": 70092,
+      "sha256": "33d9c646febc65a8d33d9b0a5c8dec9814e9b71f8ac6b136dde3a3e9bbeb0870"
+    },
+    {
+      "path": "public/assets/characters/kang-minho-live.png",
+      "bytes": 2276780,
+      "sha256": "6eb423f0f9e7242463f14239ecd43094c341d254a69ade0bcb54f3bbd375dd7b"
+    },
+    {
+      "path": "public/assets/characters/kang-minho.webp",
+      "bytes": 84694,
+      "sha256": "d78ac609a9938ffc517915d51a0dc8b47af6cbd06247dbf2b1541588277cffe7"
+    },
+    {
+      "path": "public/assets/characters/seo-haeun-live.png",
+      "bytes": 645323,
+      "sha256": "20315262059bfc95797d6de523aee184585c1dbb68fb023e531cde9d24d0be66"
+    },
+    {
+      "path": "public/assets/characters/seo-haeun.webp",
+      "bytes": 73360,
+      "sha256": "3aecc45406784470cb19ec853e15aebff7713e2d4a2d2b0d3be8b24718156a54"
+    },
+    {
+      "path": "public/assets/characters/yoon-jaehyuk-live.png",
+      "bytes": 1103436,
+      "sha256": "091610550623c0e8922cf26a26097902e34a90ab9be74611d0aca4a02dfb1884"
+    },
+    {
+      "path": "public/assets/characters/yoon-jaehyuk.webp",
+      "bytes": 67054,
+      "sha256": "3a935224ff50b407636597b9449635bdd98a2c360a3309ee9fe029a27b0693b1"
+    },
+    {
+      "path": "public/assets/evidence/1-01.png",
+      "bytes": 2279645,
+      "sha256": "5b9ca27f8ee0f8da441cd3a9b4328c0c9857ff905526553a4c95f98ab7721100"
+    },
+    {
+      "path": "public/assets/evidence/1-02.png",
+      "bytes": 2051530,
+      "sha256": "c9c7c5c8cd7d48a188abdf62fea6a0b694f2a235215beab0e4e2bc2bf5cd38f4"
+    },
+    {
+      "path": "public/assets/evidence/1-03.png",
+      "bytes": 2263714,
+      "sha256": "cd42d0d2b0bd91851d5db774a71e9552bf1e8726cd422cc6547cfac67f87e3e6"
+    },
+    {
+      "path": "public/assets/evidence/1-04.png",
+      "bytes": 2392779,
+      "sha256": "d4a1413e4871e545dae3501795fafb94ff62dca335d59ae8a0e4c75b093747f4"
+    },
+    {
+      "path": "public/assets/evidence/1-05.png",
+      "bytes": 2079780,
+      "sha256": "1a826ccba36cbd2bfd2b101bef27275833e54d0e723598256b6cb8a0095448a8"
+    },
+    {
+      "path": "public/assets/evidence/1-06.png",
+      "bytes": 2331301,
+      "sha256": "3b36901c160e6f7b6f6c559b125808a796a0f2a28215fa07e851eaa7d5996c5b"
+    },
+    {
+      "path": "public/assets/evidence/1-07.png",
+      "bytes": 2302553,
+      "sha256": "ce0b9ca7b1e44852f64f2349f873e1caf78f0251da55d5db8e34829f6a508c8e"
+    },
+    {
+      "path": "public/assets/evidence/1-08.png",
+      "bytes": 2312806,
+      "sha256": "02a3c66f7c916db5a01b43db3defff7776214de9dffe95e53f28b2a7f69445fa"
+    },
+    {
+      "path": "public/assets/evidence/1-09.png",
+      "bytes": 2542515,
+      "sha256": "26efba67bc32ee7c4c23e2b26aaf46895163bdbc203398ce8ed40efb97b464e3"
+    },
+    {
+      "path": "public/assets/evidence/1-10.png",
+      "bytes": 2566087,
+      "sha256": "24a196eff6644bb07852ce59516568c9cb078ed52188969fd8bc12855657f0b8"
+    },
+    {
+      "path": "public/assets/evidence/1-11.png",
+      "bytes": 2451534,
+      "sha256": "f4b552fb69e7c7488cc30d25d70bec737da172110bfae61e032f09531408463f"
+    },
+    {
+      "path": "public/assets/evidence/1-12.png",
+      "bytes": 2271492,
+      "sha256": "ebdbbca4ae1a202c1446c0cc74feb3d2bfd94f6fd61f9123055102b09c4e643b"
+    },
+    {
+      "path": "public/assets/evidence/1-13.png",
+      "bytes": 2322903,
+      "sha256": "8d3642acb001759dd7c7313b42561588ac861dea1c93f17d58d49b52f92f0551"
+    },
+    {
+      "path": "public/assets/evidence/S-B.png",
+      "bytes": 2414519,
+      "sha256": "b9806781fe9ee92b2ff577d2905ff08e43ec3dd0f436af759dbe9e8474063f5e"
+    },
+    {
+      "path": "public/assets/evidence/S-C.png",
+      "bytes": 2627779,
+      "sha256": "8525e6cd97febedf7db6f35fa83751a78dbd5a80797140090b1ef97bd7567102"
+    },
+    {
+      "path": "public/assets/evidence/S-K.png",
+      "bytes": 2643515,
+      "sha256": "2529b4af0acb2855de66e8e96b10d8bc71c9ba53adf0f6d74e00711daa69aea4"
+    },
+    {
+      "path": "public/assets/evidence/S-S.png",
+      "bytes": 2406518,
+      "sha256": "48084ed8c0911d97f6fc319e79835ddd9d0f2dad57029dbcb358227d375cfcf7"
+    },
+    {
+      "path": "public/assets/evidence/S-Y.png",
+      "bytes": 2467439,
+      "sha256": "cf4f60286722a6aee9d7445007ed48d91c0be24e5fadbabe07e464f949e0efde"
+    },
+    {
+      "path": "public/assets/intro/thirteenth-bell-opening-v3-quiet.mp4",
+      "bytes": 31238490,
+      "sha256": "e68d0ddc9b0318a1b06a87deddf4806957a68fc59955bb60a1819c81f893bd00"
+    },
+    {
+      "path": "public/assets/intro/thirteenth-bell-opening-v3.mp4",
+      "bytes": 31238987,
+      "sha256": "544977d894106ebf62d154b1e82443afe546b1ba668daa28c4bd2e29ae4d959c"
+    },
+    {
+      "path": "public/assets/intro/thirteenth-bell-opening.mp4",
+      "bytes": 3719225,
+      "sha256": "64266e3ea8063f7fb057449a96fc9225681e1ca80e5dd42c7445204eed5bba19"
+    },
+    {
+      "path": "public/assets/notebook-paper.png",
+      "bytes": 2770309,
+      "sha256": "946bfa03ddb9896de482b72449b20ed9fee1c0f92021ca3ed36f26a7949bced0"
+    },
+    {
+      "path": "public/hotel.jpg",
+      "bytes": 716739,
+      "sha256": "d332e3a243130da3cfd5e4865a81027b1dbf5f67be76779ab6938dd8c8fc3e23"
+    },
+    {
+      "path": "public/manor.jpg",
+      "bytes": 307054,
+      "sha256": "327721cfb17c363049e3a5ea67e587959977b02c92032706829367de17ed70f0"
+    },
+    {
+      "path": "scenarios/template/application-data.json",
+      "bytes": 4049,
+      "sha256": "243e872ee0cb84c3aa1f8c712a2bc048cad569aa6bb0634687f107195f4c436d"
+    },
+    {
+      "path": "scenarios/template/assets.json",
+      "bytes": 16009,
+      "sha256": "8ac4aa2acaa406d879749b3c27530d90bf0f8258e9e98e6ac02ac08585d3c630"
+    },
+    {
+      "path": "scenarios/template/case.json",
+      "bytes": 3022,
+      "sha256": "8f592e0af71c966bff3c937260c1982ec269debe3a4ebd82fbb6be2e1efbd83d"
+    },
+    {
+      "path": "scenarios/template/character-scripts.private.json",
+      "bytes": 10994,
+      "sha256": "6b4f22fe89954eacc6c7cc8a9e87f7e7ff780f6bb09ec5b7c8bcece60beedda5"
+    },
+    {
+      "path": "scenarios/template/characters.json",
+      "bytes": 8311,
+      "sha256": "39bed5bbb5655ba9da2b80183e474472526fee71c0ff1a35daafcb3ef6dd9966"
+    },
+    {
+      "path": "scenarios/template/dialogue-rules.private.json",
+      "bytes": 104258,
+      "sha256": "317f121d147c0c133cf7d98c32a863583f0dc1dc35b2b28c1fbbdfa53407d8b3"
+    },
+    {
+      "path": "scenarios/template/evidence.json",
+      "bytes": 19073,
+      "sha256": "fd4521d7758c97821d804c22e2d5e201761f4f16a1add82218b5bd3d79fdef58"
+    },
+    {
+      "path": "scenarios/template/findings.private.json",
+      "bytes": 3500,
+      "sha256": "53c807654dde7cc7527b1b1882b64346737660da007a3d5ba8db80bb89f4f9da"
+    },
+    {
+      "path": "scenarios/template/game-rules.json",
+      "bytes": 1160,
+      "sha256": "e516b406825bc5409cbd5149a8f1321740666c5f817a35154194676aa40ef435"
+    },
+    {
+      "path": "scenarios/template/inferences.private.json",
+      "bytes": 7358,
+      "sha256": "65882f803b263623940559b2eccf37b7f4689cc610397bbdc800c1948a245846"
+    },
+    {
+      "path": "scenarios/template/initial-state.json",
+      "bytes": 2548,
+      "sha256": "f8f7617cd614ffd520743be1c424013404f02b75b5ba8ef17d1414d975c3b65a"
+    },
+    {
+      "path": "scenarios/template/manifest.json",
+      "bytes": 13001,
+      "sha256": "1c796059a6962ff18a8e94887530495a83f4ef83b4ba99fa309ce0a01201147d"
+    },
+    {
+      "path": "scenarios/template/screen-content.json",
+      "bytes": 279863,
+      "sha256": "3d537fb59a086e724eff41dac049075fbf1b0655469deb5297d2097b0fc2d7e7"
+    },
+    {
+      "path": "scenarios/template/solution.private.json",
+      "bytes": 983,
+      "sha256": "c015a80347279fc26accb89e2c1e8692504beee01aa30e251640c35ed79019f7"
+    },
+    {
+      "path": "scenarios/template/story-presentation.json",
+      "bytes": 5778,
+      "sha256": "3ccdc8a2d5eb4707efa27d507c3fd2dcb2e415af1a47c112504b43062a480511"
+    },
+    {
+      "path": "scenarios/template/testimony-templates.private.json",
+      "bytes": 55059,
+      "sha256": "18033f7d4eb2e600c073c4aea840bcd4687dae2efa6c8b978e4ed2b2789a577d"
+    },
+    {
+      "path": "scenarios/thirteenth-bell/character-scripts.server.json",
+      "bytes": 10740,
+      "sha256": "c0da805b3e374d08f56bbffd915a97bbaa14fc826182a1c3aa2ef974fef23cd0"
+    }
+  ],
+  "contains_private_data": true
+}

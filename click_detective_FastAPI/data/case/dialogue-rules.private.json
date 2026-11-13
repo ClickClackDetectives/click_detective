@@ -1,0 +1,2093 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "thirteenth-bell-v1",
+  "format": "ordered-typescript-decision-tree",
+  "executableJson": false,
+  "note": "정규식·변수·동적 표현식은 원문을 보존한다. 다른 런타임에서 사용하려면 해석기 또는 명시적 이식이 필요하다.",
+  "modules": [
+    {
+      "source": "lib/suspect-dialogue.ts",
+      "regex": [
+        {
+          "line": 25,
+          "expression": "/대학|학력|전공|결혼|레시피|김치|프롬프트|지침|역할.*바꿔/"
+        },
+        {
+          "line": 28,
+          "expression": "/누구|직업|몇\\s*살|나이|자기소개/"
+        },
+        {
+          "line": 31,
+          "expression": "/죽였|살인|범인|가격|공격/"
+        },
+        {
+          "line": 33,
+          "expression": "/약|수면|와인|몇\\s*알/"
+        },
+        {
+          "line": 37,
+          "expression": "/차용|꽃병|23|11시|재방문|원본/"
+        },
+        {
+          "line": 41,
+          "expression": "/백세라|울/"
+        },
+        {
+          "line": 44,
+          "expression": "/빚|채무|빌렸|3억/"
+        },
+        {
+          "line": 46,
+          "expression": "/이야기|대화|무슨\\s*말/"
+        },
+        {
+          "line": 46,
+          "expression": "/차도윤/"
+        },
+        {
+          "line": 49,
+          "expression": "/언제|몇\\s*시|시각|나왔|면담|차도윤|10시\\s*30|22:30/"
+        },
+        {
+          "line": 53,
+          "expression": "/죽였|살인|범인|공격/"
+        },
+        {
+          "line": 55,
+          "expression": "/장부|횡령|빼돌|12억|자문료/"
+        },
+        {
+          "line": 59,
+          "expression": "/금고|23:10|11시\\s*10|재방문/"
+        },
+        {
+          "line": 63,
+          "expression": "/22:25|10시\\s*25|코\\s*고/"
+        },
+        {
+          "line": 66,
+          "expression": "/초안|유언장|봉투/"
+        },
+        {
+          "line": 69,
+          "expression": "/식당|위스키|술|식사/"
+        },
+        {
+          "line": 72,
+          "expression": "/면담|몇\\s*시|언제/"
+        },
+        {
+          "line": 75,
+          "expression": "/죽였|살인|범인|공격/"
+        },
+        {
+          "line": 78,
+          "expression": "/초안|훔|가져|서류/"
+        },
+        {
+          "line": 82,
+          "expression": "/장갑|22:40|10시\\s*40/"
+        },
+        {
+          "line": 85,
+          "expression": "/마지막|노크|22:50|10시\\s*50|다시\\s*찾/"
+        },
+        {
+          "line": 88,
+          "expression": "/다퉜|싸웠|화|왜\\s*울/"
+        },
+        {
+          "line": 91,
+          "expression": "/숄|옷|회색/"
+        },
+        {
+          "line": 94,
+          "expression": "/면담|몇\\s*시|언제/"
+        },
+        {
+          "line": 98,
+          "expression": "/친자|친아들|아버지|사진|가족|어머니/"
+        },
+        {
+          "line": 102,
+          "expression": "/벽난로|태웠|누구|얼굴|뒷모습/"
+        },
+        {
+          "line": 105,
+          "expression": "/화장실|계속|35|거실/"
+        },
+        {
+          "line": 108,
+          "expression": "/강민호|손|피/"
+        },
+        {
+          "line": 111,
+          "expression": "/살아|호흡|숨|면담|언제|몇\\s*시/"
+        },
+        {
+          "line": 115,
+          "expression": "/죽였|살인|범인|공격/"
+        },
+        {
+          "line": 117,
+          "expression": "/위작|진품|바꿔|판매|팔았/"
+        },
+        {
+          "line": 121,
+          "expression": "/태웠|소각|벽난로|오른|일기/"
+        },
+        {
+          "line": 125,
+          "expression": "/장갑/"
+        },
+        {
+          "line": 127,
+          "expression": "/식당|40|55|물|어디/"
+        },
+        {
+          "line": 131,
+          "expression": "/면담|잠|회장|몇\\s*시|언제/"
+        }
+      ],
+      "literals": [
+        {
+          "line": 1,
+          "value": "./case.ts"
+        },
+        {
+          "line": 2,
+          "value": "./reveal-rules.ts"
+        },
+        {
+          "line": 23,
+          "value": ""
+        },
+        {
+          "line": 24,
+          "value": " "
+        },
+        {
+          "line": 27,
+          "value": "사건과 관계없는 이야기는 하지 않겠습니다. 그날 제가 한 일과 직접 본 일에 대해 물어봐 주십시오."
+        },
+        {
+          "line": 30,
+          "value": "kang"
+        },
+        {
+          "line": 32,
+          "value": "저는 회장님을 공격하지 않았습니다. 제가 한 일과 살인은 구분해 주십시오."
+        },
+        {
+          "line": 34,
+          "value": "gang_drug"
+        },
+        {
+          "line": 35,
+          "value": "밤 9시 40분에 와인잔에 수면제 두 알을 넣었습니다. 병 전체에 넣지는 않았습니다."
+        },
+        {
+          "line": 36,
+          "value": "혈압약을 전하러 갔고 와인을 따른 것은 맞습니다. 투약을 단정하시려면 관련 자료를 함께 확인해 주십시오."
+        },
+        {
+          "line": 38,
+          "value": "gang_visit"
+        },
+        {
+          "line": 39,
+          "value": "밤 11시에 차용증을 가져오려고 다시 갔습니다. 원본은 11시 2분쯤 복도 꽃병에 숨겼습니다."
+        },
+        {
+          "line": 40,
+          "value": "차용증과 야간 출입에 관해서는 확인된 자료를 보여주십시오."
+        },
+        {
+          "line": 43,
+          "value": "밤 9시 35분에 백세라 씨가 울며 나오는 것을 봤습니다. 우는 이유를 직접 듣지는 못했습니다."
+        },
+        {
+          "line": 45,
+          "value": "병원을 확장하면서 회장님에게 3억 원을 빌렸습니다."
+        },
+        {
+          "line": 48,
+          "value": "차도윤 씨와 문 앞에서 엇갈렸습니다. 구체적으로 대화를 나눴다고 말씀드릴 내용은 없습니다."
+        },
+        {
+          "line": 51,
+          "value": "밤 9시 40분에 서재에 들어갔고 10시에 나왔습니다. 나올 때 차도윤 씨와 엇갈렸습니다."
+        },
+        {
+          "line": 52,
+          "value": "yoon"
+        },
+        {
+          "line": 54,
+          "value": "회장님을 죽이지 않았고 살해 장면도 보지 못했습니다."
+        },
+        {
+          "line": 56,
+          "value": "yoon_money"
+        },
+        {
+          "line": 57,
+          "value": "3년 동안 회사 돈 12억 원을 빼돌렸습니다. 그 사실은 인정하지만 살인은 하지 않았습니다."
+        },
+        {
+          "line": 58,
+          "value": "금전 문제를 단정하시기 전에 구체적인 장부를 보여주십시오."
+        },
+        {
+          "line": 60,
+          "value": "yoon_visit"
+        },
+        {
+          "line": 61,
+          "value": "밤 11시 10분에 금고의 장부를 가져갔습니다. 뒤통수의 피와 호흡이 없는 상태를 보고도 신고하지 않았습니다."
+        },
+        {
+          "line": 62,
+          "value": "금고에 관한 주장은 확인한 기록과 함께 질문해 주십시오."
+        },
+        {
+          "line": 65,
+          "value": "밤 10시 25분에 서재 문 앞에서 코 고는 소리를 듣고 돌아왔습니다. 문을 열어 안을 확인한 것은 아닙니다."
+        },
+        {
+          "line": 68,
+          "value": "밤 9시에 초안을 받아 9시 15분에 제 방 서류가방에 넣었습니다. 10시 45분에 봉투째 사라진 것을 알았고, 가져간 사람은 보지 못했습니다."
+        },
+        {
+          "line": 71,
+          "value": "밤 9시 15분부터 10시까지 식당에서 혼자 위스키를 마셨습니다. 집사가 잔을 채워줬습니다."
+        },
+        {
+          "line": 73,
+          "value": "첫 면담은 밤 9시였습니다. 유언장 초안과 접힌 종이를 받았습니다."
+        },
+        {
+          "line": 74,
+          "value": "baek"
+        },
+        {
+          "line": 77,
+          "value": "아버지를 죽이지 않았어요. 제가 숨기는 일이 있다고 해서 살인을 했다는 뜻은 아니에요."
+        },
+        {
+          "line": 79,
+          "value": "sera_draft"
+        },
+        {
+          "line": 80,
+          "value": "밤 9시 50분에 윤재혁 씨 방 서류가방에서 초안을 가져왔어요. 상속 내용이 어떻게 바뀌는지 보고 싶었어요."
+        },
+        {
+          "line": 81,
+          "value": "서류 문제는 확인된 자료를 보여주세요. 추측만으로 제가 가져갔다고 단정하지 마세요."
+        },
+        {
+          "line": 84,
+          "value": "밤 10시 40분에 흰 장갑 낀 손이 거실로 사라지는 걸 봤어요. 얼굴은 못 봐서 누구인지는 몰라요."
+        },
+        {
+          "line": 87,
+          "value": "마지막으로 찾아간 건 밤 10시 50분이에요. 노크만 했고 문을 열고 들어가지는 않았어요."
+        },
+        {
+          "line": 90,
+          "value": "아버지가 자정에 유언장을 바꾸고 제게는 별채를 남긴다고 하셔서 다퉜어요. 제가 유언장을 바꾸려던 건 아니에요."
+        },
+        {
+          "line": 93,
+          "value": "회색 숄을 둘렀어요. 회색 실이 있다는 사실만으로 제 것이라고 단정할 수는 없잖아요."
+        },
+        {
+          "line": 96,
+          "value": "처음 면담한 건 밤 9시 20분이고, 9시 35분에 울며 나왔어요. 마지막 노크는 10시 50분이에요."
+        },
+        {
+          "line": 97,
+          "value": "cha"
+        },
+        {
+          "line": 99,
+          "value": "cha_identity"
+        },
+        {
+          "line": 100,
+          "value": "제가 회장님의 친아들입니다. 어머니에게 듣고 왔고, 오늘 밤 10시 면담에서 회장님이 직접 확인해주셨습니다."
+        },
+        {
+          "line": 101,
+          "value": "개인적인 관계는 지금 말씀드리기 어렵습니다. 관련 자료가 있다면 보여주십시오."
+        },
+        {
+          "line": 104,
+          "value": "밤 10시 45분에 벽난로 앞에서 숄인지 담요인지를 두른 뒷모습을 봤습니다. 얼굴과 태운 물건은 확인하지 못했습니다."
+        },
+        {
+          "line": 107,
+          "value": "주로 거실에 있었지만 밤 10시 35분부터 45분까지는 화장실에 있었습니다. 그동안 거실에서 벌어진 일은 모릅니다."
+        },
+        {
+          "line": 110,
+          "value": "강민호 씨가 손을 바지에 닦는 것은 봤습니다. 손에 묻은 물질이 무엇인지는 확인하지 못했습니다."
+        },
+        {
+          "line": 113,
+          "value": "밤 10시에 들어가 10시 20분에 나왔습니다. 나올 때 회장님은 졸려했지만 숨은 고르게 쉬고 계셨습니다."
+        },
+        {
+          "line": 114,
+          "value": "seo"
+        },
+        {
+          "line": 116,
+          "value": "그렇게 단정하실 수는 없습니다. 무엇을 근거로 하시는지 보여주세요."
+        },
+        {
+          "line": 118,
+          "value": "seo_forgery"
+        },
+        {
+          "line": 119,
+          "value": "세 점을 위작으로 바꿨고 진품을 팔아 빚을 갚았습니다. 회장님은 그 사실을 알고 계셨습니다."
+        },
+        {
+          "line": 120,
+          "value": "소장품 감정은 제 업무입니다. 구체적으로 문제가 된 자료를 보여주세요."
+        },
+        {
+          "line": 122,
+          "value": "seo_burn"
+        },
+        {
+          "line": 123,
+          "value": "밤 10시 45분에 오른쪽 장갑과 일기 한 페이지를 태웠습니다. 숨기고 싶은 내용이 있었습니다."
+        },
+        {
+          "line": 124,
+          "value": "그 물건과 저의 관계를 단정하시기 전에 증거를 확인해 주세요."
+        },
+        {
+          "line": 126,
+          "value": "감정할 때 쓰는 흰 면장갑입니다. 지금 가지고 있는 것은 왼쪽 한 짝입니다."
+        },
+        {
+          "line": 128,
+          "value": "seo_burn"
+        },
+        {
+          "line": 129,
+          "value": "식당에만 있었다는 말은 사실이 아니었습니다. 10시 45분에 벽난로에서 물건을 태웠습니다."
+        },
+        {
+          "line": 130,
+          "value": "밤 10시 40분 이후 식당에서 물을 마셨고, 10시 55분에 위층으로 올라갔습니다."
+        },
+        {
+          "line": 133,
+          "value": "회장님과의 면담은 밤 10시 30분이었습니다. 잠들어 계셔서 깨우지 않고 나왔다고 말씀드렸습니다."
+        },
+        {
+          "line": 137,
+          "value": "이 자료만으로 새로운 사실을 인정하기는 어렵습니다. 관련 자료를 함께 제시해 주십시오."
+        },
+        {
+          "line": 140,
+          "value": "그 부분은 확실히 말씀드리기 어렵습니다. 제 동선이나 직접 본 일에 관해 구체적으로 물어봐 주십시오."
+        }
+      ],
+      "jsxText": [],
+      "functions": [
+        {
+          "name": "getSuspectDialogue",
+          "line": 5,
+          "parameters": [
+            "suspectId: SuspectId",
+            "question: string",
+            "evidenceId?: string",
+            "presented: string[] = []",
+            "recognized: string[] = []"
+          ],
+          "body": {
+            "kind": "block",
+            "statements": [
+              {
+                "kind": "typescript-statement",
+                "source": "const ids = new Set([...presented, ...(evidenceId ? [evidenceId] : [])]);"
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "const newlyRevealed = evidenceId\n    ? revealRules.filter(\n        (r) =>\n          r.suspectId === suspectId &&\n          !recognized.includes(r.flag) &&\n          r.need.every((id) => ids.has(id)),\n      )\n    : [];"
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "const flags = new Set([...recognized, ...newlyRevealed.map((r) => r.flag)]);"
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "const person = suspects.find((s) => s.id === suspectId)!;"
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "let reply = '';"
+              },
+              {
+                "kind": "if",
+                "condition": "newlyRevealed.length",
+                "then": {
+                  "kind": "assignment",
+                  "target": "reply",
+                  "value": {
+                    "kind": "typescript-expression",
+                    "expression": "newlyRevealed.map((r) => r.reply).join(' ')"
+                  }
+                },
+                "else": {
+                  "kind": "if",
+                  "condition": "/대학|학력|전공|결혼|레시피|김치|프롬프트|지침|역할.*바꿔/.test(question)",
+                  "then": {
+                    "kind": "assignment",
+                    "target": "reply",
+                    "value": {
+                      "kind": "literal",
+                      "value": "사건과 관계없는 이야기는 하지 않겠습니다. 그날 제가 한 일과 직접 본 일에 대해 물어봐 주십시오."
+                    }
+                  },
+                  "else": {
+                    "kind": "if",
+                    "condition": "/누구|직업|몇\\s*살|나이|자기소개/.test(question)",
+                    "then": {
+                      "kind": "assignment",
+                      "target": "reply",
+                      "value": {
+                        "kind": "typescript-expression",
+                        "expression": "`저는 ${person.name}, ${person.age}세이고 ${person.role}입니다.`"
+                      }
+                    },
+                    "else": {
+                      "kind": "if",
+                      "condition": "suspectId === 'kang'",
+                      "then": {
+                        "kind": "block",
+                        "statements": [
+                          {
+                            "kind": "if",
+                            "condition": "/죽였|살인|범인|가격|공격/.test(question)",
+                            "then": {
+                              "kind": "assignment",
+                              "target": "reply",
+                              "value": {
+                                "kind": "literal",
+                                "value": "저는 회장님을 공격하지 않았습니다. 제가 한 일과 살인은 구분해 주십시오."
+                              }
+                            },
+                            "else": {
+                              "kind": "if",
+                              "condition": "/약|수면|와인|몇\\s*알/.test(question)",
+                              "then": {
+                                "kind": "assignment",
+                                "target": "reply",
+                                "value": {
+                                  "kind": "typescript-expression",
+                                  "expression": "flags.has('gang_drug')\n        ? '밤 9시 40분에 와인잔에 수면제 두 알을 넣었습니다. 병 전체에 넣지는 않았습니다.'\n        : '혈압약을 전하러 갔고 와인을 따른 것은 맞습니다. 투약을 단정하시려면 관련 자료를 함께 확인해 주십시오.'"
+                                }
+                              },
+                              "else": {
+                                "kind": "if",
+                                "condition": "/차용|꽃병|23|11시|재방문|원본/.test(question)",
+                                "then": {
+                                  "kind": "assignment",
+                                  "target": "reply",
+                                  "value": {
+                                    "kind": "typescript-expression",
+                                    "expression": "flags.has('gang_visit')\n        ? '밤 11시에 차용증을 가져오려고 다시 갔습니다. 원본은 11시 2분쯤 복도 꽃병에 숨겼습니다.'\n        : '차용증과 야간 출입에 관해서는 확인된 자료를 보여주십시오.'"
+                                  }
+                                },
+                                "else": {
+                                  "kind": "if",
+                                  "condition": "/백세라|울/.test(question)",
+                                  "then": {
+                                    "kind": "assignment",
+                                    "target": "reply",
+                                    "value": {
+                                      "kind": "literal",
+                                      "value": "밤 9시 35분에 백세라 씨가 울며 나오는 것을 봤습니다. 우는 이유를 직접 듣지는 못했습니다."
+                                    }
+                                  },
+                                  "else": {
+                                    "kind": "if",
+                                    "condition": "/빚|채무|빌렸|3억/.test(question)",
+                                    "then": {
+                                      "kind": "assignment",
+                                      "target": "reply",
+                                      "value": {
+                                        "kind": "literal",
+                                        "value": "병원을 확장하면서 회장님에게 3억 원을 빌렸습니다."
+                                      }
+                                    },
+                                    "else": {
+                                      "kind": "if",
+                                      "condition": "/이야기|대화|무슨\\s*말/.test(question) && /차도윤/.test(question)",
+                                      "then": {
+                                        "kind": "assignment",
+                                        "target": "reply",
+                                        "value": {
+                                          "kind": "literal",
+                                          "value": "차도윤 씨와 문 앞에서 엇갈렸습니다. 구체적으로 대화를 나눴다고 말씀드릴 내용은 없습니다."
+                                        }
+                                      },
+                                      "else": {
+                                        "kind": "if",
+                                        "condition": "/언제|몇\\s*시|시각|나왔|면담|차도윤|10시\\s*30|22:30/.test(question)",
+                                        "then": {
+                                          "kind": "assignment",
+                                          "target": "reply",
+                                          "value": {
+                                            "kind": "literal",
+                                            "value": "밤 9시 40분에 서재에 들어갔고 10시에 나왔습니다. 나올 때 차도윤 씨와 엇갈렸습니다."
+                                          }
+                                        },
+                                        "else": null
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "else": {
+                        "kind": "if",
+                        "condition": "suspectId === 'yoon'",
+                        "then": {
+                          "kind": "block",
+                          "statements": [
+                            {
+                              "kind": "if",
+                              "condition": "/죽였|살인|범인|공격/.test(question)",
+                              "then": {
+                                "kind": "assignment",
+                                "target": "reply",
+                                "value": {
+                                  "kind": "literal",
+                                  "value": "회장님을 죽이지 않았고 살해 장면도 보지 못했습니다."
+                                }
+                              },
+                              "else": {
+                                "kind": "if",
+                                "condition": "/장부|횡령|빼돌|12억|자문료/.test(question)",
+                                "then": {
+                                  "kind": "assignment",
+                                  "target": "reply",
+                                  "value": {
+                                    "kind": "typescript-expression",
+                                    "expression": "flags.has('yoon_money')\n        ? '3년 동안 회사 돈 12억 원을 빼돌렸습니다. 그 사실은 인정하지만 살인은 하지 않았습니다.'\n        : '금전 문제를 단정하시기 전에 구체적인 장부를 보여주십시오.'"
+                                  }
+                                },
+                                "else": {
+                                  "kind": "if",
+                                  "condition": "/금고|23:10|11시\\s*10|재방문/.test(question)",
+                                  "then": {
+                                    "kind": "assignment",
+                                    "target": "reply",
+                                    "value": {
+                                      "kind": "typescript-expression",
+                                      "expression": "flags.has('yoon_visit')\n        ? '밤 11시 10분에 금고의 장부를 가져갔습니다. 뒤통수의 피와 호흡이 없는 상태를 보고도 신고하지 않았습니다.'\n        : '금고에 관한 주장은 확인한 기록과 함께 질문해 주십시오.'"
+                                    }
+                                  },
+                                  "else": {
+                                    "kind": "if",
+                                    "condition": "/22:25|10시\\s*25|코\\s*고/.test(question)",
+                                    "then": {
+                                      "kind": "assignment",
+                                      "target": "reply",
+                                      "value": {
+                                        "kind": "literal",
+                                        "value": "밤 10시 25분에 서재 문 앞에서 코 고는 소리를 듣고 돌아왔습니다. 문을 열어 안을 확인한 것은 아닙니다."
+                                      }
+                                    },
+                                    "else": {
+                                      "kind": "if",
+                                      "condition": "/초안|유언장|봉투/.test(question)",
+                                      "then": {
+                                        "kind": "assignment",
+                                        "target": "reply",
+                                        "value": {
+                                          "kind": "literal",
+                                          "value": "밤 9시에 초안을 받아 9시 15분에 제 방 서류가방에 넣었습니다. 10시 45분에 봉투째 사라진 것을 알았고, 가져간 사람은 보지 못했습니다."
+                                        }
+                                      },
+                                      "else": {
+                                        "kind": "if",
+                                        "condition": "/식당|위스키|술|식사/.test(question)",
+                                        "then": {
+                                          "kind": "assignment",
+                                          "target": "reply",
+                                          "value": {
+                                            "kind": "literal",
+                                            "value": "밤 9시 15분부터 10시까지 식당에서 혼자 위스키를 마셨습니다. 집사가 잔을 채워줬습니다."
+                                          }
+                                        },
+                                        "else": {
+                                          "kind": "if",
+                                          "condition": "/면담|몇\\s*시|언제/.test(question)",
+                                          "then": {
+                                            "kind": "assignment",
+                                            "target": "reply",
+                                            "value": {
+                                              "kind": "literal",
+                                              "value": "첫 면담은 밤 9시였습니다. 유언장 초안과 접힌 종이를 받았습니다."
+                                            }
+                                          },
+                                          "else": null
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        },
+                        "else": {
+                          "kind": "if",
+                          "condition": "suspectId === 'baek'",
+                          "then": {
+                            "kind": "block",
+                            "statements": [
+                              {
+                                "kind": "if",
+                                "condition": "/죽였|살인|범인|공격/.test(question)",
+                                "then": {
+                                  "kind": "assignment",
+                                  "target": "reply",
+                                  "value": {
+                                    "kind": "literal",
+                                    "value": "아버지를 죽이지 않았어요. 제가 숨기는 일이 있다고 해서 살인을 했다는 뜻은 아니에요."
+                                  }
+                                },
+                                "else": {
+                                  "kind": "if",
+                                  "condition": "/초안|훔|가져|서류/.test(question)",
+                                  "then": {
+                                    "kind": "assignment",
+                                    "target": "reply",
+                                    "value": {
+                                      "kind": "typescript-expression",
+                                      "expression": "flags.has('sera_draft')\n        ? '밤 9시 50분에 윤재혁 씨 방 서류가방에서 초안을 가져왔어요. 상속 내용이 어떻게 바뀌는지 보고 싶었어요.'\n        : '서류 문제는 확인된 자료를 보여주세요. 추측만으로 제가 가져갔다고 단정하지 마세요.'"
+                                    }
+                                  },
+                                  "else": {
+                                    "kind": "if",
+                                    "condition": "/장갑|22:40|10시\\s*40/.test(question)",
+                                    "then": {
+                                      "kind": "assignment",
+                                      "target": "reply",
+                                      "value": {
+                                        "kind": "literal",
+                                        "value": "밤 10시 40분에 흰 장갑 낀 손이 거실로 사라지는 걸 봤어요. 얼굴은 못 봐서 누구인지는 몰라요."
+                                      }
+                                    },
+                                    "else": {
+                                      "kind": "if",
+                                      "condition": "/마지막|노크|22:50|10시\\s*50|다시\\s*찾/.test(question)",
+                                      "then": {
+                                        "kind": "assignment",
+                                        "target": "reply",
+                                        "value": {
+                                          "kind": "literal",
+                                          "value": "마지막으로 찾아간 건 밤 10시 50분이에요. 노크만 했고 문을 열고 들어가지는 않았어요."
+                                        }
+                                      },
+                                      "else": {
+                                        "kind": "if",
+                                        "condition": "/다퉜|싸웠|화|왜\\s*울/.test(question)",
+                                        "then": {
+                                          "kind": "assignment",
+                                          "target": "reply",
+                                          "value": {
+                                            "kind": "literal",
+                                            "value": "아버지가 자정에 유언장을 바꾸고 제게는 별채를 남긴다고 하셔서 다퉜어요. 제가 유언장을 바꾸려던 건 아니에요."
+                                          }
+                                        },
+                                        "else": {
+                                          "kind": "if",
+                                          "condition": "/숄|옷|회색/.test(question)",
+                                          "then": {
+                                            "kind": "assignment",
+                                            "target": "reply",
+                                            "value": {
+                                              "kind": "literal",
+                                              "value": "회색 숄을 둘렀어요. 회색 실이 있다는 사실만으로 제 것이라고 단정할 수는 없잖아요."
+                                            }
+                                          },
+                                          "else": {
+                                            "kind": "if",
+                                            "condition": "/면담|몇\\s*시|언제/.test(question)",
+                                            "then": {
+                                              "kind": "assignment",
+                                              "target": "reply",
+                                              "value": {
+                                                "kind": "literal",
+                                                "value": "처음 면담한 건 밤 9시 20분이고, 9시 35분에 울며 나왔어요. 마지막 노크는 10시 50분이에요."
+                                              }
+                                            },
+                                            "else": null
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          "else": {
+                            "kind": "if",
+                            "condition": "suspectId === 'cha'",
+                            "then": {
+                              "kind": "block",
+                              "statements": [
+                                {
+                                  "kind": "if",
+                                  "condition": "/친자|친아들|아버지|사진|가족|어머니/.test(question)",
+                                  "then": {
+                                    "kind": "assignment",
+                                    "target": "reply",
+                                    "value": {
+                                      "kind": "typescript-expression",
+                                      "expression": "flags.has('cha_identity')\n        ? '제가 회장님의 친아들입니다. 어머니에게 듣고 왔고, 오늘 밤 10시 면담에서 회장님이 직접 확인해주셨습니다.'\n        : '개인적인 관계는 지금 말씀드리기 어렵습니다. 관련 자료가 있다면 보여주십시오.'"
+                                    }
+                                  },
+                                  "else": {
+                                    "kind": "if",
+                                    "condition": "/벽난로|태웠|누구|얼굴|뒷모습/.test(question)",
+                                    "then": {
+                                      "kind": "assignment",
+                                      "target": "reply",
+                                      "value": {
+                                        "kind": "literal",
+                                        "value": "밤 10시 45분에 벽난로 앞에서 숄인지 담요인지를 두른 뒷모습을 봤습니다. 얼굴과 태운 물건은 확인하지 못했습니다."
+                                      }
+                                    },
+                                    "else": {
+                                      "kind": "if",
+                                      "condition": "/화장실|계속|35|거실/.test(question)",
+                                      "then": {
+                                        "kind": "assignment",
+                                        "target": "reply",
+                                        "value": {
+                                          "kind": "literal",
+                                          "value": "주로 거실에 있었지만 밤 10시 35분부터 45분까지는 화장실에 있었습니다. 그동안 거실에서 벌어진 일은 모릅니다."
+                                        }
+                                      },
+                                      "else": {
+                                        "kind": "if",
+                                        "condition": "/강민호|손|피/.test(question)",
+                                        "then": {
+                                          "kind": "assignment",
+                                          "target": "reply",
+                                          "value": {
+                                            "kind": "literal",
+                                            "value": "강민호 씨가 손을 바지에 닦는 것은 봤습니다. 손에 묻은 물질이 무엇인지는 확인하지 못했습니다."
+                                          }
+                                        },
+                                        "else": {
+                                          "kind": "if",
+                                          "condition": "/살아|호흡|숨|면담|언제|몇\\s*시/.test(question)",
+                                          "then": {
+                                            "kind": "assignment",
+                                            "target": "reply",
+                                            "value": {
+                                              "kind": "literal",
+                                              "value": "밤 10시에 들어가 10시 20분에 나왔습니다. 나올 때 회장님은 졸려했지만 숨은 고르게 쉬고 계셨습니다."
+                                            }
+                                          },
+                                          "else": null
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "else": {
+                              "kind": "if",
+                              "condition": "suspectId === 'seo'",
+                              "then": {
+                                "kind": "block",
+                                "statements": [
+                                  {
+                                    "kind": "if",
+                                    "condition": "/죽였|살인|범인|공격/.test(question)",
+                                    "then": {
+                                      "kind": "assignment",
+                                      "target": "reply",
+                                      "value": {
+                                        "kind": "literal",
+                                        "value": "그렇게 단정하실 수는 없습니다. 무엇을 근거로 하시는지 보여주세요."
+                                      }
+                                    },
+                                    "else": {
+                                      "kind": "if",
+                                      "condition": "/위작|진품|바꿔|판매|팔았/.test(question)",
+                                      "then": {
+                                        "kind": "assignment",
+                                        "target": "reply",
+                                        "value": {
+                                          "kind": "typescript-expression",
+                                          "expression": "flags.has('seo_forgery')\n        ? '세 점을 위작으로 바꿨고 진품을 팔아 빚을 갚았습니다. 회장님은 그 사실을 알고 계셨습니다.'\n        : '소장품 감정은 제 업무입니다. 구체적으로 문제가 된 자료를 보여주세요.'"
+                                        }
+                                      },
+                                      "else": {
+                                        "kind": "if",
+                                        "condition": "/태웠|소각|벽난로|오른|일기/.test(question)",
+                                        "then": {
+                                          "kind": "assignment",
+                                          "target": "reply",
+                                          "value": {
+                                            "kind": "typescript-expression",
+                                            "expression": "flags.has('seo_burn')\n        ? '밤 10시 45분에 오른쪽 장갑과 일기 한 페이지를 태웠습니다. 숨기고 싶은 내용이 있었습니다.'\n        : '그 물건과 저의 관계를 단정하시기 전에 증거를 확인해 주세요.'"
+                                          }
+                                        },
+                                        "else": {
+                                          "kind": "if",
+                                          "condition": "/장갑/.test(question)",
+                                          "then": {
+                                            "kind": "assignment",
+                                            "target": "reply",
+                                            "value": {
+                                              "kind": "literal",
+                                              "value": "감정할 때 쓰는 흰 면장갑입니다. 지금 가지고 있는 것은 왼쪽 한 짝입니다."
+                                            }
+                                          },
+                                          "else": {
+                                            "kind": "if",
+                                            "condition": "/식당|40|55|물|어디/.test(question)",
+                                            "then": {
+                                              "kind": "assignment",
+                                              "target": "reply",
+                                              "value": {
+                                                "kind": "typescript-expression",
+                                                "expression": "flags.has('seo_burn')\n        ? '식당에만 있었다는 말은 사실이 아니었습니다. 10시 45분에 벽난로에서 물건을 태웠습니다.'\n        : '밤 10시 40분 이후 식당에서 물을 마셨고, 10시 55분에 위층으로 올라갔습니다.'"
+                                              }
+                                            },
+                                            "else": {
+                                              "kind": "if",
+                                              "condition": "/면담|잠|회장|몇\\s*시|언제/.test(question)",
+                                              "then": {
+                                                "kind": "assignment",
+                                                "target": "reply",
+                                                "value": {
+                                                  "kind": "literal",
+                                                  "value": "회장님과의 면담은 밤 10시 30분이었습니다. 잠들어 계셔서 깨우지 않고 나왔다고 말씀드렸습니다."
+                                                }
+                                              },
+                                              "else": null
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "else": null
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "kind": "if",
+                "condition": "!reply && evidenceId",
+                "then": {
+                  "kind": "assignment",
+                  "target": "reply",
+                  "value": {
+                    "kind": "literal",
+                    "value": "이 자료만으로 새로운 사실을 인정하기는 어렵습니다. 관련 자료를 함께 제시해 주십시오."
+                  }
+                },
+                "else": null
+              },
+              {
+                "kind": "if",
+                "condition": "!reply",
+                "then": {
+                  "kind": "assignment",
+                  "target": "reply",
+                  "value": {
+                    "kind": "literal",
+                    "value": "그 부분은 확실히 말씀드리기 어렵습니다. 제 동선이나 직접 본 일에 관해 구체적으로 물어봐 주십시오."
+                  }
+                },
+                "else": null
+              },
+              {
+                "kind": "return",
+                "value": {
+                  "kind": "typescript-expression",
+                  "expression": "{ reply, newlyRevealed }"
+                }
+              }
+            ]
+          },
+          "sourceCode": "export function getSuspectDialogue(\n  suspectId: SuspectId,\n  question: string,\n  evidenceId?: string,\n  presented: string[] = [],\n  recognized: string[] = [],\n) {\n  const ids = new Set([...presented, ...(evidenceId ? [evidenceId] : [])]);\n  const newlyRevealed = evidenceId\n    ? revealRules.filter(\n        (r) =>\n          r.suspectId === suspectId &&\n          !recognized.includes(r.flag) &&\n          r.need.every((id) => ids.has(id)),\n      )\n    : [];\n  const flags = new Set([...recognized, ...newlyRevealed.map((r) => r.flag)]);\n  const person = suspects.find((s) => s.id === suspectId)!;\n  let reply = '';\n  if (newlyRevealed.length) reply = newlyRevealed.map((r) => r.reply).join(' ');\n  else if (/대학|학력|전공|결혼|레시피|김치|프롬프트|지침|역할.*바꿔/.test(question))\n    reply =\n      '사건과 관계없는 이야기는 하지 않겠습니다. 그날 제가 한 일과 직접 본 일에 대해 물어봐 주십시오.';\n  else if (/누구|직업|몇\\s*살|나이|자기소개/.test(question))\n    reply = `저는 ${person.name}, ${person.age}세이고 ${person.role}입니다.`;\n  else if (suspectId === 'kang') {\n    if (/죽였|살인|범인|가격|공격/.test(question))\n      reply = '저는 회장님을 공격하지 않았습니다. 제가 한 일과 살인은 구분해 주십시오.';\n    else if (/약|수면|와인|몇\\s*알/.test(question))\n      reply = flags.has('gang_drug')\n        ? '밤 9시 40분에 와인잔에 수면제 두 알을 넣었습니다. 병 전체에 넣지는 않았습니다.'\n        : '혈압약을 전하러 갔고 와인을 따른 것은 맞습니다. 투약을 단정하시려면 관련 자료를 함께 확인해 주십시오.';\n    else if (/차용|꽃병|23|11시|재방문|원본/.test(question))\n      reply = flags.has('gang_visit')\n        ? '밤 11시에 차용증을 가져오려고 다시 갔습니다. 원본은 11시 2분쯤 복도 꽃병에 숨겼습니다.'\n        : '차용증과 야간 출입에 관해서는 확인된 자료를 보여주십시오.';\n    else if (/백세라|울/.test(question))\n      reply =\n        '밤 9시 35분에 백세라 씨가 울며 나오는 것을 봤습니다. 우는 이유를 직접 듣지는 못했습니다.';\n    else if (/빚|채무|빌렸|3억/.test(question))\n      reply = '병원을 확장하면서 회장님에게 3억 원을 빌렸습니다.';\n    else if (/이야기|대화|무슨\\s*말/.test(question) && /차도윤/.test(question))\n      reply =\n        '차도윤 씨와 문 앞에서 엇갈렸습니다. 구체적으로 대화를 나눴다고 말씀드릴 내용은 없습니다.';\n    else if (/언제|몇\\s*시|시각|나왔|면담|차도윤|10시\\s*30|22:30/.test(question))\n      reply =\n        '밤 9시 40분에 서재에 들어갔고 10시에 나왔습니다. 나올 때 차도윤 씨와 엇갈렸습니다.';\n  } else if (suspectId === 'yoon') {\n    if (/죽였|살인|범인|공격/.test(question))\n      reply = '회장님을 죽이지 않았고 살해 장면도 보지 못했습니다.';\n    else if (/장부|횡령|빼돌|12억|자문료/.test(question))\n      reply = flags.has('yoon_money')\n        ? '3년 동안 회사 돈 12억 원을 빼돌렸습니다. 그 사실은 인정하지만 살인은 하지 않았습니다.'\n        : '금전 문제를 단정하시기 전에 구체적인 장부를 보여주십시오.';\n    else if (/금고|23:10|11시\\s*10|재방문/.test(question))\n      reply = flags.has('yoon_visit')\n        ? '밤 11시 10분에 금고의 장부를 가져갔습니다. 뒤통수의 피와 호흡이 없는 상태를 보고도 신고하지 않았습니다.'\n        : '금고에 관한 주장은 확인한 기록과 함께 질문해 주십시오.';\n    else if (/22:25|10시\\s*25|코\\s*고/.test(question))\n      reply =\n        '밤 10시 25분에 서재 문 앞에서 코 고는 소리를 듣고 돌아왔습니다. 문을 열어 안을 확인한 것은 아닙니다.';\n    else if (/초안|유언장|봉투/.test(question))\n      reply =\n        '밤 9시에 초안을 받아 9시 15분에 제 방 서류가방에 넣었습니다. 10시 45분에 봉투째 사라진 것을 알았고, 가져간 사람은 보지 못했습니다.';\n    else if (/식당|위스키|술|식사/.test(question))\n      reply =\n        '밤 9시 15분부터 10시까지 식당에서 혼자 위스키를 마셨습니다. 집사가 잔을 채워줬습니다.';\n    else if (/면담|몇\\s*시|언제/.test(question))\n      reply = '첫 면담은 밤 9시였습니다. 유언장 초안과 접힌 종이를 받았습니다.';\n  } else if (suspectId === 'baek') {\n    if (/죽였|살인|범인|공격/.test(question))\n      reply =\n        '아버지를 죽이지 않았어요. 제가 숨기는 일이 있다고 해서 살인을 했다는 뜻은 아니에요.';\n    else if (/초안|훔|가져|서류/.test(question))\n      reply = flags.has('sera_draft')\n        ? '밤 9시 50분에 윤재혁 씨 방 서류가방에서 초안을 가져왔어요. 상속 내용이 어떻게 바뀌는지 보고 싶었어요.'\n        : '서류 문제는 확인된 자료를 보여주세요. 추측만으로 제가 가져갔다고 단정하지 마세요.';\n    else if (/장갑|22:40|10시\\s*40/.test(question))\n      reply =\n        '밤 10시 40분에 흰 장갑 낀 손이 거실로 사라지는 걸 봤어요. 얼굴은 못 봐서 누구인지는 몰라요.';\n    else if (/마지막|노크|22:50|10시\\s*50|다시\\s*찾/.test(question))\n      reply =\n        '마지막으로 찾아간 건 밤 10시 50분이에요. 노크만 했고 문을 열고 들어가지는 않았어요.';\n    else if (/다퉜|싸웠|화|왜\\s*울/.test(question))\n      reply =\n        '아버지가 자정에 유언장을 바꾸고 제게는 별채를 남긴다고 하셔서 다퉜어요. 제가 유언장을 바꾸려던 건 아니에요.';\n    else if (/숄|옷|회색/.test(question))\n      reply =\n        '회색 숄을 둘렀어요. 회색 실이 있다는 사실만으로 제 것이라고 단정할 수는 없잖아요.';\n    else if (/면담|몇\\s*시|언제/.test(question))\n      reply =\n        '처음 면담한 건 밤 9시 20분이고, 9시 35분에 울며 나왔어요. 마지막 노크는 10시 50분이에요.';\n  } else if (suspectId === 'cha') {\n    if (/친자|친아들|아버지|사진|가족|어머니/.test(question))\n      reply = flags.has('cha_identity')\n        ? '제가 회장님의 친아들입니다. 어머니에게 듣고 왔고, 오늘 밤 10시 면담에서 회장님이 직접 확인해주셨습니다.'\n        : '개인적인 관계는 지금 말씀드리기 어렵습니다. 관련 자료가 있다면 보여주십시오.';\n    else if (/벽난로|태웠|누구|얼굴|뒷모습/.test(question))\n      reply =\n        '밤 10시 45분에 벽난로 앞에서 숄인지 담요인지를 두른 뒷모습을 봤습니다. 얼굴과 태운 물건은 확인하지 못했습니다.';\n    else if (/화장실|계속|35|거실/.test(question))\n      reply =\n        '주로 거실에 있었지만 밤 10시 35분부터 45분까지는 화장실에 있었습니다. 그동안 거실에서 벌어진 일은 모릅니다.';\n    else if (/강민호|손|피/.test(question))\n      reply =\n        '강민호 씨가 손을 바지에 닦는 것은 봤습니다. 손에 묻은 물질이 무엇인지는 확인하지 못했습니다.';\n    else if (/살아|호흡|숨|면담|언제|몇\\s*시/.test(question))\n      reply =\n        '밤 10시에 들어가 10시 20분에 나왔습니다. 나올 때 회장님은 졸려했지만 숨은 고르게 쉬고 계셨습니다.';\n  } else if (suspectId === 'seo') {\n    if (/죽였|살인|범인|공격/.test(question))\n      reply = '그렇게 단정하실 수는 없습니다. 무엇을 근거로 하시는지 보여주세요.';\n    else if (/위작|진품|바꿔|판매|팔았/.test(question))\n      reply = flags.has('seo_forgery')\n        ? '세 점을 위작으로 바꿨고 진품을 팔아 빚을 갚았습니다. 회장님은 그 사실을 알고 계셨습니다.'\n        : '소장품 감정은 제 업무입니다. 구체적으로 문제가 된 자료를 보여주세요.';\n    else if (/태웠|소각|벽난로|오른|일기/.test(question))\n      reply = flags.has('seo_burn')\n        ? '밤 10시 45분에 오른쪽 장갑과 일기 한 페이지를 태웠습니다. 숨기고 싶은 내용이 있었습니다.'\n        : '그 물건과 저의 관계를 단정하시기 전에 증거를 확인해 주세요.';\n    else if (/장갑/.test(question))\n      reply = '감정할 때 쓰는 흰 면장갑입니다. 지금 가지고 있는 것은 왼쪽 한 짝입니다.';\n    else if (/식당|40|55|물|어디/.test(question))\n      reply = flags.has('seo_burn')\n        ? '식당에만 있었다는 말은 사실이 아니었습니다. 10시 45분에 벽난로에서 물건을 태웠습니다.'\n        : '밤 10시 40분 이후 식당에서 물을 마셨고, 10시 55분에 위층으로 올라갔습니다.';\n    else if (/면담|잠|회장|몇\\s*시|언제/.test(question))\n      reply =\n        '회장님과의 면담은 밤 10시 30분이었습니다. 잠들어 계셔서 깨우지 않고 나왔다고 말씀드렸습니다.';\n  }\n  if (!reply && evidenceId)\n    reply =\n      '이 자료만으로 새로운 사실을 인정하기는 어렵습니다. 관련 자료를 함께 제시해 주십시오.';\n  if (!reply)\n    reply =\n      '그 부분은 확실히 말씀드리기 어렵습니다. 제 동선이나 직접 본 일에 관해 구체적으로 물어봐 주십시오.';\n  return { reply, newlyRevealed };\n}"
+        }
+      ]
+    },
+    {
+      "source": "lib/character-scenario.server.ts",
+      "regex": [
+        {
+          "line": 372,
+          "expression": "/대해|알고|보았|봤|관계/"
+        },
+        {
+          "line": 375,
+          "expression": "/동선|행적|그날 밤.*행동/"
+        }
+      ],
+      "literals": [
+        {
+          "line": 2,
+          "value": "node:fs"
+        },
+        {
+          "line": 3,
+          "value": "node:path"
+        },
+        {
+          "line": 9,
+          "value": "./case.ts"
+        },
+        {
+          "line": 10,
+          "value": "./interview-topics.ts"
+        },
+        {
+          "line": 15,
+          "value": "scenarios/thirteenth-bell/character-scripts.server.json"
+        },
+        {
+          "line": 16,
+          "value": "utf8"
+        },
+        {
+          "line": 26,
+          "value": "nature"
+        },
+        {
+          "line": 37,
+          "value": "본인 진술"
+        },
+        {
+          "line": 44,
+          "value": "직접 목격"
+        },
+        {
+          "line": 47,
+          "value": "yoon"
+        },
+        {
+          "line": 50,
+          "value": "meeting"
+        },
+        {
+          "line": 51,
+          "value": "21:00–21:15"
+        },
+        {
+          "line": 53,
+          "value": "윤재혁의 면담 진술"
+        },
+        {
+          "line": 54,
+          "value": "밤 9시에 유언장 초안과 접힌 종이를 받았습니다. 9시 15분에 제 방 가방에 넣었습니다."
+        },
+        {
+          "line": 58,
+          "value": "dining"
+        },
+        {
+          "line": 59,
+          "value": "21:15–22:00"
+        },
+        {
+          "line": 61,
+          "value": "윤재혁의 식당 체류 진술"
+        },
+        {
+          "line": 62,
+          "value": "식당에서 혼자 위스키를 마셨고 집사가 잔을 채워줬습니다."
+        },
+        {
+          "line": 66,
+          "value": "snoring"
+        },
+        {
+          "line": 67,
+          "value": "22:25"
+        },
+        {
+          "line": 69,
+          "value": "윤재혁의 서재 앞 진술"
+        },
+        {
+          "line": 70,
+          "value": "문밖에서 코 고는 소리를 듣고 돌아왔습니다. 문을 열어 안을 확인하지는 않았습니다."
+        },
+        {
+          "line": 73,
+          "value": "missing-draft"
+        },
+        {
+          "line": 74,
+          "value": "22:45"
+        },
+        {
+          "line": 76,
+          "value": "윤재혁의 초안 분실 진술"
+        },
+        {
+          "line": 77,
+          "value": "밤 10시 45분에 가방을 열어 초안이 봉투째 사라진 것을 알았습니다. 가져간 사람은 보지 못했습니다."
+        },
+        {
+          "line": 79,
+          "value": "yoon_visit"
+        },
+        {
+          "line": 81,
+          "value": "baek"
+        },
+        {
+          "line": 84,
+          "value": "meeting"
+        },
+        {
+          "line": 85,
+          "value": "21:20–21:35"
+        },
+        {
+          "line": 87,
+          "value": "백세라의 면담 진술"
+        },
+        {
+          "line": 88,
+          "value": "유언장 변경과 별채 상속 이야기를 듣고 다퉜어요. 9시 35분에 울며 나왔어요."
+        },
+        {
+          "line": 92,
+          "value": "white-glove"
+        },
+        {
+          "line": 93,
+          "value": "22:40"
+        },
+        {
+          "line": 95,
+          "value": "백세라의 흰 장갑 목격"
+        },
+        {
+          "line": 96,
+          "value": "흰 장갑 낀 손이 거실 쪽으로 사라졌어요. 얼굴을 못 봐서 누구인지는 몰라요."
+        },
+        {
+          "line": 99,
+          "value": "knock"
+        },
+        {
+          "line": 100,
+          "value": "22:50"
+        },
+        {
+          "line": 102,
+          "value": "백세라의 마지막 노크"
+        },
+        {
+          "line": 103,
+          "value": "서재에 노크했지만 대답이 없었어요. 문을 열지 않고 제 방으로 돌아갔어요."
+        },
+        {
+          "line": 105,
+          "value": "sera_draft"
+        },
+        {
+          "line": 107,
+          "value": "kang"
+        },
+        {
+          "line": 110,
+          "value": "crying"
+        },
+        {
+          "line": 111,
+          "value": "21:35"
+        },
+        {
+          "line": 113,
+          "value": "강민호의 백세라 목격"
+        },
+        {
+          "line": 114,
+          "value": "차례를 기다리던 중 백세라 씨가 문을 쾅 닫고 울며 나오는 것을 봤습니다."
+        },
+        {
+          "line": 117,
+          "value": "meeting"
+        },
+        {
+          "line": 118,
+          "value": "21:40–22:00"
+        },
+        {
+          "line": 120,
+          "value": "강민호의 면담 진술"
+        },
+        {
+          "line": 121,
+          "value": "혈압약을 전하고 와인을 따랐습니다. 10시에 나오며 차도윤 씨와 엇갈렸습니다."
+        },
+        {
+          "line": 125,
+          "value": "room"
+        },
+        {
+          "line": 126,
+          "value": "22:00–23:00"
+        },
+        {
+          "line": 128,
+          "value": "강민호의 방 체류 진술"
+        },
+        {
+          "line": 129,
+          "value": "10시부터 11시까지는 2층 제 방에 있었습니다."
+        },
+        {
+          "line": 132,
+          "value": "gang_drug"
+        },
+        {
+          "line": 133,
+          "value": "gang_visit"
+        },
+        {
+          "line": 135,
+          "value": "cha"
+        },
+        {
+          "line": 138,
+          "value": "meeting"
+        },
+        {
+          "line": 139,
+          "value": "22:00–22:20"
+        },
+        {
+          "line": 141,
+          "value": "차도윤의 면담 진술"
+        },
+        {
+          "line": 142,
+          "value": "cha_identity"
+        },
+        {
+          "line": 143,
+          "value": "회장님이 제가 친아들이라고 확인해주셨고 자정에 소개하겠다고 하셨습니다. 사진을 받았습니다."
+        },
+        {
+          "line": 144,
+          "value": "밤 10시에 서재로 들어가 10시 20분에 나왔습니다. 개인적인 면담 내용은 관련 자료를 확인한 뒤 말씀드리겠습니다."
+        },
+        {
+          "line": 148,
+          "value": "breathing"
+        },
+        {
+          "line": 149,
+          "value": "22:20"
+        },
+        {
+          "line": 151,
+          "value": "차도윤의 생존 목격"
+        },
+        {
+          "line": 152,
+          "value": "나올 때 회장님은 졸려했지만 숨은 고르게 쉬고 계셨습니다."
+        },
+        {
+          "line": 155,
+          "value": "absence"
+        },
+        {
+          "line": 156,
+          "value": "22:35–22:45"
+        },
+        {
+          "line": 158,
+          "value": "차도윤의 거실 부재"
+        },
+        {
+          "line": 159,
+          "value": "주로 거실에서 수첩을 정리했지만 이 시간에는 화장실에 있었습니다. 그동안 거실에서 벌어진 일은 모릅니다."
+        },
+        {
+          "line": 163,
+          "value": "fireplace"
+        },
+        {
+          "line": 164,
+          "value": "22:45"
+        },
+        {
+          "line": 166,
+          "value": "차도윤의 벽난로 목격"
+        },
+        {
+          "line": 167,
+          "value": "숄인지 담요인지를 두른 뒷모습이 무언가를 태우는 것을 봤습니다. 얼굴과 태운 물건은 확인하지 못했습니다."
+        },
+        {
+          "line": 170,
+          "value": "seo"
+        },
+        {
+          "line": 173,
+          "value": "baek-corridor"
+        },
+        {
+          "line": 174,
+          "value": "21:50"
+        },
+        {
+          "line": 176,
+          "value": "서하은의 백세라 목격"
+        },
+        {
+          "line": 177,
+          "value": "2층 복도에서 백세라 씨와 마주쳤습니다. 뭔가를 감추는 얼굴로 서둘러 지나갔습니다."
+        },
+        {
+          "line": 180,
+          "value": "meeting-claim"
+        },
+        {
+          "line": 181,
+          "value": "22:30"
+        },
+        {
+          "line": 183,
+          "value": "서하은의 초기 면담 주장"
+        },
+        {
+          "line": 184,
+          "value": "회장님이 잠들어 계셔서 깨우지 않고 나왔다고 말씀드렸습니다."
+        },
+        {
+          "line": 186,
+          "value": "seo_burn"
+        },
+        {
+          "line": 190,
+          "value": "dining-claim"
+        },
+        {
+          "line": 191,
+          "value": "22:40–22:55"
+        },
+        {
+          "line": 193,
+          "value": "서하은의 식당 체류 주장"
+        },
+        {
+          "line": 194,
+          "value": "식당에서 물을 마시다가 밤 10시 55분에 위층으로 올라갔습니다."
+        },
+        {
+          "line": 201,
+          "value": "심문에서 인정"
+        },
+        {
+          "line": 205,
+          "value": "admit-gang_drug"
+        },
+        {
+          "line": 206,
+          "value": "21:40"
+        },
+        {
+          "line": 208,
+          "value": "강민호의 투약 인정"
+        },
+        {
+          "line": 209,
+          "value": "제가 와인잔에 수면제 두 알을 넣었습니다. 병에는 넣지 않았습니다. 자정 발표를 미루려 했습니다."
+        },
+        {
+          "line": 214,
+          "value": "admit-gang_visit"
+        },
+        {
+          "line": 215,
+          "value": "23:00–23:02"
+        },
+        {
+          "line": 217,
+          "value": "강민호의 재방문·은닉 인정"
+        },
+        {
+          "line": 218,
+          "value": "차용증 원본을 가지러 서재에 갔습니다. 어두워서 상태를 확신하지 못했습니다. 어깨를 흔들어도 반응이 없었고 맥도 제대로 짚지 못했습니다. 11시 2분에 원본을 복도 꽃병에 숨겼습니다."
+        },
+        {
+          "line": 223,
+          "value": "admit-yoon_money"
+        },
+        {
+          "line": 224,
+          "value": "윤재혁의 횡령 인정"
+        },
+        {
+          "line": 225,
+          "value": "3년 동안 회사 돈 12억 원을 빼돌렸습니다."
+        },
+        {
+          "line": 226,
+          "value": "심문에서 인정"
+        },
+        {
+          "line": 230,
+          "value": "admit-yoon_visit"
+        },
+        {
+          "line": 231,
+          "value": "23:10"
+        },
+        {
+          "line": 233,
+          "value": "윤재혁의 금고 방문 인정"
+        },
+        {
+          "line": 234,
+          "value": "금고에서 장부를 가져왔습니다. 회장님 뒤통수에 피가 보였고 숨을 쉬지 않았지만 신고하지 않았습니다."
+        },
+        {
+          "line": 239,
+          "value": "admit-sera_draft"
+        },
+        {
+          "line": 240,
+          "value": "21:50"
+        },
+        {
+          "line": 242,
+          "value": "백세라의 초안 절도 인정"
+        },
+        {
+          "line": 243,
+          "value": "윤재혁 씨 방 가방에서 초안을 가져왔어요. 빈 봉투는 제 방에 버렸고 돌아가다 서하은 씨를 만났어요."
+        },
+        {
+          "line": 248,
+          "value": "admit-cha_identity"
+        },
+        {
+          "line": 249,
+          "value": "22:00–22:20"
+        },
+        {
+          "line": 251,
+          "value": "차도윤의 친자 관계 인정"
+        },
+        {
+          "line": 252,
+          "value": "제가 회장님의 친아들입니다. 어머니에게 듣고 왔고 면담에서 회장님이 직접 확인해주셨습니다."
+        },
+        {
+          "line": 257,
+          "value": "admit-seo_forgery"
+        },
+        {
+          "line": 258,
+          "value": "서하은의 위작 인정"
+        },
+        {
+          "line": 259,
+          "value": "세 점을 위작으로 바꾸고 진품을 팔아 빚을 갚았습니다."
+        },
+        {
+          "line": 260,
+          "value": "심문에서 인정"
+        },
+        {
+          "line": 265,
+          "value": "admit-seo_burn"
+        },
+        {
+          "line": 266,
+          "value": "22:45"
+        },
+        {
+          "line": 268,
+          "value": "서하은의 소각 인정"
+        },
+        {
+          "line": 269,
+          "value": "식당에만 있었다는 말은 사실이 아니었습니다. 벽난로에서 오른쪽 장갑과 일기 한 페이지를 태웠습니다."
+        },
+        {
+          "line": 272,
+          "value": "seo-dining-claim"
+        },
+        {
+          "line": 277,
+          "value": "nature"
+        },
+        {
+          "line": 281,
+          "value": "추측·인상"
+        },
+        {
+          "line": 282,
+          "value": "어릴 때부터 봐온 아이입니다. 유언 변경에 가장 흔들릴 사람이라고 생각합니다."
+        },
+        {
+          "line": 285,
+          "value": "본인 진술"
+        },
+        {
+          "line": 286,
+          "value": "강 선생의 3억 원 차용증 작성에 입회했습니다. 그의 채무 사정을 알고 있습니다."
+        },
+        {
+          "line": 289,
+          "value": "직접 목격"
+        },
+        {
+          "line": 290,
+          "value": "오늘 처음 본 기자인데 미술보다 회장님의 사생활을 많이 물었습니다."
+        },
+        {
+          "line": 293,
+          "value": "전언"
+        },
+        {
+          "line": 294,
+          "value": "최근 큰 빚을 한꺼번에 갚았다는 소문을 들었습니다. 수입과 맞지 않는다는 생각은 제 추측입니다."
+        },
+        {
+          "line": 299,
+          "value": "추측·인상"
+        },
+        {
+          "line": 300,
+          "value": "아버지가 요즘 윤 변호사님을 대하는 눈빛이 차가워졌다고 느꼈어요."
+        },
+        {
+          "line": 303,
+          "value": "전언"
+        },
+        {
+          "line": 304,
+          "value": "수면제를 처방해준 분이에요. 아버지가 강 선생 약은 너무 잘 듣는다고 말한 적이 있어요."
+        },
+        {
+          "line": 307,
+          "value": "직접 목격"
+        },
+        {
+          "line": 308,
+          "value": "만찬 때 기자가 아버지를 오래 쳐다봤고 아버지도 그를 자꾸 쳐다봤어요."
+        },
+        {
+          "line": 311,
+          "value": "직접 목격"
+        },
+        {
+          "line": 312,
+          "value": "석 달 전 전시 때 관리하던 그림 한 점의 액자 뒷면 봉인이 새것이었어요. 그때는 넘겼어요."
+        },
+        {
+          "line": 316,
+          "value": "본인 진술"
+        },
+        {
+          "line": 316,
+          "value": "차용증 작성에 입회한 변호사라 제 채무 사정을 알고 있습니다."
+        },
+        {
+          "line": 318,
+          "value": "직접 목격"
+        },
+        {
+          "line": 319,
+          "value": "밤 9시 35분에 서재에서 울며 나오는 것을 봤습니다. 우는 이유를 직접 듣지는 못했습니다."
+        },
+        {
+          "line": 322,
+          "value": "직접 목격"
+        },
+        {
+          "line": 323,
+          "value": "오늘 처음 본 기자입니다. 만찬 내내 회장님이 그에게 직접 와인을 따라줬습니다."
+        },
+        {
+          "line": 326,
+          "value": "전언"
+        },
+        {
+          "line": 327,
+          "value": "지난달 회장님이 그림들이 낯설어 보인다고 하셨습니다. 당시에는 시력 문제라고 생각했습니다. 서하은 씨의 범행을 본 것은 아닙니다."
+        },
+        {
+          "line": 332,
+          "value": "전언"
+        },
+        {
+          "line": 333,
+          "value": "회장님이 윤 변호사를 조심하라고 하셨습니다. 회사 돈이 새고 있다는 말도 들었습니다. 직접 장부를 확인한 것은 아닙니다."
+        },
+        {
+          "line": 336,
+          "value": "추측·인상"
+        },
+        {
+          "line": 337,
+          "value": "양녀이며 유언장이 바뀌면 상속에서 손해를 볼 것이라고 생각합니다. 그 사실만으로 범행을 안다는 뜻은 아닙니다."
+        },
+        {
+          "line": 340,
+          "value": "직접 목격"
+        },
+        {
+          "line": 341,
+          "value": "밤 10시에 서재 앞에서 엇갈릴 때 창백했고 손을 바지에 닦고 있었습니다. 묻은 물질은 확인하지 못했습니다."
+        },
+        {
+          "line": 344,
+          "value": "직접 목격"
+        },
+        {
+          "line": 345,
+          "value": "만찬 때 그림 이야기가 나오자 와인잔을 엎었습니다. 그 이유는 직접 듣지 못했습니다."
+        },
+        {
+          "line": 350,
+          "value": "추측·인상"
+        },
+        {
+          "line": 351,
+          "value": "회장님은 윤 변호사 이야기만 나오면 표정이 굳었습니다. 돈 문제 같다는 것은 제 추측입니다."
+        },
+        {
+          "line": 354,
+          "value": "직접 목격"
+        },
+        {
+          "line": 355,
+          "value": "밤 9시 50분에 2층 복도에서 마주쳤습니다. 뭔가를 감추는 듯 서둘렀지만 무엇인지는 보지 못했습니다."
+        },
+        {
+          "line": 358,
+          "value": "추측·인상"
+        },
+        {
+          "line": 359,
+          "value": "회장님 수면제를 관리하는 분입니다. 졸음과 관련 있을지도 모른다고 생각하지만 투약을 직접 본 것은 아닙니다."
+        },
+        {
+          "line": 361,
+          "value": "직접 목격"
+        },
+        {
+          "line": 361,
+          "value": "미술보다 회장님 가족사에 관한 질문이 많았습니다."
+        },
+        {
+          "line": 374,
+          "value": "about-"
+        },
+        {
+          "line": 375,
+          "value": "movement"
+        },
+        {
+          "line": 380,
+          "value": "movement"
+        },
+        {
+          "line": 382,
+          "value": "\n"
+        },
+        {
+          "line": 389,
+          "value": "about-"
+        },
+        {
+          "line": 390,
+          "value": "에 대한 진술"
+        },
+        {
+          "line": 395,
+          "value": "kang"
+        },
+        {
+          "line": 395,
+          "value": "baek"
+        },
+        {
+          "line": 396,
+          "value": "21:35"
+        },
+        {
+          "line": 397,
+          "value": "cha"
+        },
+        {
+          "line": 397,
+          "value": "kang"
+        },
+        {
+          "line": 398,
+          "value": "22:00"
+        },
+        {
+          "line": 399,
+          "value": "seo"
+        },
+        {
+          "line": 399,
+          "value": "baek"
+        },
+        {
+          "line": 400,
+          "value": "21:50"
+        },
+        {
+          "line": 409,
+          "value": "sourceRefs"
+        },
+        {
+          "line": 413,
+          "value": "-"
+        },
+        {
+          "line": 415,
+          "value": "about-"
+        },
+        {
+          "line": 416,
+          "value": "다른 사람들에 대해"
+        },
+        {
+          "line": 417,
+          "value": "그날 밤 당신의 행동"
+        },
+        {
+          "line": 421,
+          "value": "ST-"
+        },
+        {
+          "line": 421,
+          "value": "0"
+        },
+        {
+          "line": 435,
+          "value": "01_대본_"
+        },
+        {
+          "line": 435,
+          "value": ".pdf"
+        },
+        {
+          "line": 447,
+          "value": "sourceRefs"
+        },
+        {
+          "line": 452,
+          "value": "admission"
+        },
+        {
+          "line": 466,
+          "value": "부엉이상 받침과 검시 손상이 부합한다는 지적은 알겠습니다. 누가 사용했는지는 이 자료만으로 단정할 수 없습니다."
+        },
+        {
+          "line": 468,
+          "value": "22시 35분부터 45분까지 화장실에 있었습니다. 뒷모습뿐이라 신원과 태운 물건을 확인하지 못했습니다."
+        },
+        {
+          "line": 473,
+          "value": "\n"
+        },
+        {
+          "line": 480,
+          "value": "sourceRefs"
+        },
+        {
+          "line": 483,
+          "value": "baek-white-glove"
+        },
+        {
+          "line": 483,
+          "value": "얼굴은 못 봐"
+        },
+        {
+          "line": 484,
+          "value": "baek-knock"
+        },
+        {
+          "line": 484,
+          "value": "노크만 했고"
+        },
+        {
+          "line": 485,
+          "value": "cha-fireplace"
+        },
+        {
+          "line": 485,
+          "value": "얼굴과 태운 물건은 확인하지"
+        },
+        {
+          "line": 486,
+          "value": "cha-breathing"
+        },
+        {
+          "line": 486,
+          "value": "숨은 고르게"
+        },
+        {
+          "line": 487,
+          "value": "cha-absence"
+        },
+        {
+          "line": 487,
+          "value": "그동안 거실에서"
+        },
+        {
+          "line": 488,
+          "value": "yoon-snoring"
+        },
+        {
+          "line": 488,
+          "value": "코 고는 소리를 듣고"
+        },
+        {
+          "line": 489,
+          "value": "yoon-missing-draft"
+        },
+        {
+          "line": 489,
+          "value": "봉투째 사라진"
+        },
+        {
+          "line": 490,
+          "value": "kang-crying"
+        },
+        {
+          "line": 490,
+          "value": "울며 나오는"
+        },
+        {
+          "line": 491,
+          "value": "seo-dining-claim"
+        },
+        {
+          "line": 491,
+          "value": "식당에서 물을 마셨고"
+        },
+        {
+          "line": 496,
+          "value": "-"
+        },
+        {
+          "line": 497,
+          "value": "-"
+        },
+        {
+          "line": 500,
+          "value": "movement"
+        }
+      ],
+      "jsxText": [],
+      "functions": [
+        {
+          "name": "movements",
+          "line": 45,
+          "parameters": [
+            "id: SuspectId",
+            "flags: string[]"
+          ],
+          "body": {
+            "kind": "block",
+            "statements": [
+              {
+                "kind": "typescript-statement",
+                "source": "switch (id) {\n    case 'yoon':\n      return [\n        own(\n          'meeting',\n          '21:00–21:15',\n          1260,\n          '윤재혁의 면담 진술',\n          '밤 9시에 유언장 초안과 접힌 종이를 받았습니다. 9시 15분에 제 방 가방에 넣었습니다.',\n          1275,\n        ),\n        own(\n          'dining',\n          '21:15–22:00',\n          1275,\n          '윤재혁의 식당 체류 진술',\n          '식당에서 혼자 위스키를 마셨고 집사가 잔을 채워줬습니다.',\n          1320,\n        ),\n        seen(\n          'snoring',\n          '22:25',\n          1345,\n          '윤재혁의 서재 앞 진술',\n          '문밖에서 코 고는 소리를 듣고 돌아왔습니다. 문을 열어 안을 확인하지는 않았습니다.',\n        ),\n        own(\n          'missing-draft',\n          '22:45',\n          1365,\n          '윤재혁의 초안 분실 진술',\n          '밤 10시 45분에 가방을 열어 초안이 봉투째 사라진 것을 알았습니다. 가져간 사람은 보지 못했습니다.',\n        ),\n        ...(flags.includes('yoon_visit') ? [admissions.yoon_visit] : []),\n      ];\n    case 'baek':\n      return [\n        own(\n          'meeting',\n          '21:20–21:35',\n          1280,\n          '백세라의 면담 진술',\n          '유언장 변경과 별채 상속 이야기를 듣고 다퉜어요. 9시 35분에 울며 나왔어요.',\n          1295,\n        ),\n        seen(\n          'white-glove',\n          '22:40',\n          1360,\n          '백세라의 흰 장갑 목격',\n          '흰 장갑 낀 손이 거실 쪽으로 사라졌어요. 얼굴을 못 봐서 누구인지는 몰라요.',\n        ),\n        own(\n          'knock',\n          '22:50',\n          1370,\n          '백세라의 마지막 노크',\n          '서재에 노크했지만 대답이 없었어요. 문을 열지 않고 제 방으로 돌아갔어요.',\n        ),\n        ...(flags.includes('sera_draft') ? [admissions.sera_draft] : []),\n      ];\n    case 'kang':\n      return [\n        seen(\n          'crying',\n          '21:35',\n          1295,\n          '강민호의 백세라 목격',\n          '차례를 기다리던 중 백세라 씨가 문을 쾅 닫고 울며 나오는 것을 봤습니다.',\n        ),\n        own(\n          'meeting',\n          '21:40–22:00',\n          1300,\n          '강민호의 면담 진술',\n          '혈압약을 전하고 와인을 따랐습니다. 10시에 나오며 차도윤 씨와 엇갈렸습니다.',\n          1320,\n        ),\n        own(\n          'room',\n          '22:00–23:00',\n          1320,\n          '강민호의 방 체류 진술',\n          '10시부터 11시까지는 2층 제 방에 있었습니다.',\n          1380,\n        ),\n        ...(flags.includes('gang_drug') ? [admissions.gang_drug] : []),\n        ...(flags.includes('gang_visit') ? [admissions.gang_visit] : []),\n      ];\n    case 'cha':\n      return [\n        own(\n          'meeting',\n          '22:00–22:20',\n          1320,\n          '차도윤의 면담 진술',\n          flags.includes('cha_identity')\n            ? '회장님이 제가 친아들이라고 확인해주셨고 자정에 소개하겠다고 하셨습니다. 사진을 받았습니다.'\n            : '밤 10시에 서재로 들어가 10시 20분에 나왔습니다. 개인적인 면담 내용은 관련 자료를 확인한 뒤 말씀드리겠습니다.',\n          1340,\n        ),\n        seen(\n          'breathing',\n          '22:20',\n          1340,\n          '차도윤의 생존 목격',\n          '나올 때 회장님은 졸려했지만 숨은 고르게 쉬고 계셨습니다.',\n        ),\n        own(\n          'absence',\n          '22:35–22:45',\n          1355,\n          '차도윤의 거실 부재',\n          '주로 거실에서 수첩을 정리했지만 이 시간에는 화장실에 있었습니다. 그동안 거실에서 벌어진 일은 모릅니다.',\n          1365,\n        ),\n        seen(\n          'fireplace',\n          '22:45',\n          1365,\n          '차도윤의 벽난로 목격',\n          '숄인지 담요인지를 두른 뒷모습이 무언가를 태우는 것을 봤습니다. 얼굴과 태운 물건은 확인하지 못했습니다.',\n        ),\n      ];\n    case 'seo':\n      return [\n        seen(\n          'baek-corridor',\n          '21:50',\n          1310,\n          '서하은의 백세라 목격',\n          '2층 복도에서 백세라 씨와 마주쳤습니다. 뭔가를 감추는 얼굴로 서둘러 지나갔습니다.',\n        ),\n        own(\n          'meeting-claim',\n          '22:30',\n          1350,\n          '서하은의 초기 면담 주장',\n          '회장님이 잠들어 계셔서 깨우지 않고 나왔다고 말씀드렸습니다.',\n        ),\n        ...(flags.includes('seo_burn')\n          ? [admissions.seo_burn]\n          : [\n              own(\n                'dining-claim',\n                '22:40–22:55',\n                1360,\n                '서하은의 식당 체류 주장',\n                '식당에서 물을 마시다가 밤 10시 55분에 위층으로 올라갔습니다.',\n                1375,\n              ),\n            ]),\n      ];\n  }"
+              }
+            ]
+          },
+          "sourceCode": "function movements(id: SuspectId, flags: string[]): Entry[] {\n  switch (id) {\n    case 'yoon':\n      return [\n        own(\n          'meeting',\n          '21:00–21:15',\n          1260,\n          '윤재혁의 면담 진술',\n          '밤 9시에 유언장 초안과 접힌 종이를 받았습니다. 9시 15분에 제 방 가방에 넣었습니다.',\n          1275,\n        ),\n        own(\n          'dining',\n          '21:15–22:00',\n          1275,\n          '윤재혁의 식당 체류 진술',\n          '식당에서 혼자 위스키를 마셨고 집사가 잔을 채워줬습니다.',\n          1320,\n        ),\n        seen(\n          'snoring',\n          '22:25',\n          1345,\n          '윤재혁의 서재 앞 진술',\n          '문밖에서 코 고는 소리를 듣고 돌아왔습니다. 문을 열어 안을 확인하지는 않았습니다.',\n        ),\n        own(\n          'missing-draft',\n          '22:45',\n          1365,\n          '윤재혁의 초안 분실 진술',\n          '밤 10시 45분에 가방을 열어 초안이 봉투째 사라진 것을 알았습니다. 가져간 사람은 보지 못했습니다.',\n        ),\n        ...(flags.includes('yoon_visit') ? [admissions.yoon_visit] : []),\n      ];\n    case 'baek':\n      return [\n        own(\n          'meeting',\n          '21:20–21:35',\n          1280,\n          '백세라의 면담 진술',\n          '유언장 변경과 별채 상속 이야기를 듣고 다퉜어요. 9시 35분에 울며 나왔어요.',\n          1295,\n        ),\n        seen(\n          'white-glove',\n          '22:40',\n          1360,\n          '백세라의 흰 장갑 목격',\n          '흰 장갑 낀 손이 거실 쪽으로 사라졌어요. 얼굴을 못 봐서 누구인지는 몰라요.',\n        ),\n        own(\n          'knock',\n          '22:50',\n          1370,\n          '백세라의 마지막 노크',\n          '서재에 노크했지만 대답이 없었어요. 문을 열지 않고 제 방으로 돌아갔어요.',\n        ),\n        ...(flags.includes('sera_draft') ? [admissions.sera_draft] : []),\n      ];\n    case 'kang':\n      return [\n        seen(\n          'crying',\n          '21:35',\n          1295,\n          '강민호의 백세라 목격',\n          '차례를 기다리던 중 백세라 씨가 문을 쾅 닫고 울며 나오는 것을 봤습니다.',\n        ),\n        own(\n          'meeting',\n          '21:40–22:00',\n          1300,\n          '강민호의 면담 진술',\n          '혈압약을 전하고 와인을 따랐습니다. 10시에 나오며 차도윤 씨와 엇갈렸습니다.',\n          1320,\n        ),\n        own(\n          'room',\n          '22:00–23:00',\n          1320,\n          '강민호의 방 체류 진술',\n          '10시부터 11시까지는 2층 제 방에 있었습니다.',\n          1380,\n        ),\n        ...(flags.includes('gang_drug') ? [admissions.gang_drug] : []),\n        ...(flags.includes('gang_visit') ? [admissions.gang_visit] : []),\n      ];\n    case 'cha':\n      return [\n        own(\n          'meeting',\n          '22:00–22:20',\n          1320,\n          '차도윤의 면담 진술',\n          flags.includes('cha_identity')\n            ? '회장님이 제가 친아들이라고 확인해주셨고 자정에 소개하겠다고 하셨습니다. 사진을 받았습니다.'\n            : '밤 10시에 서재로 들어가 10시 20분에 나왔습니다. 개인적인 면담 내용은 관련 자료를 확인한 뒤 말씀드리겠습니다.',\n          1340,\n        ),\n        seen(\n          'breathing',\n          '22:20',\n          1340,\n          '차도윤의 생존 목격',\n          '나올 때 회장님은 졸려했지만 숨은 고르게 쉬고 계셨습니다.',\n        ),\n        own(\n          'absence',\n          '22:35–22:45',\n          1355,\n          '차도윤의 거실 부재',\n          '주로 거실에서 수첩을 정리했지만 이 시간에는 화장실에 있었습니다. 그동안 거실에서 벌어진 일은 모릅니다.',\n          1365,\n        ),\n        seen(\n          'fireplace',\n          '22:45',\n          1365,\n          '차도윤의 벽난로 목격',\n          '숄인지 담요인지를 두른 뒷모습이 무언가를 태우는 것을 봤습니다. 얼굴과 태운 물건은 확인하지 못했습니다.',\n        ),\n      ];\n    case 'seo':\n      return [\n        seen(\n          'baek-corridor',\n          '21:50',\n          1310,\n          '서하은의 백세라 목격',\n          '2층 복도에서 백세라 씨와 마주쳤습니다. 뭔가를 감추는 얼굴로 서둘러 지나갔습니다.',\n        ),\n        own(\n          'meeting-claim',\n          '22:30',\n          1350,\n          '서하은의 초기 면담 주장',\n          '회장님이 잠들어 계셔서 깨우지 않고 나왔다고 말씀드렸습니다.',\n        ),\n        ...(flags.includes('seo_burn')\n          ? [admissions.seo_burn]\n          : [\n              own(\n                'dining-claim',\n                '22:40–22:55',\n                1360,\n                '서하은의 식당 체류 주장',\n                '식당에서 물을 마시다가 밤 10시 55분에 위층으로 올라갔습니다.',\n                1375,\n              ),\n            ]),\n      ];\n  }\n}"
+        },
+        {
+          "name": "resolveTopic",
+          "line": 365,
+          "parameters": [
+            "speaker: SuspectId",
+            "question: string",
+            "explicit?: string"
+          ],
+          "body": {
+            "kind": "block",
+            "statements": [
+              {
+                "kind": "if",
+                "condition": "explicit",
+                "then": {
+                  "kind": "return",
+                  "value": {
+                    "kind": "typescript-expression",
+                    "expression": "getInterviewTopics(speaker).some((t) => t.id === explicit) ? explicit : null"
+                  }
+                },
+                "else": null
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "const other = suspects.find(\n    (p) =>\n      p.id !== speaker &&\n      question.includes(p.name) &&\n      /대해|알고|보았|봤|관계/.test(question),\n  );"
+              },
+              {
+                "kind": "if",
+                "condition": "other",
+                "then": {
+                  "kind": "return",
+                  "value": {
+                    "kind": "typescript-expression",
+                    "expression": "'about-' + other.id"
+                  }
+                },
+                "else": null
+              },
+              {
+                "kind": "if",
+                "condition": "/동선|행적|그날 밤.*행동/.test(question)",
+                "then": {
+                  "kind": "return",
+                  "value": {
+                    "kind": "literal",
+                    "value": "movement"
+                  }
+                },
+                "else": null
+              },
+              {
+                "kind": "return",
+                "value": {
+                  "kind": "typescript-expression",
+                  "expression": "undefined"
+                }
+              }
+            ]
+          },
+          "sourceCode": "export function resolveTopic(speaker: SuspectId, question: string, explicit?: string) {\n  if (explicit)\n    return getInterviewTopics(speaker).some((t) => t.id === explicit) ? explicit : null;\n  const other = suspects.find(\n    (p) =>\n      p.id !== speaker &&\n      question.includes(p.name) &&\n      /대해|알고|보았|봤|관계/.test(question),\n  );\n  if (other) return 'about-' + other.id;\n  if (/동선|행적|그날 밤.*행동/.test(question)) return 'movement';\n  return undefined;\n}"
+        },
+        {
+          "name": "topicAnswer",
+          "line": 379,
+          "parameters": [
+            "speaker: SuspectId",
+            "topic: string",
+            "flags: string[]"
+          ],
+          "body": {
+            "kind": "block",
+            "statements": [
+              {
+                "kind": "if",
+                "condition": "topic === 'movement'",
+                "then": {
+                  "kind": "block",
+                  "statements": [
+                    {
+                      "kind": "typescript-statement",
+                      "source": "const entries = movements(speaker, flags);"
+                    },
+                    {
+                      "kind": "return",
+                      "value": {
+                        "kind": "typescript-expression",
+                        "expression": "{ reply: entries.map((e) => e.text).join('\\n'), entries }"
+                      }
+                    }
+                  ]
+                },
+                "else": null
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "const target = topic.slice(6) as SuspectId;"
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "const relationship = relationships[speaker][target];"
+              },
+              {
+                "kind": "if",
+                "condition": "!relationship",
+                "then": {
+                  "kind": "return",
+                  "value": {
+                    "kind": "typescript-expression",
+                    "expression": "null"
+                  }
+                },
+                "else": null
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "const name = suspects.find((p) => p.id === target)!.name;"
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "const entry: Entry = {\n    key: 'about-' + target,\n    title: name + '에 대한 진술',\n    text: relationship[1],\n    nature: relationship[0],\n    target,\n  };"
+              },
+              {
+                "kind": "if",
+                "condition": "speaker === 'kang' && target === 'baek'",
+                "then": {
+                  "kind": "typescript-statement",
+                  "source": "Object.assign(entry, { time: '21:35', start: 1295 });"
+                },
+                "else": null
+              },
+              {
+                "kind": "if",
+                "condition": "speaker === 'cha' && target === 'kang'",
+                "then": {
+                  "kind": "typescript-statement",
+                  "source": "Object.assign(entry, { time: '22:00', start: 1320 });"
+                },
+                "else": null
+              },
+              {
+                "kind": "if",
+                "condition": "speaker === 'seo' && target === 'baek'",
+                "then": {
+                  "kind": "typescript-statement",
+                  "source": "Object.assign(entry, { time: '21:50', start: 1310 });"
+                },
+                "else": null
+              },
+              {
+                "kind": "return",
+                "value": {
+                  "kind": "typescript-expression",
+                  "expression": "{ reply: entry.text, entries: [entry] }"
+                }
+              }
+            ]
+          },
+          "sourceCode": "export function topicAnswer(speaker: SuspectId, topic: string, flags: string[]) {\n  if (topic === 'movement') {\n    const entries = movements(speaker, flags);\n    return { reply: entries.map((e) => e.text).join('\\n'), entries };\n  }\n  const target = topic.slice(6) as SuspectId;\n  const relationship = relationships[speaker][target];\n  if (!relationship) return null;\n  const name = suspects.find((p) => p.id === target)!.name;\n  const entry: Entry = {\n    key: 'about-' + target,\n    title: name + '에 대한 진술',\n    text: relationship[1],\n    nature: relationship[0],\n    target,\n  };\n  if (speaker === 'kang' && target === 'baek')\n    Object.assign(entry, { time: '21:35', start: 1295 });\n  if (speaker === 'cha' && target === 'kang')\n    Object.assign(entry, { time: '22:00', start: 1320 });\n  if (speaker === 'seo' && target === 'baek')\n    Object.assign(entry, { time: '21:50', start: 1310 });\n  return { reply: entry.text, entries: [entry] };\n}"
+        },
+        {
+          "name": "recordStatements",
+          "line": 404,
+          "parameters": [
+            "state: GameState",
+            "speaker: SuspectId",
+            "topic: string",
+            "entries: Entry[]",
+            "refs: AcquiredStatement['sourceRefs']"
+          ],
+          "body": {
+            "kind": "block",
+            "statements": [
+              {
+                "kind": "typescript-statement",
+                "source": "for (const entry of entries) {\n    // Keep the first acquired version. Changed claims get a separate stable ID.\n    const id = speaker + '-' + entry.key;\n    if (Object.hasOwn(state.statements, id)) continue;\n    const section = topic.startsWith('about-')\n      ? '다른 사람들에 대해'\n      : '그날 밤 당신의 행동';\n    const name = suspects.find((p) => p.id === speaker)!.name;\n    state.statements[id] = {\n      id,\n      code: 'ST-' + String(Object.keys(state.statements).length + 1).padStart(3, '0'),\n      speaker,\n      topic,\n      title: entry.title,\n      excerpt: entry.text,\n      nature: entry.nature,\n      target: entry.target,\n      time: entry.time,\n      start: entry.start,\n      end: entry.end,\n      supersedes: entry.supersedes,\n      sourceRefs: refs,\n      messageIndex: state.messages.length - 1,\n      source: {\n        file: '01_대본_' + name + '.pdf',\n        pages: characterScripts[speaker].sections[section].pages,\n        section,\n      },\n    };\n  }"
+              }
+            ]
+          },
+          "sourceCode": "export function recordStatements(\n  state: GameState,\n  speaker: SuspectId,\n  topic: string,\n  entries: Entry[],\n  refs: AcquiredStatement['sourceRefs'],\n) {\n  for (const entry of entries) {\n    // Keep the first acquired version. Changed claims get a separate stable ID.\n    const id = speaker + '-' + entry.key;\n    if (Object.hasOwn(state.statements, id)) continue;\n    const section = topic.startsWith('about-')\n      ? '다른 사람들에 대해'\n      : '그날 밤 당신의 행동';\n    const name = suspects.find((p) => p.id === speaker)!.name;\n    state.statements[id] = {\n      id,\n      code: 'ST-' + String(Object.keys(state.statements).length + 1).padStart(3, '0'),\n      speaker,\n      topic,\n      title: entry.title,\n      excerpt: entry.text,\n      nature: entry.nature,\n      target: entry.target,\n      time: entry.time,\n      start: entry.start,\n      end: entry.end,\n      supersedes: entry.supersedes,\n      sourceRefs: refs,\n      messageIndex: state.messages.length - 1,\n      source: {\n        file: '01_대본_' + name + '.pdf',\n        pages: characterScripts[speaker].sections[section].pages,\n        section,\n      },\n    };\n  }\n}"
+        },
+        {
+          "name": "recordAdmissions",
+          "line": 443,
+          "parameters": [
+            "state: GameState",
+            "speaker: SuspectId",
+            "flags: string[]",
+            "refs: AcquiredStatement['sourceRefs']"
+          ],
+          "body": {
+            "kind": "block",
+            "statements": [
+              {
+                "kind": "typescript-statement",
+                "source": "recordStatements(\n    state,\n    speaker,\n    'admission',\n    flags.map((flag) => admissions[flag]).filter(Boolean),\n    refs,\n  );"
+              }
+            ]
+          },
+          "sourceCode": "export function recordAdmissions(\n  state: GameState,\n  speaker: SuspectId,\n  flags: string[],\n  refs: AcquiredStatement['sourceRefs'],\n) {\n  recordStatements(\n    state,\n    speaker,\n    'admission',\n    flags.map((flag) => admissions[flag]).filter(Boolean),\n    refs,\n  );\n}"
+        },
+        {
+          "name": "admissionReply",
+          "line": 458,
+          "parameters": [
+            "flags: string[]"
+          ],
+          "body": {
+            "kind": "block",
+            "statements": [
+              {
+                "kind": "return",
+                "value": {
+                  "kind": "typescript-expression",
+                  "expression": "flags\n    .map(\n      (flag) =>\n        admissions[flag]?.text ??\n        (\n          {\n            weapon_fit:\n              '부엉이상 받침과 검시 손상이 부합한다는 지적은 알겠습니다. 누가 사용했는지는 이 자료만으로 단정할 수 없습니다.',\n            witness_gap:\n              '22시 35분부터 45분까지 화장실에 있었습니다. 뒷모습뿐이라 신원과 태운 물건을 확인하지 못했습니다.',\n          } as Record<string, string>\n        )[flag],\n    )\n    .filter(Boolean)\n    .join('\\n')"
+                }
+              }
+            ]
+          },
+          "sourceCode": "export function admissionReply(flags: string[]) {\n  return flags\n    .map(\n      (flag) =>\n        admissions[flag]?.text ??\n        (\n          {\n            weapon_fit:\n              '부엉이상 받침과 검시 손상이 부합한다는 지적은 알겠습니다. 누가 사용했는지는 이 자료만으로 단정할 수 없습니다.',\n            witness_gap:\n              '22시 35분부터 45분까지 화장실에 있었습니다. 뒷모습뿐이라 신원과 태운 물건을 확인하지 못했습니다.',\n          } as Record<string, string>\n        )[flag],\n    )\n    .filter(Boolean)\n    .join('\\n');\n}"
+        },
+        {
+          "name": "recordLegacyReply",
+          "line": 476,
+          "parameters": [
+            "state: GameState",
+            "speaker: SuspectId",
+            "reply: string",
+            "refs: AcquiredStatement['sourceRefs']"
+          ],
+          "body": {
+            "kind": "block",
+            "statements": [
+              {
+                "kind": "typescript-statement",
+                "source": "const signatures: Record<string, string> = {\n    'baek-white-glove': '얼굴은 못 봐',\n    'baek-knock': '노크만 했고',\n    'cha-fireplace': '얼굴과 태운 물건은 확인하지',\n    'cha-breathing': '숨은 고르게',\n    'cha-absence': '그동안 거실에서',\n    'yoon-snoring': '코 고는 소리를 듣고',\n    'yoon-missing-draft': '봉투째 사라진',\n    'kang-crying': '울며 나오는',\n    'seo-dining-claim': '식당에서 물을 마셨고',\n  };"
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "const entries = movements(speaker, state.revealed)\n    .filter(\n      (entry) =>\n        signatures[speaker + '-' + entry.key] &&\n        reply.includes(signatures[speaker + '-' + entry.key]),\n    )\n    .map((entry) => ({ ...entry, text: reply }));"
+              },
+              {
+                "kind": "typescript-statement",
+                "source": "recordStatements(state, speaker, 'movement', entries, refs);"
+              }
+            ]
+          },
+          "sourceCode": "export function recordLegacyReply(\n  state: GameState,\n  speaker: SuspectId,\n  reply: string,\n  refs: AcquiredStatement['sourceRefs'],\n) {\n  const signatures: Record<string, string> = {\n    'baek-white-glove': '얼굴은 못 봐',\n    'baek-knock': '노크만 했고',\n    'cha-fireplace': '얼굴과 태운 물건은 확인하지',\n    'cha-breathing': '숨은 고르게',\n    'cha-absence': '그동안 거실에서',\n    'yoon-snoring': '코 고는 소리를 듣고',\n    'yoon-missing-draft': '봉투째 사라진',\n    'kang-crying': '울며 나오는',\n    'seo-dining-claim': '식당에서 물을 마셨고',\n  };\n  const entries = movements(speaker, state.revealed)\n    .filter(\n      (entry) =>\n        signatures[speaker + '-' + entry.key] &&\n        reply.includes(signatures[speaker + '-' + entry.key]),\n    )\n    .map((entry) => ({ ...entry, text: reply }));\n  recordStatements(state, speaker, 'movement', entries, refs);\n}"
+        }
+      ]
+    }
+  ]
+}

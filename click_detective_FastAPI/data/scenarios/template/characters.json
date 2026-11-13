@@ -1,0 +1,226 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "thirteenth-bell-v1",
+  "characters": [
+    {
+      "id": "yoon",
+      "name": "윤재혁",
+      "en": "YOON JAEHYUK",
+      "age": 47,
+      "role": "전속 변호사",
+      "portrait": "/assets/characters/yoon-jaehyuk-live.png",
+      "initials": "01",
+      "color": "#747c6c",
+      "statement": "회장님 곁에서 법률과 재산 관리를 맡아왔습니다. 오늘은 유언장 변경 업무 때문에 왔습니다.",
+      "bio": "20년의 신뢰 · 전속 변호사",
+      "suggestions": [
+        "회장님과 언제 면담했습니까?",
+        "오늘 밤 식당에서 무엇을 했습니까?",
+        "유언장 초안은 어디 있습니까?"
+      ],
+      "interviewTopics": [
+        {
+          "id": "movement",
+          "label": "그날 밤의 동선",
+          "question": "그날 밤 면담 전후의 동선과 직접 본 일을 말씀해 주세요."
+        },
+        {
+          "id": "about-baek",
+          "label": "백세라에 대해",
+          "question": "백세라에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-kang",
+          "label": "강민호에 대해",
+          "question": "강민호에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-cha",
+          "label": "차도윤에 대해",
+          "question": "차도윤에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-seo",
+          "label": "서하은에 대해",
+          "question": "서하은에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        }
+      ]
+    },
+    {
+      "id": "baek",
+      "name": "백세라",
+      "en": "BAEK SERA",
+      "age": 34,
+      "role": "회장의 양녀",
+      "portrait": "/assets/characters/baek-sera-live.png",
+      "initials": "02",
+      "color": "#796a60",
+      "statement": "일곱 살 때 이 집에 왔어요. 아버지 소장품 전시를 도왔고요. 아버지가 그렇게 되실 줄은…",
+      "bio": "흔들리는 상속 · 회장의 양녀",
+      "suggestions": [
+        "아버지와 왜 다퉜습니까?",
+        "밤 10시 40분에 뭘 봤습니까?",
+        "마지막으로 서재를 찾은 건 언제입니까?"
+      ],
+      "interviewTopics": [
+        {
+          "id": "movement",
+          "label": "그날 밤의 동선",
+          "question": "그날 밤 면담 전후의 동선과 직접 본 일을 말씀해 주세요."
+        },
+        {
+          "id": "about-yoon",
+          "label": "윤재혁에 대해",
+          "question": "윤재혁에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-kang",
+          "label": "강민호에 대해",
+          "question": "강민호에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-cha",
+          "label": "차도윤에 대해",
+          "question": "차도윤에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-seo",
+          "label": "서하은에 대해",
+          "question": "서하은에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        }
+      ]
+    },
+    {
+      "id": "kang",
+      "name": "강민호",
+      "en": "KANG MINHO",
+      "age": 52,
+      "role": "주치의",
+      "portrait": "/assets/characters/kang-minho-live.png",
+      "initials": "03",
+      "color": "#667781",
+      "statement": "15년 동안 회장님의 혈압과 불면증을 봐드렸습니다. 오늘은 혈압약을 전해드리러 왔습니다.",
+      "bio": "불안한 침묵 · 주치의",
+      "suggestions": [
+        "면담을 마친 시각은 언제입니까?",
+        "백세라를 봤습니까?",
+        "회장님에게 빚이 있습니까?"
+      ],
+      "interviewTopics": [
+        {
+          "id": "movement",
+          "label": "그날 밤의 동선",
+          "question": "그날 밤 면담 전후의 동선과 직접 본 일을 말씀해 주세요."
+        },
+        {
+          "id": "about-yoon",
+          "label": "윤재혁에 대해",
+          "question": "윤재혁에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-baek",
+          "label": "백세라에 대해",
+          "question": "백세라에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-cha",
+          "label": "차도윤에 대해",
+          "question": "차도윤에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-seo",
+          "label": "서하은에 대해",
+          "question": "서하은에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        }
+      ]
+    },
+    {
+      "id": "cha",
+      "name": "차도윤",
+      "en": "CHA DOYOON",
+      "age": 32,
+      "role": "잡지 기자",
+      "portrait": "/assets/characters/cha-doyoon-live.png",
+      "initials": "04",
+      "color": "#746c82",
+      "statement": "아트 앤 라이프의 기자입니다. 회장님 일대기 인터뷰로 초대받았습니다. 제가 본 일을 말씀드리겠습니다.",
+      "bio": "사진 속의 이름 · 잡지 기자",
+      "suggestions": [
+        "서재에서 나올 때 회장은 살아 있었습니까?",
+        "거실에 계속 있었습니까?",
+        "벽난로 앞에서 누구를 봤습니까?"
+      ],
+      "interviewTopics": [
+        {
+          "id": "movement",
+          "label": "그날 밤의 동선",
+          "question": "그날 밤 면담 전후의 동선과 직접 본 일을 말씀해 주세요."
+        },
+        {
+          "id": "about-yoon",
+          "label": "윤재혁에 대해",
+          "question": "윤재혁에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-baek",
+          "label": "백세라에 대해",
+          "question": "백세라에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-kang",
+          "label": "강민호에 대해",
+          "question": "강민호에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-seo",
+          "label": "서하은에 대해",
+          "question": "서하은에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        }
+      ]
+    },
+    {
+      "id": "seo",
+      "name": "서하은",
+      "en": "SEO HAEUN",
+      "age": 38,
+      "role": "미술품 감정사",
+      "portrait": "/assets/characters/seo-haeun-live.png",
+      "initials": "05",
+      "color": "#7b775c",
+      "statement": "5년째 회장님 소장품의 감정과 관리를 맡고 있습니다. 오늘도 소장품을 점검했습니다.",
+      "bio": "깨끗한 왼손 · 미술품 감정사",
+      "suggestions": [
+        "회장과의 면담은 몇 시였습니까?",
+        "밤 10시 40분 이후에는 어디 있었습니까?",
+        "왜 장갑을 끼고 있었습니까?"
+      ],
+      "interviewTopics": [
+        {
+          "id": "movement",
+          "label": "그날 밤의 동선",
+          "question": "그날 밤 면담 전후의 동선과 직접 본 일을 말씀해 주세요."
+        },
+        {
+          "id": "about-yoon",
+          "label": "윤재혁에 대해",
+          "question": "윤재혁에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-baek",
+          "label": "백세라에 대해",
+          "question": "백세라에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-kang",
+          "label": "강민호에 대해",
+          "question": "강민호에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        },
+        {
+          "id": "about-cha",
+          "label": "차도윤에 대해",
+          "question": "차도윤에 대해 직접 보거나 알고 있는 것을 말씀해 주세요."
+        }
+      ]
+    }
+  ]
+}

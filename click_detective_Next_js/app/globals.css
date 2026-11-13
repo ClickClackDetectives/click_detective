@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap');
+@import './styles/base.css';
+@import './styles/home.css';
+@import './styles/library.css';
+@import './styles/investigation.css';
+@import './styles/dialogs.css';
+@import './styles/responsive.css';
+
+/* 스타일은 기본 → 화면별 → 반응형 순서로 적용한다. */

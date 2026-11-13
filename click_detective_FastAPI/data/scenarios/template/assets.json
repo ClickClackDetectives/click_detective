@@ -1,0 +1,345 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "thirteenth-bell-v1",
+  "files": [
+    {
+      "path": "public/assets/characters/baek-sera-live.png",
+      "url": "/assets/characters/baek-sera-live.png",
+      "bytes": 1902917,
+      "sha256": "bb793a71d550aeb28bb90e598f67417fef73d52539c0b8fd5cb2dfd83e67a644"
+    },
+    {
+      "path": "public/assets/characters/baek-sera.webp",
+      "url": "/assets/characters/baek-sera.webp",
+      "bytes": 66728,
+      "sha256": "207b50c973d77a00112ecf0a84c97973fda4d5a8a0650f836227aaa14ee10050"
+    },
+    {
+      "path": "public/assets/characters/cha-doyoon-live.png",
+      "url": "/assets/characters/cha-doyoon-live.png",
+      "bytes": 1970710,
+      "sha256": "5b3833f158d143b867e1d71f62b1d6223041038b55fb82d93d6ba156eb32796c"
+    },
+    {
+      "path": "public/assets/characters/cha-doyoon.webp",
+      "url": "/assets/characters/cha-doyoon.webp",
+      "bytes": 70092,
+      "sha256": "33d9c646febc65a8d33d9b0a5c8dec9814e9b71f8ac6b136dde3a3e9bbeb0870"
+    },
+    {
+      "path": "public/assets/characters/kang-minho-live.png",
+      "url": "/assets/characters/kang-minho-live.png",
+      "bytes": 2276780,
+      "sha256": "6eb423f0f9e7242463f14239ecd43094c341d254a69ade0bcb54f3bbd375dd7b"
+    },
+    {
+      "path": "public/assets/characters/kang-minho.webp",
+      "url": "/assets/characters/kang-minho.webp",
+      "bytes": 84694,
+      "sha256": "d78ac609a9938ffc517915d51a0dc8b47af6cbd06247dbf2b1541588277cffe7"
+    },
+    {
+      "path": "public/assets/characters/seo-haeun-live.png",
+      "url": "/assets/characters/seo-haeun-live.png",
+      "bytes": 645323,
+      "sha256": "20315262059bfc95797d6de523aee184585c1dbb68fb023e531cde9d24d0be66"
+    },
+    {
+      "path": "public/assets/characters/seo-haeun.webp",
+      "url": "/assets/characters/seo-haeun.webp",
+      "bytes": 73360,
+      "sha256": "3aecc45406784470cb19ec853e15aebff7713e2d4a2d2b0d3be8b24718156a54"
+    },
+    {
+      "path": "public/assets/characters/yoon-jaehyuk-live.png",
+      "url": "/assets/characters/yoon-jaehyuk-live.png",
+      "bytes": 1103436,
+      "sha256": "091610550623c0e8922cf26a26097902e34a90ab9be74611d0aca4a02dfb1884"
+    },
+    {
+      "path": "public/assets/characters/yoon-jaehyuk.webp",
+      "url": "/assets/characters/yoon-jaehyuk.webp",
+      "bytes": 67054,
+      "sha256": "3a935224ff50b407636597b9449635bdd98a2c360a3309ee9fe029a27b0693b1"
+    },
+    {
+      "path": "public/assets/evidence/1-01.png",
+      "url": "/assets/evidence/1-01.png",
+      "bytes": 2279645,
+      "sha256": "5b9ca27f8ee0f8da441cd3a9b4328c0c9857ff905526553a4c95f98ab7721100"
+    },
+    {
+      "path": "public/assets/evidence/1-02.png",
+      "url": "/assets/evidence/1-02.png",
+      "bytes": 2051530,
+      "sha256": "c9c7c5c8cd7d48a188abdf62fea6a0b694f2a235215beab0e4e2bc2bf5cd38f4"
+    },
+    {
+      "path": "public/assets/evidence/1-03.png",
+      "url": "/assets/evidence/1-03.png",
+      "bytes": 2263714,
+      "sha256": "cd42d0d2b0bd91851d5db774a71e9552bf1e8726cd422cc6547cfac67f87e3e6"
+    },
+    {
+      "path": "public/assets/evidence/1-04.png",
+      "url": "/assets/evidence/1-04.png",
+      "bytes": 2392779,
+      "sha256": "d4a1413e4871e545dae3501795fafb94ff62dca335d59ae8a0e4c75b093747f4"
+    },
+    {
+      "path": "public/assets/evidence/1-05.png",
+      "url": "/assets/evidence/1-05.png",
+      "bytes": 2079780,
+      "sha256": "1a826ccba36cbd2bfd2b101bef27275833e54d0e723598256b6cb8a0095448a8"
+    },
+    {
+      "path": "public/assets/evidence/1-06.png",
+      "url": "/assets/evidence/1-06.png",
+      "bytes": 2331301,
+      "sha256": "3b36901c160e6f7b6f6c559b125808a796a0f2a28215fa07e851eaa7d5996c5b"
+    },
+    {
+      "path": "public/assets/evidence/1-07.png",
+      "url": "/assets/evidence/1-07.png",
+      "bytes": 2302553,
+      "sha256": "ce0b9ca7b1e44852f64f2349f873e1caf78f0251da55d5db8e34829f6a508c8e"
+    },
+    {
+      "path": "public/assets/evidence/1-08.png",
+      "url": "/assets/evidence/1-08.png",
+      "bytes": 2312806,
+      "sha256": "02a3c66f7c916db5a01b43db3defff7776214de9dffe95e53f28b2a7f69445fa"
+    },
+    {
+      "path": "public/assets/evidence/1-09.png",
+      "url": "/assets/evidence/1-09.png",
+      "bytes": 2542515,
+      "sha256": "26efba67bc32ee7c4c23e2b26aaf46895163bdbc203398ce8ed40efb97b464e3"
+    },
+    {
+      "path": "public/assets/evidence/1-10.png",
+      "url": "/assets/evidence/1-10.png",
+      "bytes": 2566087,
+      "sha256": "24a196eff6644bb07852ce59516568c9cb078ed52188969fd8bc12855657f0b8"
+    },
+    {
+      "path": "public/assets/evidence/1-11.png",
+      "url": "/assets/evidence/1-11.png",
+      "bytes": 2451534,
+      "sha256": "f4b552fb69e7c7488cc30d25d70bec737da172110bfae61e032f09531408463f"
+    },
+    {
+      "path": "public/assets/evidence/1-12.png",
+      "url": "/assets/evidence/1-12.png",
+      "bytes": 2271492,
+      "sha256": "ebdbbca4ae1a202c1446c0cc74feb3d2bfd94f6fd61f9123055102b09c4e643b"
+    },
+    {
+      "path": "public/assets/evidence/1-13.png",
+      "url": "/assets/evidence/1-13.png",
+      "bytes": 2322903,
+      "sha256": "8d3642acb001759dd7c7313b42561588ac861dea1c93f17d58d49b52f92f0551"
+    },
+    {
+      "path": "public/assets/evidence/S-B.png",
+      "url": "/assets/evidence/S-B.png",
+      "bytes": 2414519,
+      "sha256": "b9806781fe9ee92b2ff577d2905ff08e43ec3dd0f436af759dbe9e8474063f5e"
+    },
+    {
+      "path": "public/assets/evidence/S-C.png",
+      "url": "/assets/evidence/S-C.png",
+      "bytes": 2627779,
+      "sha256": "8525e6cd97febedf7db6f35fa83751a78dbd5a80797140090b1ef97bd7567102"
+    },
+    {
+      "path": "public/assets/evidence/S-K.png",
+      "url": "/assets/evidence/S-K.png",
+      "bytes": 2643515,
+      "sha256": "2529b4af0acb2855de66e8e96b10d8bc71c9ba53adf0f6d74e00711daa69aea4"
+    },
+    {
+      "path": "public/assets/evidence/S-S.png",
+      "url": "/assets/evidence/S-S.png",
+      "bytes": 2406518,
+      "sha256": "48084ed8c0911d97f6fc319e79835ddd9d0f2dad57029dbcb358227d375cfcf7"
+    },
+    {
+      "path": "public/assets/evidence/S-Y.png",
+      "url": "/assets/evidence/S-Y.png",
+      "bytes": 2467439,
+      "sha256": "cf4f60286722a6aee9d7445007ed48d91c0be24e5fadbabe07e464f949e0efde"
+    },
+    {
+      "path": "public/assets/intro/thirteenth-bell-opening-v3-quiet.mp4",
+      "url": "/assets/intro/thirteenth-bell-opening-v3-quiet.mp4",
+      "bytes": 31238490,
+      "sha256": "e68d0ddc9b0318a1b06a87deddf4806957a68fc59955bb60a1819c81f893bd00"
+    },
+    {
+      "path": "public/assets/intro/thirteenth-bell-opening-v3.mp4",
+      "url": "/assets/intro/thirteenth-bell-opening-v3.mp4",
+      "bytes": 31238987,
+      "sha256": "544977d894106ebf62d154b1e82443afe546b1ba668daa28c4bd2e29ae4d959c"
+    },
+    {
+      "path": "public/assets/intro/thirteenth-bell-opening.mp4",
+      "url": "/assets/intro/thirteenth-bell-opening.mp4",
+      "bytes": 3719225,
+      "sha256": "64266e3ea8063f7fb057449a96fc9225681e1ca80e5dd42c7445204eed5bba19"
+    },
+    {
+      "path": "public/assets/notebook-paper.png",
+      "url": "/assets/notebook-paper.png",
+      "bytes": 2770309,
+      "sha256": "946bfa03ddb9896de482b72449b20ed9fee1c0f92021ca3ed36f26a7949bced0"
+    },
+    {
+      "path": "public/hotel.jpg",
+      "url": "/hotel.jpg",
+      "bytes": 716739,
+      "sha256": "d332e3a243130da3cfd5e4865a81027b1dbf5f67be76779ab6938dd8c8fc3e23"
+    },
+    {
+      "path": "public/manor.jpg",
+      "url": "/manor.jpg",
+      "bytes": 307054,
+      "sha256": "327721cfb17c363049e3a5ea67e587959977b02c92032706829367de17ed70f0"
+    }
+  ],
+  "evidenceIllustrations": {
+    "1-01": "/assets/evidence/1-01.png",
+    "1-02": "/assets/evidence/1-02.png",
+    "1-03": "/assets/evidence/1-03.png",
+    "1-04": "/assets/evidence/1-04.png",
+    "1-12": "/assets/evidence/1-12.png",
+    "1-05": "/assets/evidence/1-05.png",
+    "1-06": "/assets/evidence/1-06.png",
+    "1-13": "/assets/evidence/1-13.png",
+    "1-07": "/assets/evidence/1-07.png",
+    "1-08": "/assets/evidence/1-08.png",
+    "1-09": "/assets/evidence/1-09.png",
+    "1-10": "/assets/evidence/1-10.png",
+    "1-11": "/assets/evidence/1-11.png",
+    "S-Y": "/assets/evidence/S-Y.png",
+    "S-B": "/assets/evidence/S-B.png",
+    "S-K": "/assets/evidence/S-K.png",
+    "S-C": "/assets/evidence/S-C.png",
+    "S-S": "/assets/evidence/S-S.png"
+  },
+  "illustrationPrompts": {
+    "tool": "built-in image_gen",
+    "style": "atmospheric realistic painterly illustration; warm antique amber light, muted olive/brown mansion palette; landscape 4:3; no invented clues; reference illustrations only",
+    "images": [
+      {
+        "id": "1-01",
+        "title": "시신과 빈 서랍",
+        "brief": "A dignified elderly Korean man in a dark suit sits motionless slumped forward at a grand study desk, viewed obliquely from the front, his face hidden by posture; one desk drawer is half-open and empty. Non-graphic crime scene, NO visible wounds or blood, no culprit or weapon.",
+        "path": "public/assets/evidence/1-01.png"
+      },
+      {
+        "id": "1-02",
+        "title": "와인병과 잔",
+        "brief": "A nearly full dark-green bottle of red wine beside a half-full clear wine glass on a mahogany study desk. Clearly visible pale undissolved powder sediment at the bottom of the GLASS only, no powder on the bottle. Close investigative still life, no medicine bottle.",
+        "path": "public/assets/evidence/1-02.png"
+      },
+      {
+        "id": "1-03",
+        "title": "청동 부엉이상",
+        "brief": "A heavy antique bronze owl statuette with a broad round base on a mansion bookshelf. A faint dusty circular footprint is slightly offset from its current position, and the underside edge has a faint wiped smudge. Several identical leather-bound books behind. No visible blood or killer.",
+        "path": "public/assets/evidence/1-03.png"
+      },
+      {
+        "id": "1-04",
+        "title": "찢긴 일기장",
+        "brief": "An open old leather diary with a page visibly torn out near its binding, ragged paper remnants, a few fragmented unreadable handwritten marks in one corner. On a mansion study desk. No readable confession, no suspect names or extra clues.",
+        "path": "public/assets/evidence/1-04.png"
+      },
+      {
+        "id": "1-12",
+        "title": "회색 실오라기",
+        "brief": "Macro investigative close-up of several short gray wool threads caught on an ornate dark burgundy carpet behind a carved wooden desk. The fibers are central and clearly visible. No whole shawl, no person, no indication of owner.",
+        "path": "public/assets/evidence/1-12.png"
+      },
+      {
+        "id": "1-05",
+        "title": "집사의 첫 증언",
+        "brief": "An elderly Korean butler in a restrained black formal suit and white shirt standing in a dim grand mansion corridor at a closed study door, cautiously recounting events, waist-up documentary illustration. No speech bubbles, no written testimony, no extra people or identifying clues.",
+        "path": "public/assets/evidence/1-05.png"
+      },
+      {
+        "id": "1-06",
+        "title": "서로 다른 시계",
+        "brief": "Three distinct antique mansion clocks arranged as an investigative triptych with no panel borders: corridor wall clock, ornate living-room mantel clock, and dining-room clock, their hands showing clearly different times. Brass and dark wood, no exact legible numbers required, no secret mechanisms revealed.",
+        "path": "public/assets/evidence/1-06.png"
+      },
+      {
+        "id": "1-13",
+        "title": "차용증 원본",
+        "brief": "A crumpled loan agreement tucked into the mouth of a decorative porcelain vase on a mansion corridor console, a dry brown stain at the corner of the paper. Some abstract document lines and signature marks, no legible invented amounts or names. Close evidence still life.",
+        "path": "public/assets/evidence/1-13.png"
+      },
+      {
+        "id": "1-07",
+        "title": "빈 법률사무소 봉투",
+        "brief": "An EMPTY cream legal document envelope with an unlettered scales-of-justice emblem, open flap and clearly empty interior, discarded in a small bedroom wastebasket. No document inside, no extra incriminating clues.",
+        "path": "public/assets/evidence/1-07.png"
+      },
+      {
+        "id": "1-08",
+        "title": "수면제 통",
+        "brief": "An open small amber prescription pill bottle inside an old leather physician's bag, white round tablets visible within bottle. Beside it a simple label with only 30 and a discreet evidence tally 28 as illustration design; no medical instructions or drug branding. No spilled extra pills, no syringe.",
+        "path": "public/assets/evidence/1-08.png"
+      },
+      {
+        "id": "1-09",
+        "title": "외부 감사 일정",
+        "brief": "A paper desk calendar and an audit appointment sheet on a lawyer's guestroom desk, one upcoming Monday appointment marked with THREE overlapping red pen circles. Fountain pen nearby. No readable invented dates, names or incriminating ledger.",
+        "path": "public/assets/evidence/1-09.png"
+      },
+      {
+        "id": "1-10",
+        "title": "소장품 카탈로그",
+        "brief": "An open fine-art collection catalog on an appraiser's desk with three dog-eared page corners and discreet pencil annotations in the margin, paintings reproduced as small thumbnails. No readable extra secrets, no forged-versus-real reveal, no people.",
+        "path": "public/assets/evidence/1-10.png"
+      },
+      {
+        "id": "1-11",
+        "title": "취재수첩 첫 장",
+        "brief": "The FIRST page of a journalist's small spiral notebook opened on a guestroom desk beside a black pen, sparse brief handwritten fragments including a clear 1995 and otherwise abstract strokes. No family photograph, no parentage reveal, no confession.",
+        "path": "public/assets/evidence/1-11.png"
+      },
+      {
+        "id": "S-Y",
+        "title": "회사의 내부 장부",
+        "brief": "A worn company accounting ledger opened on a mansion table beside a lawyer's leather folio, multiple rows of financial entries, recurring transfers highlighted, a signature at bottom represented abstractly. No legible invented numbers, no person, no murder clues.",
+        "path": "public/assets/evidence/S-Y.png"
+      },
+      {
+        "id": "S-B",
+        "title": "새 유언장 초안",
+        "brief": "An unsigned draft will on cream legal paper with a visibly BLANK beneficiary name field and blank signature line, several orderly clauses, held under a paperweight on a mansion side table. No readable invented legal details, no identified heir.",
+        "path": "public/assets/evidence/S-B.png"
+      },
+      {
+        "id": "S-K",
+        "title": "차용증 사본",
+        "brief": "A clean monochrome PHOTOCOPY of a loan agreement carried in a doctor's plain document folder, tidy printed lines and signature marks, slightly folded corners, no blood or stains, no porcelain vase. Contrast with crumpled stained original; no readable invented text.",
+        "path": "public/assets/evidence/S-K.png"
+      },
+      {
+        "id": "S-C",
+        "title": "오래된 가족사진",
+        "brief": "A faded 1990s family photograph lying on a wooden table: a younger Korean father in ordinary clothes, a Korean mother wearing a simple apron, and a one-year-old baby together, mild sepia fading and worn edges. Include a tiny secondary glimpse of photo reverse with 1995 only. No modern suspects shown, no confirmation caption.",
+        "path": "public/assets/evidence/S-C.png"
+      },
+      {
+        "id": "S-S",
+        "title": "왼쪽 흰 면장갑",
+        "brief": "ONE clean white cotton LEFT-HAND art-handling glove lying flat on dark green felt on a mansion side table. Five fingers with thumb arranged anatomically clearly as left glove. No right glove, no blood, no fire, no box or accusation.",
+        "path": "public/assets/evidence/S-S.png"
+      }
+    ]
+  },
+  "binariesEmbedded": false
+}

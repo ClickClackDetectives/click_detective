@@ -1,0 +1,201 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "thirteenth-bell-v1",
+  "cases": [
+    {
+      "id": "0001",
+      "title": "THE THIRTEENTH BELL",
+      "ko": "열세 번째 종",
+      "desc": "폭풍우로 고립된 저택. 백도현 회장의 일흔 번째 생일 만찬 뒤, 서재에서 시신이 발견됐다. 다섯 용의자의 비밀을 대조하고 범인·흉기·동기를 밝혀라.",
+      "place": "폭풍우에 고립된 흑운장",
+      "duration": "45–60분",
+      "level": "DETECTIVE"
+    },
+    {
+      "id": "0002",
+      "title": "THE SILENT FLOOR",
+      "ko": "침묵의 층",
+      "desc": "카메라는 꺼져 있었다. 문은 기록을 남기지 않았다.",
+      "place": "기업 본사 · 임원 전용층",
+      "duration": "45–60분",
+      "level": "DETECTIVE"
+    },
+    {
+      "id": "0003",
+      "title": "DEAD LETTER",
+      "ko": "전해지지 않은 편지",
+      "desc": "모두가 기사를 막고 싶어 했다. 기사는 세상에 나왔다.",
+      "place": "기자의 비밀 문서 창고",
+      "duration": "45–75분",
+      "level": "INSPECTOR"
+    },
+    {
+      "id": "0004",
+      "title": "THE SECOND KEY",
+      "ko": "두 번째 열쇠",
+      "desc": "하나의 문. 하나의 열쇠. 그리고 안에서 발견된 시신.",
+      "place": "수집가의 지하 금고",
+      "duration": "60–90분",
+      "level": "EXPERT"
+    }
+  ],
+  "sourceLabels": {
+    "evidence": "증거",
+    "testimony": "증언",
+    "derived": "추론"
+  },
+  "navigationSource": {
+    "source": "components/navigation.ts",
+    "regex": [],
+    "literals": [
+      {
+        "line": 10,
+        "value": "lucide-react"
+      },
+      {
+        "line": 12,
+        "value": "home"
+      },
+      {
+        "line": 13,
+        "value": "cases"
+      },
+      {
+        "line": 14,
+        "value": "briefing"
+      },
+      {
+        "line": 15,
+        "value": "evidence"
+      },
+      {
+        "line": 16,
+        "value": "testimonies"
+      },
+      {
+        "line": 17,
+        "value": "interrogate"
+      },
+      {
+        "line": 18,
+        "value": "timeline"
+      },
+      {
+        "line": 19,
+        "value": "notes"
+      },
+      {
+        "line": 20,
+        "value": "accuse"
+      },
+      {
+        "line": 21,
+        "value": "results"
+      },
+      {
+        "line": 22,
+        "value": "findings"
+      },
+      {
+        "line": 23,
+        "value": "inference"
+      },
+      {
+        "line": 25,
+        "value": "briefing"
+      },
+      {
+        "line": 25,
+        "value": "사건 브리핑"
+      },
+      {
+        "line": 26,
+        "value": "evidence"
+      },
+      {
+        "line": 26,
+        "value": "증거 보관실"
+      },
+      {
+        "line": 27,
+        "value": "testimonies"
+      },
+      {
+        "line": 27,
+        "value": "증언 기록"
+      },
+      {
+        "line": 28,
+        "value": "interrogate"
+      },
+      {
+        "line": 28,
+        "value": "용의자 심문"
+      },
+      {
+        "line": 29,
+        "value": "findings"
+      },
+      {
+        "line": 29,
+        "value": "발견한 쟁점"
+      },
+      {
+        "line": 30,
+        "value": "inference"
+      },
+      {
+        "line": 30,
+        "value": "추론 증거"
+      },
+      {
+        "line": 31,
+        "value": "timeline"
+      },
+      {
+        "line": 31,
+        "value": "사건 타임라인"
+      },
+      {
+        "line": 32,
+        "value": "notes"
+      },
+      {
+        "line": 32,
+        "value": "수사 노트"
+      },
+      {
+        "line": 33,
+        "value": "accuse"
+      },
+      {
+        "line": 33,
+        "value": "최종 고발"
+      }
+    ],
+    "jsxText": [],
+    "functions": []
+  },
+  "characterIdMap": [
+    {
+      "id": "yoon",
+      "name": "윤재혁"
+    },
+    {
+      "id": "baek",
+      "name": "백세라"
+    },
+    {
+      "id": "kang",
+      "name": "강민호"
+    },
+    {
+      "id": "cha",
+      "name": "차도윤"
+    },
+    {
+      "id": "seo",
+      "name": "서하은"
+    }
+  ]
+}

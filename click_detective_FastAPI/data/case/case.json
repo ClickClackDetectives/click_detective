@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0.0",
+  "caseId": "thirteenth-bell-v1",
+  "case": {
+    "id": "thirteenth-bell-v1",
+    "title": "열세 번째 종",
+    "englishTitle": "THE THIRTEENTH BELL",
+    "place": "흑운장",
+    "number": "0001",
+    "duration": "45–60분",
+    "summary": "폭풍우로 고립된 저택. 백도현 회장의 일흔 번째 생일 만찬 뒤, 서재에서 시신이 발견됐다. 다섯 용의자의 비밀을 대조하고 범인·흉기·동기를 밝혀라."
+  },
+  "motiveOptions": [
+    {
+      "id": "forgery",
+      "label": "위작 바꿔치기 폭로를 막기 위해"
+    },
+    {
+      "id": "debt",
+      "label": "빚 상환을 피하기 위해"
+    },
+    {
+      "id": "inheritance",
+      "label": "상속 재산을 지키기 위해"
+    },
+    {
+      "id": "embezzle",
+      "label": "회사 자금 횡령을 숨기기 위해"
+    }
+  ],
+  "methodOptions": [
+    {
+      "id": "owl",
+      "label": "청동 부엉이상으로 뒤통수를 가격"
+    },
+    {
+      "id": "drug",
+      "label": "수면제로 살해"
+    },
+    {
+      "id": "wine",
+      "label": "와인병으로 가격"
+    }
+  ],
+  "publicTimeline": [
+    {
+      "id": "schedule-yoon",
+      "time": "21:00",
+      "start": 1260,
+      "title": "윤재혁 면담 예정",
+      "text": "공개된 예정 시각이며 실제 입·퇴실을 확인한 진술과 구분합니다.",
+      "category": "공개 일정"
+    },
+    {
+      "id": "schedule-baek",
+      "time": "21:20",
+      "start": 1280,
+      "title": "백세라 면담 예정",
+      "text": "공개된 예정 시각이며 실제 입·퇴실을 확인한 진술과 구분합니다.",
+      "category": "공개 일정"
+    },
+    {
+      "id": "schedule-kang",
+      "time": "21:40",
+      "start": 1300,
+      "title": "강민호 면담 예정",
+      "text": "공개된 예정 시각이며 실제 입·퇴실을 확인한 진술과 구분합니다.",
+      "category": "공개 일정"
+    },
+    {
+      "id": "schedule-cha",
+      "time": "22:00",
+      "start": 1320,
+      "title": "차도윤 면담 예정",
+      "text": "공개된 예정 시각이며 실제 입·퇴실을 확인한 진술과 구분합니다.",
+      "category": "공개 일정"
+    },
+    {
+      "id": "schedule-seo",
+      "time": "22:30",
+      "start": 1350,
+      "title": "서하은 면담 예정",
+      "text": "공개된 예정 시각이며 실제 입·퇴실을 확인한 진술과 구분합니다.",
+      "category": "공개 일정"
+    },
+    {
+      "id": "body-found",
+      "time": "23:30",
+      "start": 1410,
+      "title": "시신 발견",
+      "text": "집사가 서재에서 회장의 시신을 발견했다는 오프닝 공개 정보입니다.",
+      "category": "공개 사건"
+    },
+    {
+      "id": "will-announcement",
+      "time": "자정 예정",
+      "start": 1440,
+      "title": "유언장 변경 예고",
+      "text": "회장은 자정에 유언장을 바꾸겠다고 예고했습니다.",
+      "category": "공개 일정"
+    }
+  ]
+}
