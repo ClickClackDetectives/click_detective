@@ -1,0 +1,84 @@
+.notebook-emblem {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #936730;
+}
+.notebook-emblem::before,
+.notebook-emblem::after {
+  content: '';
+  width: 45px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #956734);
+}
+.notebook-emblem::after {
+  transform: rotate(180deg);
+}
+.notebook-emblem > span {
+  font-size: 28px;
+}
+.notebook-emblem > span:last-child {
+  transform: scaleX(-1);
+}
+.notebook textarea {
+  min-height: 500px;
+  padding: 24px 30px 24px 65px;
+  line-height: 33px;
+  font-size: 16px;
+  background-image:
+    linear-gradient(to right, transparent 49px, #b65f4d99 49px, #b65f4d99 50px, transparent 50px),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 32px,
+      #99764644 32px,
+      #99764644 33px
+    ),
+    url('/assets/notebook-paper.png');
+  background-size:
+    auto,
+    auto,
+    100% 100%;
+  background-position:
+    0 0,
+    0 24px,
+    0 0;
+  box-shadow: inset 4px 0 12px #8b5b2920;
+}
+.notebook textarea::placeholder {
+  color: #795735;
+}
+.notebook-bottom {
+  padding: 16px 30px;
+  border-top-color: #ad875a66;
+  border-radius: 0 0 5px 5px;
+  box-shadow: none;
+}
+@media (max-width: 650px) {
+  .notebook-emblem {
+    display: none;
+  }
+  .notebook-top {
+    padding: 18px;
+  }
+  .notebook-top > span:first-child {
+    font-size: 12px;
+  }
+  .notebook textarea {
+    font-size: 14px;
+    padding-left: 48px;
+    background-image:
+      linear-gradient(to right, transparent 33px, #b65f4d99 33px, #b65f4d99 34px, transparent 34px),
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 32px,
+        #99764644 32px,
+        #99764644 33px
+      ),
+      url('/assets/notebook-paper.png');
+  }
+}
