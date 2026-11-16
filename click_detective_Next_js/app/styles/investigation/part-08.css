@@ -1,0 +1,112 @@
+.timeline time {
+  overflow-wrap: anywhere;
+}
+.testimony-entry details {
+  margin-top: 15px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.testimony-entry summary {
+  cursor: pointer;
+}
+.testimony-entry h3 {
+  font-size: 15px;
+  line-height: 1.7;
+}
+.timeline article[id],
+.testimony-entry[id] {
+  scroll-margin-top: 100px;
+}
+.result-checks > details > summary {
+  cursor: pointer;
+  list-style: none;
+  text-align: left;
+}
+.result-checks > details > summary::-webkit-details-marker {
+  display: none;
+}
+.result-checks > details > summary::after {
+  content: '+';
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.result-checks > details[open] > summary::after {
+  content: '−';
+}
+.result-checks > details > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.result-check-detail {
+  padding: 0 0 18px;
+  text-align: left;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.9;
+}
+.result-check-detail > p {
+  margin: 8px 0;
+}
+.result-check-detail .result-evidence-assessment {
+  margin-top: 14px;
+}
+.inference-search {
+  margin: 16px 0;
+  max-width: 100%;
+}
+.connection-source {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.connection-source strong {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.8;
+}
+.connection-source small {
+  display: block;
+  line-height: 1.7;
+  margin-top: 4px;
+}
+.selected-sources {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.selected-sources > strong {
+  width: 100%;
+  font-size: 12px;
+}
+.selected-sources p {
+  font-size: 11px;
+  color: var(--muted);
+}
+.selected-sources button {
+  padding: 8px;
+  border: 1px solid var(--line);
+  font-size: 10px;
+  color: var(--accent);
+  text-align: left;
+}
+.inference-kind {
+  display: inline-block;
+  font-size: 10px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.derived-grid h4 {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 16px 0 8px;
+}
+.inference-origins {
+  font-size: 11px;
+  margin: 18px 0;
+  color: var(--muted);
+}
+.inference-origins summary {
+  cursor: pointer;
+}

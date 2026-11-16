@@ -1,0 +1,220 @@
+@media (max-width: 560px) {
+  .topbar {
+    padding: 0 20px;
+    gap: 20px;
+  }
+  .topbar nav {
+    gap: 15px;
+    margin-left: auto;
+  }
+  .top-right {
+    display: none;
+  }
+  .brand {
+    font-size: 17px;
+  }
+  .hero {
+    min-height: auto;
+    padding: 50px 25px 65px;
+    display: block;
+  }
+  .hero .eyebrow {
+    font-size: 6.5px;
+    letter-spacing: 2px;
+  }
+  .hero h1 {
+    font-size: 45px;
+    margin-top: 23px;
+  }
+  .hero-content > p {
+    font-size: 11px;
+  }
+  .hero-actions {
+    gap: 10px;
+  }
+  .hero-meta {
+    font-size: 8px;
+    gap: 14px;
+  }
+  .hero-file {
+    display: none;
+  }
+  .hero-bottom {
+    left: 25px;
+    right: 25px;
+    bottom: 22px;
+    font-size: 5.5px;
+    letter-spacing: 1.3px;
+  }
+  .process {
+    padding: 30px 25px;
+  }
+  .section-label {
+    display: block;
+  }
+  .section-label p {
+    margin-top: 12px;
+  }
+  .process-grid {
+    gap: 28px 0;
+    margin-top: 28px;
+  }
+  .process-grid article {
+    padding: 0 17px;
+  }
+  .process-grid h3 {
+    font-size: 13px;
+  }
+  .process-grid p {
+    font-size: 10px;
+  }
+  .process-number {
+    margin-bottom: 13px;
+    font-size: 10px;
+  }
+  .process-number svg {
+    width: 17px;
+  }
+  .archive-teaser {
+    padding: 35px 25px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 25px;
+  }
+  .archive-teaser h2 {
+    font-size: 28px;
+  }
+  .archive-teaser .outline {
+    font-size: 11px;
+  }
+  footer {
+    padding: 25px;
+  }
+  .wrap {
+    padding: 40px 22px;
+  }
+  .page-heading h1 {
+    font-size: 33px;
+  }
+  .page-heading p {
+    font-size: 11px;
+  }
+  .case-grid {
+    grid-template-columns: 1fr;
+  }
+  .case-card p {
+    min-height: auto;
+  }
+  .case-art {
+    height: 180px;
+  }
+  .case-card h2 {
+    font-size: 27px;
+  }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 75px;
+    bottom: 0;
+    width: 235px;
+    z-index: 30;
+    transform: translateX(-100%);
+    box-shadow: 20px 0 70px #0009;
+    transition: transform 0.2s;
+  }
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  .sidebar-file h3 {
+    font-size: 17px;
+  }
+  .sidebar nav button {
+    padding: 15px;
+    font-size: 12px;
+  }
+  .mobile-menu {
+    display: block;
+    padding: 0;
+  }
+  .desk {
+    padding: 0 20px 35px;
+  }
+  .desk-top {
+    justify-content: flex-start;
+    height: 55px;
+    gap: 15px;
+  }
+  .desk-heading {
+    margin: 28px 0;
+  }
+  .desk-heading h1 {
+    font-size: 28px;
+  }
+  .desk-heading > .eyebrow {
+    font-size: 8px;
+  }
+  .desk-heading p {
+    font-size: 10px;
+    line-height: 1.9;
+  }
+  .desk-heading .subtle {
+    display: block;
+    margin: 0;
+  }
+  .paper {
+    padding: 25px;
+  }
+  .paper h2 {
+    font-size: 24px;
+  }
+  .paper > p:not(.mono) {
+    font-size: 11px;
+  }
+  .evidence-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .evidence-card {
+    padding: 14px 12px;
+  }
+  .evidence-card-top {
+    font-size: 7px;
+  }
+  .read-label {
+    font-size: 0;
+  }
+  .read-label svg {
+    width: 12px;
+  }
+  .document-symbol {
+    gap: 7px;
+    margin: 23px 0 18px;
+  }
+  .document-symbol span {
+    font-size: 8px;
+  }
+  .document-symbol svg {
+    width: 24px;
+  }
+  .evidence-card h3 {
+    font-size: 12px;
+    line-height: 1.7;
+    min-height: 39px;
+  }
+  .evidence-card p {
+    font-size: 9px;
+    min-height: 36px;
+  }
+  .evidence-card-bottom {
+    font-size: 7px;
+  }
+  .evidence-card-bottom svg {
+    width: 13px;
+  }
+  .suspect-list > button {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 7px;
+    gap: 6px;
+  }
+}

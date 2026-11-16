@@ -1,0 +1,208 @@
+.result-score {
+  font-size: 74px;
+  color: var(--accent);
+  font-weight: 500;
+  letter-spacing: -4px;
+  margin: 24px 0;
+}
+.result-score span {
+  font-size: 20px;
+  color: #879777;
+  letter-spacing: 0;
+  margin-left: 10px;
+}
+.result-checks {
+  border: 1px solid var(--line);
+  padding: 4px 22px;
+}
+.result-checks > details > summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  color: var(--accent);
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+}
+.result-checks > details:last-child > summary {
+  border: 0;
+}
+.result-checks strong {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 400;
+}
+.result-checks span {
+  color: #bcc8ac;
+}
+.solution {
+  text-align: left;
+  padding: 25px;
+  background: #1b2216;
+  margin: 22px 0;
+}
+.solution p {
+  color: #b2bfa1;
+  font-size: 12px;
+  margin: 14px 0 0;
+}
+.result-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+.empty {
+  padding: 50px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+.empty > svg {
+  margin-bottom: 20px;
+  color: var(--accent);
+}
+.empty h2 {
+  font-size: 22px;
+}
+.empty .primary {
+  margin-top: 15px;
+}
+/* 열세 번째 종 인물 사진 */
+.avatar {
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transform: none;
+}
+.suspect-portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+  object-position: center top;
+  background: #10130f;
+  border: 1px solid var(--line);
+  margin: 0 0 22px;
+}
+.phase-notice {
+  margin: 0 0 24px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+.phase-notice p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.phase-notice .primary {
+  flex-shrink: 0;
+}
+@media (max-width: 650px) {
+  .phase-notice {
+    display: block;
+  }
+  .phase-notice .primary {
+    margin-top: 14px;
+  }
+  .suspect-portrait {
+    max-width: 360px;
+  }
+}
+.case-opening {
+  margin: 0 0 32px;
+  border: 1px solid #53513b;
+  background: #0a100f;
+}
+.opening-label {
+  padding: 13px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #c7b77f;
+  border-bottom: 1px solid #343c30;
+}
+.opening-label > span:last-child {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #8b9b91;
+}
+.opening-screen {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-height: 560px;
+  overflow: hidden;
+  background: #050807;
+}
+.opening-screen video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.opening-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  background: linear-gradient(0deg, #030807dd, #03080755 65%, #03080777);
+}
+.opening-overlay.ended {
+  background: #060d0cea;
+}
+.opening-overlay .eyebrow {
+  color: #c4b788;
+  font-size: 10px;
+  letter-spacing: 4px;
+}
+.opening-overlay h2 {
+  color: #efebdf;
+  font-size: clamp(22px, 3.2vw, 42px);
+  margin: 18px 0 8px;
+  letter-spacing: -1px;
+}
+.opening-overlay p {
+  color: #b5bcb0;
+  font-size: 12px;
+}
+.opening-play {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid #b6a574;
+  background: #151d17df;
+  padding: 13px 21px;
+  margin-top: 22px;
+  color: #e3d6ac;
+  font-size: 12px;
+}
+.opening-play:hover {
+  background: #313b2a;
+  border-color: #dfce98;
+}
+.opening-caption {
+  padding: 11px 18px;
+  color: #91a092;
+  font-size: 10px;
+}

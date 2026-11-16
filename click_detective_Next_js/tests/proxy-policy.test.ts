@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveTarget, isSameOrigin } from '../lib/server/proxy-policy.ts';
-import { assetUrl } from '../lib/client-api.ts';
+import { resolveTarget, isSameOrigin } from '../server/proxy/policy.ts';
+import { assetUrl } from '../shared/api/client.ts';
 /** 임의 URL·다른 수사 접근·다른 사이트의 변경 요청을 막는 경계를 검사합니다. */
 test('허용되지 않은 경로와 경로 탈출 차단', () => {
   for (const parts of [
@@ -24,23 +24,12 @@ test('허용되지 않은 경로와 경로 탈출 차단', () => {
   );
 });
 test('변경 요청의 동일 출처 검사', () => {
-  assert.equal(
-    isSameOrigin('http://localhost:3000/api', 'http://localhost:3000'),
-    true,
-  );
-  for (const origin of [
-    null,
-    'null',
-    'https://evil.example',
-    'http://localhost:3001',
-  ])
+  assert.equal(isSameOrigin('http://localhost:3000/api', 'http://localhost:3000'), true);
+  for (const origin of [null, 'null', 'https://evil.example', 'http://localhost:3001'])
     assert.equal(isSameOrigin('http://localhost:3000/api', origin), false);
 });
 test('자산을 같은 출처 API로 변환', () => {
-  assert.equal(
-    assetUrl('/v1/assets/manor.jpg'),
-    '/api/detective/assets/manor.jpg',
-  );
+  assert.equal(assetUrl('/v1/assets/manor.jpg'), '/api/detective/assets/manor.jpg');
   assert.equal(
     assetUrl('/v1/games/any/evidence-assets/1-01'),
     '/api/detective/evidence-assets/1-01',

@@ -116,8 +116,10 @@ project/
 │   └── pyproject.toml                # Python 의존성
 └── click_detective_Next_js/
     ├── app/                          # 화면, 스타일, 서버 라우트
-    ├── components/                   # 화면 컴포넌트
-    ├── lib/                          # API 클라이언트와 화면 로직
+    ├── features/                     # 자료·심문·추론·메모 등 기능별 화면과 로직
+    ├── shared/api/                   # 브라우저 공통 요청
+    ├── server/proxy/                 # FastAPI 서버 중계
+    ├── components/ hooks/ lib/       # 이전 import 경로 호환
     ├── scripts/                      # 통합·UI 검사 스크립트
     ├── tests/                        # 프런트엔드 테스트
     ├── docs/                         # 프런트엔드 상세 문서
@@ -274,21 +276,21 @@ npm run build
 
 ### 통합 및 UI 검사
 
-통합 검사는 백엔드의 `.cd_venv/bin/python`과 빌드된 Next.js를 사용해 별도 서버를 실행합니다. 현재 폴더명에 맞게 백엔드 경로를 지정합니다.
+통합 검사는 형제 `click_detective_FastAPI`의 가상환경과 빌드된 Next.js를 사용해 별도 fixture 서버와 임시 DB를 실행합니다. 백엔드 경로가 다르면 `CLICK_TEST_BACKEND_DIR`, Python 경로가 다르면 `CLICK_TEST_PYTHON`을 지정합니다.
 
 ```bash
 cd ~/project/click_detective_Next_js
-CLICK_TEST_BACKEND_DIR=../click_detective_FastAPI npm run test:integration
+npm run test:integration
 ```
 
-UI 검사는 Playwright Chromium을 추가로 준비합니다.
+UI 검사는 Playwright Chromium과 비교할 이전 프런트엔드 소스를 추가로 준비합니다.
 
 ```bash
 npx playwright install chromium
-CLICK_TEST_BACKEND_DIR=../click_detective_FastAPI npm run test:ui
+CLICK_TEST_ORIGINAL_DIR=/비교할/이전/프런트엔드 npm run test:ui
 ```
 
-통합 검사 결과는 프런트엔드의 `.reports/integration.json`에 저장됩니다. fixture·모의 모델 검사는 실제 LLM 품질 검사와 구분해야 합니다. 실제 모델 검증 방법은 [실서버 검사 안내](click_detective_FastAPI/docs/11_LLM_멀티에이전트_실서버_테스트.md)에 있습니다.
+통합 검사 결과는 프런트엔드의 `.reports/integration.json`에 저장됩니다. fixture·모의 모델 검사는 실제 LLM 품질 검사와 구분해야 합니다. 실제 모델 검증 방법은 [실서버 검사 안내](click_detective_FastAPI/docs/테스트/실서버_LLM_검사.md)에 있습니다.
 
 ## 문제 해결과 상세 문서
 
@@ -299,7 +301,7 @@ CLICK_TEST_BACKEND_DIR=../click_detective_FastAPI npm run test:ui
 | local 모드 시작 실패 | 모델·어댑터 파일, 경로, GPU와 CUDA 및 모델 의존성 확인 |
 | 변경한 설정이 적용되지 않음 | 해당 서버 재시작, 프로세스 환경변수의 설정 덮어쓰기 여부 확인 |
 | 포트 사용 중 오류 | 기존 서버 종료 또는 포트 변경, 연결 주소도 함께 수정 |
-| 통합 검사에서 백엔드를 찾지 못함 | `CLICK_TEST_BACKEND_DIR` 지정 및 `.cd_venv/bin/python` 준비 여부 확인 |
+| 통합 검사에서 백엔드를 찾지 못함 | `CLICK_TEST_BACKEND_DIR`와 `CLICK_TEST_PYTHON` 및 설치된 백엔드 의존성 확인 |
 
 프로젝트별 설정과 구현 설명은 다음 문서에서 확인할 수 있습니다.
 
@@ -307,8 +309,8 @@ CLICK_TEST_BACKEND_DIR=../click_detective_FastAPI npm run test:ui
 - [Next.js 프로젝트 README](click_detective_Next_js/README.md)
 - [백엔드 문서 목차](click_detective_FastAPI/docs/README.md)
 - [프런트엔드 문서 목차](click_detective_Next_js/docs/README.md)
-- [API별 역할](click_detective_FastAPI/docs/API_상세/README.md)
-- [LLM 양자화와 대화 워크플로](click_detective_FastAPI/docs/05_LLM_양자화_멀티에이전트.md)
-- [화면 사용법](click_detective_Next_js/docs/03_화면_사용법.md)
+- [API별 역할](click_detective_FastAPI/docs/API/상세/README.md)
+- [LLM 양자화와 대화 워크플로](click_detective_FastAPI/docs/에이전트/README.md)
+- [화면 사용법](click_detective_Next_js/docs/화면/화면_사용법.md)
 
-기존 상세 문서의 `click_detective`와 `click_detective_nextjs`는 각각 현재 `click_detective_FastAPI`, `click_detective_Next_js`에 해당합니다. 수집 조건·최소 통과 조건 등 일부 문서에는 사건의 정답과 쟁점이 포함되어 있습니다.
+수집 조건·최소 통과 조건 등 일부 문서에는 사건의 정답과 쟁점이 포함되어 있습니다.

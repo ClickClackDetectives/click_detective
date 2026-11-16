@@ -1,0 +1,26 @@
+@media (max-width: 800px) {
+  .page-heading h1 {
+    font-size: 36px;
+  }
+  .counter {
+    display: none;
+  }
+  .case-card h2 {
+    font-size: 22px;
+  }
+  .case-card-body {
+    padding: 22px;
+  }
+  .case-art {
+    height: 155px;
+  }
+  .case-card p {
+    min-height: 65px;
+  }
+  .case-grid {
+    gap: 17px;
+  }
+  .case-facts {
+    gap: 12px;
+  }
+}

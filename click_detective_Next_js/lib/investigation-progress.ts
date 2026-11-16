@@ -1,5 +1,2 @@
-import type { GameState } from './case';
-/** 진행률은 FastAPI가 계산한 값을 그대로 반환합니다. */
-export function getInvestigationProgress(state: GameState) {
-  return state.progress;
-}
+/** 이전 import 경로를 연결한다. 실제 구현은 features 또는 server에 있다. */
+export * from '../features/investigation/progress';

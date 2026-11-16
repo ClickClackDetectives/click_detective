@@ -1,2 +1,8 @@
-import { OriginalAppLoader } from '@/components/original-app-loader';
-export default function Page(){return <OriginalAppLoader/>;}
+import { OriginalAppLoader } from '@/features/application/original-app-loader';
+/** 사건 자료를 준비하는 첫 화면을 표시한다.
+ * 파라미터 없음.
+ * @returns 표시할 React 화면. 표시할 내용이 없으면 null.
+ */
+export default function Page() {
+  return <OriginalAppLoader />;
+}

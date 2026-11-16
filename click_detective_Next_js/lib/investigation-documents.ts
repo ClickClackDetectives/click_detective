@@ -1,9 +1,2 @@
-/** 원본 문서 팝업에 전달하는 공통 형식. 실제 본문은 상세 API에서 읽습니다. */
-export type InvestigationDocument = {
-  id: string;
-  code: string;
-  kind: 'evidence' | 'derived' | 'testimony';
-  title: string;
-  type: string;
-  body: string;
-};
+/** 이전 import 경로를 연결한다. 실제 구현은 features 또는 server에 있다. */
+export * from '../features/materials/document-types';

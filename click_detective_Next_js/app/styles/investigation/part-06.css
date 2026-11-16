@@ -1,0 +1,216 @@
+@media (max-width: 650px) {
+  .opening-label {
+    letter-spacing: 0;
+    padding: 10px;
+  }
+  .opening-overlay {
+    padding: 14px;
+  }
+  .opening-overlay h2 {
+    font-size: 21px;
+    margin: 10px 0 4px;
+  }
+  .opening-overlay p {
+    font-size: 10px;
+  }
+  .opening-play {
+    margin-top: 12px;
+    padding: 10px 15px;
+  }
+}
+.opening-replay-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 19px 23px;
+  margin-bottom: 28px;
+  border: 1px solid #4c503c;
+  background: #161e18;
+}
+.opening-replay-card p {
+  margin: 7px 0 0;
+  color: #b8c0ac;
+  font-size: 12px;
+}
+.opening-replay-card .opening-play {
+  margin: 0;
+  flex-shrink: 0;
+}
+.opening-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  padding: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #020605ec;
+  backdrop-filter: blur(12px);
+}
+.opening-modal {
+  width: min(1120px, 100%);
+  max-height: 94dvh;
+  overflow: auto;
+  background: #050807;
+  border: 1px solid #756a49;
+  box-shadow: 0 30px 120px #000;
+  animation: opening-rise 0.4s ease-out;
+}
+.opening-modal .opening-screen {
+  max-height: 78dvh;
+}
+.opening-label button {
+  display: inline-flex;
+  padding: 4px;
+  color: #dfdac8;
+  margin-left: 14px;
+}
+.opening-continue {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #e8dfc0;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+@keyframes opening-rise {
+  from {
+    opacity: 0;
+    transform: translateY(25px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 650px) {
+  .opening-modal-backdrop {
+    padding: 10px;
+  }
+  .opening-replay-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .opening-modal {
+    animation: none;
+  }
+}
+.connection-builder h3,
+.finding-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.connection-builder > p,
+.derived-grid article > p,
+.finding-card > p {
+  font-size: 11px;
+  color: var(--muted);
+}
+.connection-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-height: 340px;
+  overflow: auto;
+  margin: 20px 0;
+  scrollbar-width: thin;
+}
+.connection-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #22291c;
+  border: 1px solid var(--line);
+  font-size: 11px;
+  cursor: pointer;
+  min-width: 0;
+}
+.connection-options input {
+  accent-color: var(--accent);
+}
+.connection-options svg {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.connection-options small {
+  font-size: 8px;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.connection-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+}
+.connection-actions > span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.connection-notice {
+  color: var(--accent) !important;
+  margin-bottom: 0;
+}
+.findings-section {
+  margin-top: 32px;
+}
+.findings-section > h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+.findings-section > h2 small {
+  font-size: 12px;
+  margin-left: 8px;
+  color: var(--accent);
+}
+.derived-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.derived-grid h3 {
+  margin-top: 16px;
+  font-size: 16px;
+}
+.source-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.source-links button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  text-align: left;
+  color: var(--accent);
+  border: 1px solid var(--line);
+  padding: 8px;
+}
+.finding-card {
+  margin-bottom: 14px;
+}
+.finding-card h3 {
+  font-size: 14px;
+  line-height: 1.8;
+}
+.finding-card blockquote {
+  margin: 18px 0 0;
+  border-left: 2px solid var(--accent);
+  padding-left: 15px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 2;
+}
+@media (max-width: 800px) {
+  .derived-grid {
+    grid-template-columns: 1fr;
+  }
+}

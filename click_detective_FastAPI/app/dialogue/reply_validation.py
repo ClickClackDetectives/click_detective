@@ -18,9 +18,21 @@ def validate_generation(
     ID 검사만으로 내용이 참이라고 보장하지 않는다.
     이 검사는 임의의 추가 문장이 참인지 판별하지는 않는다. 그 범위는 조립 단계에서
     승인 원문만 사용하도록 제한한다.
+
+    Args:
+        request (CharacterReplyRequest): 승인 사실, 필수 사실 ID와 인물·대화 문맥을 담은 요청.
+        response (CharacterReplyResponse): 검사하거나 저장할 최종 대사 응답.
+        require_verbatim (bool): 응답에 승인 원문이 그대로 들어 있는지 검사할지 여부.
+
+    Returns:
+        None: 반환값 없음.
     """
     request_identity = (request.request_id, request.suspect_id, request.state_revision)
-    response_identity = (response.request_id, response.suspect_id, response.state_revision)
+    response_identity = (
+        response.request_id,
+        response.suspect_id,
+        response.state_revision,
+    )
     if response_identity != request_identity:
         raise ValueError("Response identity mismatch")
 
@@ -43,12 +55,17 @@ def validate_generation(
         raise ValueError("Missing verbatim fact text")
 
 
-
 def assemble_reply(request: CharacterReplyRequest) -> str:
-    """모든 승인 사실을 순서대로 붙인다. 사실이 없으면 중립 대사를 준다."""
+    """모든 승인 사실을 순서대로 붙인다. 사실이 없으면 중립 대사를 준다.
+
+    Args:
+        request (CharacterReplyRequest): 승인 사실, 필수 사실 ID와 인물·대화 문맥을 담은 요청.
+
+    Returns:
+        str: 승인 원문을 순서대로 연결한 대사. 사실이 없으면 중립 대사.
+    """
     if not request.allowed_facts:
         return NO_FACTS
 
     sentences = [fact.text for fact in request.allowed_facts]
     return " ".join(sentences)
-

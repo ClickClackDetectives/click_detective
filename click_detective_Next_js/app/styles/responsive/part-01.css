@@ -1,0 +1,89 @@
+@media (min-width: 1500px) {
+  .hero {
+    padding-left: max(8%, calc((100vw - 1250px) / 2));
+    padding-right: max(8%, calc((100vw - 1250px) / 2));
+    min-height: 740px;
+  }
+  .hero-file {
+    width: 350px;
+    height: 440px;
+  }
+  .hero h1 {
+    font-size: 74px;
+  }
+  .process,
+  .archive-teaser {
+    padding-left: max(8%, calc((100vw - 1250px) / 2));
+    padding-right: max(8%, calc((100vw - 1250px) / 2));
+  }
+}
+@media (max-width: 1150px) {
+  .topbar {
+    gap: 35px;
+    padding: 0 4%;
+  }
+  .edition {
+    display: none;
+  }
+  .hero {
+    padding-left: 6%;
+    padding-right: 6%;
+    min-height: 620px;
+  }
+  .hero-file {
+    width: 265px;
+    height: 360px;
+    margin-left: 20px;
+  }
+  .hero h1 {
+    font-size: 52px;
+  }
+  .hero-actions {
+    gap: 18px;
+  }
+  .sidebar {
+    width: 210px;
+  }
+  .desk {
+    padding: 0 25px 40px;
+  }
+  .brief-grid {
+    grid-template-columns: 1.2fr 1fr;
+    gap: 17px;
+  }
+  .paper {
+    padding: 23px;
+  }
+  .paper h2 {
+    font-size: 23px;
+  }
+  .panel {
+    padding: 20px;
+  }
+  .evidence-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .interrogation-grid {
+    grid-template-columns: 185px 1fr;
+    gap: 15px;
+  }
+  .suspect-list > button {
+    padding: 11px;
+    gap: 8px;
+  }
+  .suspect-list button strong {
+    font-size: 10px;
+  }
+  .suspect-list button > svg {
+    display: none;
+  }
+  .live-status {
+    font-size: 6px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .accusation {
+    padding: 24px;
+  }
+}

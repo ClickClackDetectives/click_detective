@@ -127,15 +127,19 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 
 ## 테스트 및 추가 문서
 
+전처리·생성·검증 에이전트별 구조와 코드 읽는 순서는 [코드 구조 안내](docs/시작하기/04_코드_읽는_순서.md)를 참고하세요. 각 Python 파일은 docstring을 포함하여 250줄 이내이며, 클래스·함수에 파라미터와 반환값 설명을 작성했습니다.
+
 ```bash
 python -m pytest -q
+python -m ruff check app scripts tests
+python -m ruff format --check app scripts tests
 ```
 
-테스트는 fixture·모의 모델 기반입니다. 실제 모델 검증은 `docs/11_LLM_멀티에이전트_실서버_테스트.md`를 참고하세요.
+테스트는 fixture·모의 모델 기반입니다. 실제 모델 검증은 `docs/테스트/실서버_LLM_검사.md`를 참고하세요.
 
 - 전체 문서: `docs/README.md`
-- 설치·설정 상세: `docs/02_설치_설정_실행.md`
-- API별 역할: `docs/API_상세/README.md`
-- LLM 구조: `docs/05_LLM_양자화_멀티에이전트.md`
+- 설치·설정 상세: `docs/시작하기/02_설치와_실행.md`
+- API별 역할: `docs/API/상세/README.md`
+- LLM 구조: `docs/에이전트/README.md`
 
 기존 상세 문서의 `click_detective`는 현재 `click_detective_FastAPI`에 해당합니다. 수집 조건·최소 통과 조건 문서에는 사건 정답이 포함되어 있습니다.

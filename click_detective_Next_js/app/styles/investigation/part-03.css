@@ -1,0 +1,220 @@
+.avatar {
+  width: 35px;
+  height: 41px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: Georgia, serif;
+  font-size: 14px;
+  color: #dedec8;
+  background-image: linear-gradient(0deg, #0006, transparent);
+}
+.suspect-list button strong {
+  font-size: 11px;
+  display: block;
+}
+.suspect-list button span {
+  font-size: 9px;
+  color: #a0aa90;
+  display: block;
+  margin-top: 6px;
+}
+.suspect-list button > svg {
+  margin-left: auto;
+}
+.suspect-bio {
+  padding: 0 0 22px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.suspect-bio .eyebrow {
+  font-size: 7px;
+}
+.suspect-bio h3 {
+  font-size: 26px;
+  letter-spacing: 1px;
+  margin: 12px 0;
+}
+.suspect-bio p {
+  font-size: 10px;
+  color: var(--muted);
+  margin: 0;
+}
+.chat {
+  border: 1px solid var(--line);
+  background: #171b15;
+  min-width: 0;
+}
+.chat-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+}
+.chat-heading > span:not(.live-dot) {
+  font-size: 9px;
+  color: var(--muted);
+}
+.chat-heading > svg {
+  margin-left: auto;
+  color: var(--accent);
+}
+.messages {
+  padding: 23px;
+  min-height: 300px;
+  height: 380px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4a553d #191d17;
+}
+.transcript-divider {
+  text-align: center;
+  font-size: 7px;
+  letter-spacing: 2px;
+  color: #6b795f;
+  margin: 5px 0 30px;
+}
+.message {
+  width: 88%;
+  margin-bottom: 25px;
+}
+.message > span {
+  font-size: 8px;
+  color: #a1af8e;
+}
+.message p {
+  background: #242b1e;
+  border: 1px solid #343d2b;
+  padding: 15px 18px;
+  font-size: 11px;
+  line-height: 2;
+  color: #d7dfc8;
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+}
+.message.user {
+  margin-left: auto;
+}
+.message.user > span {
+  display: block;
+  text-align: right;
+}
+.message.user p {
+  background: #1c2119;
+  border-color: #303728;
+  color: #aeb99e;
+}
+.composer {
+  padding: 20px;
+  border-top: 1px solid #8e9770;
+  background: #252c20;
+  box-shadow: 0 -6px 24px #0002;
+}
+.attachment {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #9da98c;
+  margin-bottom: 10px;
+  font-size: 9px;
+}
+.attachment select {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  max-width: 100%;
+  font-size: 10px;
+  padding: 5px;
+}
+.composer textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 110px;
+  border: 1px solid #b7bd9d;
+  border-radius: 4px;
+  background: #e9e5d6;
+  color: #263122;
+  caret-color: #263122;
+  font-size: 14px;
+  line-height: 1.8;
+  padding: 15px 16px;
+  box-shadow: inset 0 1px 3px #0001;
+}
+.composer textarea::placeholder {
+  color: #626b57;
+  opacity: 1;
+}
+.composer textarea:focus-visible {
+  outline: 2px solid #d1dba7;
+  outline-offset: 3px;
+  background: #f2eedf;
+}
+.composer textarea:disabled {
+  background: #c9c8bc;
+  color: #505749;
+}
+.composer .attachment {
+  color: #d6dfbd;
+}
+.composer .attachment select {
+  color: #e2e9cb;
+  font-size: 12px;
+}
+.composer-bottom .primary {
+  background: #d1dca8;
+  border-color: #d1dca8;
+  color: #202b19;
+  font-weight: 700;
+}
+.composer-bottom .primary:hover:not(:disabled) {
+  background: #e0e9be;
+}
+.composer-bottom .primary:disabled {
+  background: #929b79;
+  border-color: #929b79;
+  color: #24301c;
+  opacity: 1;
+}
+.composer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  gap: 8px;
+}
+.composer-bottom > span {
+  font-size: 10px;
+  color: #c7cfb4;
+}
+.typing {
+  font-size: 9px;
+  display: flex;
+  gap: 9px;
+  color: var(--muted);
+}
+.quota-note {
+  font-size: 10px;
+  color: var(--accent);
+  margin: 12px 0 0;
+}
+.contradiction-list {
+  padding: 25px 4px;
+}
+.contradiction-list .eyebrow {
+  font-size: 8px;
+}
+.contradiction-list p {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--accent);
+  margin: 13px 0;
+}
+.contradiction-list svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}

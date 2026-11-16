@@ -1,2 +1,2 @@
-/** 열람 API가 성공한 자료의 보호된 이미지 주소입니다. */
-export const evidenceIllustrations: Record<string, string> = {};
+/** 이전 import 경로를 연결한다. 실제 구현은 features 또는 server에 있다. */
+export * from '../features/materials/illustrations';
