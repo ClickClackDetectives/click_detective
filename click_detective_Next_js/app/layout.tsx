@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import './globals.css';
+import '../styles/globals.css';
 export const metadata: Metadata = {
   title: '딸깍탐정단 — AI 추리게임',
   description:

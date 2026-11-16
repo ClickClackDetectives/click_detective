@@ -6,7 +6,7 @@ import ts from 'typescript';
 
 const roots = [
   'app',
-  'features',
+  'styles',
   'shared',
   'server',
   'components',

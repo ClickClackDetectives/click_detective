@@ -115,8 +115,10 @@ project/
 │   ├── .env.example                  # 백엔드 설정 예제
 │   └── pyproject.toml                # Python 의존성
 └── click_detective_Next_js/
-    ├── app/                          # 화면, 스타일, 서버 라우트
-    ├── features/                     # 자료·심문·추론·메모 등 기능별 화면과 로직
+    ├── app/                          # 페이지·서버 라우트
+    │   └── game/                     # 게임 상태·요청·훅·타입
+    ├── components/                   # 기능별 화면과 팝업
+    ├── styles/                       # 전역·화면별·반응형 CSS
     ├── shared/api/                   # 브라우저 공통 요청
     ├── server/proxy/                 # FastAPI 서버 중계
     ├── components/ hooks/ lib/       # 이전 import 경로 호환

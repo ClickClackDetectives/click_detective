@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
  */
 async function freshClient(name: string) {
   return import(
-    new URL(`../features/investigation/game-client.ts?test=${name}`, import.meta.url).href
+    new URL(`../app/game/investigation/game-client.ts?test=${name}`, import.meta.url).href
   );
 }
 

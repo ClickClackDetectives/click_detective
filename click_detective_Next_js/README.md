@@ -1,6 +1,6 @@
 # Click Detective — Next.js
 
-탐정 게임의 화면과 FastAPI 서버 연결을 담당합니다. 화면은 기능별 `features/`, 서버 중계는 `server/proxy/`에 있습니다. 사건 규칙·저장·AI 에이전트는 [FastAPI](../click_detective_FastAPI/README.md)가 처리합니다.
+탐정 게임의 화면과 FastAPI 서버 연결을 담당합니다. 화면은 `components/`, 화면에서 사용하는 게임 로직은 `app/game/`, CSS는 `styles/`, 서버 중계는 `server/proxy/`에 있습니다. 사건 규칙·저장·AI 에이전트는 [FastAPI](../click_detective_FastAPI/README.md)가 처리합니다.
 
 ## 빠른 실행
 
@@ -31,11 +31,13 @@ npm run dev
 ## 구조
 
 ```text
-app/                  Next.js 진입점·주소·CSS
-features/             사건·자료·심문·증언·추론·메모·고발 등 기능별 코드
+app/                    Next.js 진입점·주소
+app/game/               게임 상태·요청·훅·타입
+components/             기능별 화면·팝업 컴포넌트
+styles/                 전역·화면별·반응형 CSS
 shared/api/           브라우저 공통 요청
 server/proxy/         경로·인증·입력·응답 중계
-components/ hooks/ lib/  이전 import 경로와 호환하는 재내보내기
+hooks/ lib/             이전 import 경로와 호환하는 재내보내기
 scripts/              통합 검사·화면 비교
 tests/               단위·코드 규칙 검사
 docs/                실행·동작 순서·함수 설명
@@ -70,4 +72,5 @@ CLICK_TEST_ORIGINAL_DIR=/이전/UI/프로젝트 npm run test:ui
 - [화면 사용법](docs/화면/화면_사용법.md)
 - [API 연결표](docs/서버연결/API_연결표.md) · [인증과 상태](docs/서버연결/인증과_상태관리.md)
 - [실제 함수·클래스 선언과 설명](docs/코드참조/README.md)
-- [리팩토링 내용과 검증](docs/변경이력/리팩토링.md)
+- [리팩토링 내용](docs/변경이력/리팩토링.md) · [검증 기록](docs/테스트/검증_기록.md)
+- [CSS 구조](docs/구조/CSS_구조와_적용순서.md) · [코드 발표 순서](docs/발표/코드로_설명하는_동작순서.md)

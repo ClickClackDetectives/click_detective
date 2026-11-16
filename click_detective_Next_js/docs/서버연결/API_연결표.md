@@ -1,5 +1,7 @@
 # API 연결표와 요청 예제
 
+브라우저의 호출·Next.js 중계·FastAPI 경로를 현재 `commands.ts`와 `policy.ts` 기준으로 연결합니다. 인증·재시도는 [상태 관리](인증과_상태관리.md), 함수 선언은 [서버 중계 코드](../코드참조/서버/API중계.md)에서 확인합니다.
+
 ## 1. 세 단계의 이름을 구분하기
 
 같은 행동이라도 원본 컨트롤러 이름, 브라우저 BFF 경로, FastAPI 경로가 다릅니다.
@@ -51,7 +53,7 @@ updateGame('examine', { evidenceId: '1-01' })
 | `notes`            | `text`                                                | `text`                                                   |
 | `accuse`           | `suspectId`, `motive`, `method`, `evidenceIds`        | `suspect_id`, `motive`, `method`, `evidence_ids`         |
 
-변환 코드는 `features/investigation/commands.ts`의 `mapGameCommand`에 있습니다. 화면이 사용하는 기존 이름을 유지하기 위한 어댑터이며 정답을 판정하는 엔진은 아닙니다.
+변환 코드는 `app/game/investigation/commands.ts`의 `mapGameCommand`에 있습니다. 화면이 사용하는 기존 이름을 유지하기 위한 어댑터이며 정답을 판정하는 엔진은 아닙니다.
 
 ## 4. 공통 변경 계약
 
@@ -134,4 +136,6 @@ BFF 오류 형식은 `{error, code}`입니다. 서버 생성 오류의 `X-Genera
 
 ## 기본 플레이에서의 심문 복구 응답
 
-생성·검증 실패가 있어도 기본 true 설정이면 HTTP 200·finish_reason=fallback·승인 원문 대사를 받습니다. 이는 stop 성공을 위장하지 않으며 정상 저장된 질문 1회입니다. fixed는 중립/fixture입니다. strict false에서 오류가 반환되면 BFF는 생성 원인 코드를 유지합니다.
+백엔드의 `CLICK_FALLBACK_ON_ERROR=true`가 기본값입니다. 생성·검증이 실패하면 승인 원문 대사로 복구하며, 성공 응답에 `finish_reason=fallback`이 표시됩니다. 이 답변은 정상 저장된 질문 1회로 기록합니다. `fixed`는 중립 또는 fixture 응답을 나타냅니다. 복구를 끈 `CLICK_FALLBACK_ON_ERROR=false` 환경에서 생성 오류가 반환되면 BFF는 `X-Generation-Error` 코드를 전달합니다. 자세한 정책은 [FastAPI 응답과 복구 정책](../../../click_detective_FastAPI/docs/에이전트/응답과_복구_정책.md)에 있습니다.
+
+[전체 문서](../README.md)

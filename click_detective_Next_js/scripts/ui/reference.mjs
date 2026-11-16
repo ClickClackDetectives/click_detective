@@ -31,6 +31,9 @@ export async function prepareReference({ project, temp, start, ready }) {
   ]) {
     await cp(path.join(source, entry), path.join(reference, entry), { recursive: true });
   }
+  if (existsSync(path.join(source, 'styles'))) {
+    await cp(path.join(source, 'styles'), path.join(reference, 'styles'), { recursive: true });
+  }
   if (existsSync(path.join(source, 'features'))) {
     await cp(path.join(source, 'features'), path.join(reference, 'features'), { recursive: true });
   }
