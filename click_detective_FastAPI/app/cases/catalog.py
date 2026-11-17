@@ -176,7 +176,7 @@ class Catalog:
             not candidate.is_relative_to(self.root / "public")
             or path.startswith("assets/evidence/")
             or candidate.suffix.lower()
-            not in {".png", ".jpg", ".jpeg", ".webp", ".mp4", ".svg"}
+            not in {".png", ".jpg", ".jpeg", ".webp", ".mp4", ".svg", ".mp3"}
             or not candidate.is_file()
         ):
             raise HTTPException(404, "자산을 찾을 수 없습니다.")

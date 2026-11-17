@@ -2,6 +2,8 @@ import { Fingerprint } from 'lucide-react';
 
 import type { CaseGameController } from '@/app/game/investigation/use-case-game';
 
+import { BgmToggle } from './bgm-toggle';
+
 type Props = Pick<CaseGameController, 'view' | 'state' | 'inProgress' | 'navigateTo' | 'setModal'>;
 
 /** 현재 화면에 맞는 상단 메뉴를 표시한다.
@@ -42,6 +44,7 @@ export function AppHeader({ view, state, inProgress, navigateTo, setModal }: Pro
       </nav>
       <div className="top-right">
         <span className="edition">INTERACTIVE DETECTIVE EXPERIENCE</span>
+        <BgmToggle />
         <button className="outline small" onClick={() => setModal('about')}>
           <Fingerprint size={15} /> 데모 안내
         </button>
