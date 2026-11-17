@@ -4,6 +4,7 @@ import { suspects, type GameState, type SuspectId } from '@/lib/case';
 import type { InvestigationDocument } from '@/lib/investigation-documents';
 import { requestGame, requestDocument, currentGame } from '@/lib/game-client';
 import type { View } from '@/components/navigation';
+import { bgm } from '@/lib/bgm';
 
 /** 화면 상태와 서버 요청을 연결한다. 화면 마크업은 components/screens에 있다. */
 export function useCaseGame() {
@@ -155,6 +156,7 @@ export function useCaseGame() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   async function startInvestigation(restart = false) {
+    bgm.startFromGame(); // 클릭 처리 안에서 바로 호출해야 브라우저가 재생을 허용한다
     const updatedState = await updateGame('start', { restart });
     if (updatedState) {
       setNotes(updatedState.notes);
