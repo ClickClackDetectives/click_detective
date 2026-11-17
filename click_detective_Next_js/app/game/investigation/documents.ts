@@ -17,7 +17,7 @@ export async function requestDocument(
   const data = await api<
     InvestigationDocument & {
       excerpt?: string;
-      illustration?: string;
+      illustration?: string | null;
       nature?: string;
       time?: string;
       source?: { file: string; pages: number[]; section: string };
@@ -25,7 +25,9 @@ export async function requestDocument(
       messageIndex?: number;
     }
   >('materials/' + encodeURIComponent(kind + ':' + id));
-  if (data.illustration) evidenceIllustrations[id] = assetUrl(data.illustration);
+  const illustration = data.illustration ? assetUrl(data.illustration) : '';
+  if (illustration) evidenceIllustrations[id] = illustration;
+  else delete evidenceIllustrations[id];
   if (kind === 'testimony') {
     const { suspects } = await import('../catalog/catalog.ts');
     const speaker = suspects.find((p) => p.id === data.speaker)?.name;

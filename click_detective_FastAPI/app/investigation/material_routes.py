@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
 
 from ..dependencies import authenticate, game, service
+from .evidence_images import evidence_image_path
 
 router = APIRouter(dependencies=[Depends(authenticate)])
 
@@ -74,7 +75,11 @@ async def material_detail(game_id: str, material_key: str, request: Request):
                 field: record[field]
                 for field in ("id", "code", "title", "type", "time", "phase", "body")
             },
-            "illustration": f"/v1/games/{game_id}/evidence-assets/{key}",
+            "illustration": (
+                f"/v1/games/{game_id}/evidence-assets/{key}"
+                if evidence_image_path(game_service.catalog, key)
+                else None
+            ),
         }
     return {
         "kind": kind,
@@ -97,15 +102,8 @@ async def evidence_asset(game_id: str, evidence_id: str, request: Request):
     state = game(request, game_id)
     game_service = service(request)
     game_service.engine.readable_source(state, {"kind": "evidence", "id": evidence_id})
-    name = (
-        game_service.catalog.evidence[evidence_id].get("illustration", "").lstrip("/")
-    )
-    path = (game_service.catalog.root / "public" / name).resolve()
-    if (
-        not name
-        or not path.is_relative_to(game_service.catalog.root / "public")
-        or not path.is_file()
-    ):
+    path = evidence_image_path(game_service.catalog, evidence_id)
+    if path is None:
         raise HTTPException(404, "이미지를 찾을 수 없습니다.")
     return FileResponse(path)
 

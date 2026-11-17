@@ -81,6 +81,18 @@ def test_full_game_to_100_percent_and_correct_verdict(api, play):
         for record in records:
             if record["phase"] == phase:
                 play.act("examinations", evidence_id=record["id"])
+                if phase == 2:
+                    base = f"/v1/games/{play.game_id}"
+                    detail = api(
+                        "GET",
+                        base + "/materials/evidence:" + record["id"],
+                        game_token=play.token,
+                    ).json()
+                    assert detail["illustration"]
+                    image = api("GET", detail["illustration"], game_token=play.token)
+                    assert image.status_code == 200
+                    assert image.headers["content-type"] == "image/png"
+                    assert image.content.startswith(b"\x89PNG\r\n\x1a\n")
         for rule in findings:
             if rule["flag"] not in play.state["revealed"] and all(
                 key in play.state["examined"] for key in rule["need"]
