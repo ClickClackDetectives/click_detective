@@ -8,6 +8,7 @@ import type { GameState, SuspectId } from '@/app/game/investigation/types';
 import type { InvestigationDocument } from '@/app/game/materials/document-types';
 import { requestGame, requestDocument, currentGame } from '@/app/game/investigation/game-client';
 import type { View } from '@/components/application/navigation';
+import { bgm } from '@/app/game/audio/bgm';
 
 /** 화면 상태와 서버 요청을 연결한다. 화면 마크업은 각 components 기능 폴더에 있다.
  * 파라미터 없음.
@@ -84,6 +85,7 @@ export function useCaseGame() {
    * @returns 수사 생성·복원과 화면 이동이 끝나면 완료되는 Promise.
    */
   async function startInvestigation(restart = false) {
+    bgm.startFromGame(); // 클릭 처리 안에서 바로 호출해야 브라우저가 재생을 허용한다
     const updatedState = await updateGame('start', { restart });
     if (updatedState) {
       setNotes(updatedState.notes);
