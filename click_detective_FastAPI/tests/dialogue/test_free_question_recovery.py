@@ -6,9 +6,9 @@ from uuid import uuid4
 import pytest
 
 from app.dialogue.interrogation_graph import InterrogationGraph, OutputRejected
-from app.dialogue.semantic_verification import SemanticReport
-from app.dialogue.verification_units import build_verification_units
-from app.schemas import Interrogate
+from app.dialogue.validation_agent.semantic_verification import SemanticReport
+from app.dialogue.validation_agent.verification_units import build_verification_units
+from app.investigation.api.schemas import Interrogate
 
 
 class RetryingModel:

@@ -8,4 +8,4 @@
 | [Next.js 연결](Nextjs_연결.md) | 화면 서버와 FastAPI의 책임 구분 |
 | [전체 처리 흐름](../시작하기/03_전체_처리_흐름.md) | 시작·조회·변경 요청의 호출 순서 |
 
-읽기 시작할 소스는 [GameService](../../app/investigation/service.py), [Repository](../../app/investigation/repository.py), [Catalog](../../app/cases/catalog.py)다.
+읽기 시작할 소스는 [GameService](../../app/investigation/service.py), [Repository](../../app/investigation/persistence/repository.py), [Catalog](../../app/cases/catalog.py)다.

@@ -7,7 +7,7 @@ import pytest
 from fastapi import HTTPException
 
 from app.dialogue.interrogation_graph import InterrogationGraph
-from app.investigation.schemas import Interrogate
+from app.investigation.api.schemas import Interrogate
 
 from .models import ApprovedModel
 

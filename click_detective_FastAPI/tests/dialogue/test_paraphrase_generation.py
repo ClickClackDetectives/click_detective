@@ -10,11 +10,12 @@ import pytest
 from pydantic import ValidationError
 
 from app.config import Settings
-from app.dialogue.critical_facts import critical_claim_error
 from app.dialogue.interrogation_graph import InterrogationGraph
 from app.dialogue.local_model import decoding_options
-from app.dialogue.prompting import build_messages, build_verification_messages
-from app.schemas import Interrogate
+from app.dialogue.preprocess_agent.prompt import build_messages
+from app.dialogue.validation_agent.critical_facts import critical_claim_error
+from app.dialogue.validation_agent.prompt import build_verification_messages
+from app.investigation.api.schemas import Interrogate
 
 
 def make_request(client):

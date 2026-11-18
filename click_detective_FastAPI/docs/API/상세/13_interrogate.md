@@ -76,9 +76,9 @@
 
 ## 코드에서 따라가기
 
-현재 API 진입점은 [app/investigation/routes.py의 `interrogate`](../../../app/investigation/routes.py#L55)다.
+현재 API 진입점은 [app/investigation/api/routes.py의 `interrogate`](../../../app/investigation/api/routes.py#L55)다.
 
-처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/presentation.md)에서 확인한다.
+처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/persistence/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.
 
 ## 응답 출처와 쟁점
 

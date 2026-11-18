@@ -13,9 +13,9 @@
 - [app/cases/catalog.py](cases/catalog.md)
 - [app/config.py](config.md)
 - [app/dialogue/preprocess_agent/planning.py](dialogue/preprocess_agent/planning.md)
-- [app/investigation/engine.py](investigation/engine.md)
-- [app/investigation/presentation.py](investigation/presentation.md)
-- [app/investigation/repository.py](investigation/repository.md)
+- [app/investigation/rules/engine.py](investigation/rules/engine.md)
+- [app/investigation/views/presentation.py](investigation/views/presentation.md)
+- [app/investigation/persistence/repository.py](investigation/persistence/repository.md)
 - [app/investigation/service.py](investigation/service.md)
 
 ## `lifespan`
