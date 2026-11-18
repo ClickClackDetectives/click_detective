@@ -1,5 +1,7 @@
 """PreprocessAgent의 처리 순서를 담는다."""
 
+from time import perf_counter
+
 from fastapi import HTTPException
 
 from ..diagnostics import trace_event
@@ -45,11 +47,19 @@ class PreprocessAgent:
             raise HTTPException(
                 422, "Approved context contains too many verification sentences"
             )
+        started = perf_counter()
         retrieval = retrieve_approved_facts(
             request, self.settings.rag_top_k, self.settings.rag_enabled
         )
+        elapsed_ms = round((perf_counter() - started) * 1000, 2)
+        scores = (
+            [hit.score for hit in retrieval.hits] if self.settings.rag_enabled else []
+        )
         trace_event(
             "retrieval",
+            elapsed_ms=elapsed_ms,
+            relevance_mean=round(sum(scores) / len(scores), 4) if scores else None,
+            relevance_max=round(max(scores), 4) if scores else None,
             approved_count=len(request.allowed_facts),
             selected_count=len(retrieval.selected_facts),
             required_count=len(request.required_fact_ids),
