@@ -2,7 +2,7 @@
 
 [전체 문서 목차](../README.md)
 
-현재 `app`, `scripts`, `tests`의 Python 파일 118개를 모두 다룬다. 함수 본문을 복제하는 대신 실제 선언문, 역할, 파라미터와 반환값을 보여준다. 본문은 각 문서의 소스 링크에서 확인한다.
+`app`, `scripts`, `tests`에서 코드 참조가 있는 Python 파일 100개를 다룬다. 함수 본문을 복제하는 대신 실제 선언문, 역할, 파라미터와 반환값을 보여준다. 본문은 각 문서의 소스 링크에서 확인한다.
 
 에이전트를 처음 읽는다면 [전처리](../에이전트/전처리/README.md) → [생성](../에이전트/생성/README.md) → [검증](../에이전트/검증/README.md) 설명부터 읽는다.
 
@@ -60,7 +60,6 @@
 | `app/dialogue/reply_validation.py` | [문서](app/dialogue/reply_validation.md) |
 | `app/dialogue/schemas.py` | [문서](app/dialogue/schemas.md) |
 | `app/dialogue/state.py` | [문서](app/dialogue/state.md) |
-| `app/domain/__init__.py` | [문서](app/domain/__init__.md) |
 | `app/main.py` | [문서](app/main.md) |
 
 ## 사건 데이터와 API
@@ -76,22 +75,22 @@
 | 소스 파일 | 설명 |
 |---|---|
 | `app/investigation/__init__.py` | [문서](app/investigation/__init__.md) |
-| `app/investigation/accusation.py` | [문서](app/investigation/accusation.md) |
-| `app/investigation/engine.py` | [문서](app/investigation/engine.md) |
-| `app/investigation/evidence.py` | [문서](app/investigation/evidence.md) |
-| `app/investigation/material_display.py` | [문서](app/investigation/material_display.md) |
-| `app/investigation/material_routes.py` | [문서](app/investigation/material_routes.md) |
-| `app/investigation/presentation.py` | [문서](app/investigation/presentation.md) |
-| `app/investigation/repository.py` | [문서](app/investigation/repository.md) |
-| `app/investigation/result_display.py` | [문서](app/investigation/result_display.md) |
-| `app/investigation/routes.py` | [문서](app/investigation/routes.md) |
-| `app/investigation/schemas.py` | [문서](app/investigation/schemas.md) |
-| `app/investigation/screen_views.py` | [문서](app/investigation/screen_views.md) |
+| `app/investigation/rules/accusation.py` | [문서](app/investigation/rules/accusation.md) |
+| `app/investigation/rules/engine.py` | [문서](app/investigation/rules/engine.md) |
+| `app/investigation/rules/evidence.py` | [문서](app/investigation/rules/evidence.md) |
+| `app/investigation/views/material_display.py` | [문서](app/investigation/views/material_display.md) |
+| `app/investigation/api/material_routes.py` | [문서](app/investigation/api/material_routes.md) |
+| `app/investigation/views/presentation.py` | [문서](app/investigation/views/presentation.md) |
+| `app/investigation/persistence/repository.py` | [문서](app/investigation/persistence/repository.md) |
+| `app/investigation/views/result_display.py` | [문서](app/investigation/views/result_display.md) |
+| `app/investigation/api/routes.py` | [문서](app/investigation/api/routes.md) |
+| `app/investigation/api/schemas.py` | [문서](app/investigation/api/schemas.md) |
+| `app/investigation/views/screen_views.py` | [문서](app/investigation/views/screen_views.md) |
 | `app/investigation/service.py` | [문서](app/investigation/service.md) |
-| `app/investigation/storage.py` | [문서](app/investigation/storage.md) |
-| `app/investigation/testimony.py` | [문서](app/investigation/testimony.md) |
-| `app/investigation/timeline.py` | [문서](app/investigation/timeline.md) |
-| `app/investigation/view_routes.py` | [문서](app/investigation/view_routes.md) |
+| `app/investigation/persistence/storage.py` | [문서](app/investigation/persistence/storage.md) |
+| `app/investigation/rules/testimony.py` | [문서](app/investigation/rules/testimony.md) |
+| `app/investigation/views/timeline.py` | [문서](app/investigation/views/timeline.md) |
+| `app/investigation/api/view_routes.py` | [문서](app/investigation/api/view_routes.md) |
 
 ## 실서버 검사 도구
 
@@ -146,26 +145,3 @@
 | 소스 파일 | 설명 |
 |---|---|
 | `app/dialogue/agents.py` | [문서](app/dialogue/agents.md) |
-| `app/catalog.py` | [문서](app/catalog.md) |
-| `app/dialogue/critical_facts.py` | [문서](app/dialogue/critical_facts.md) |
-| `app/dialogue/evidence_checks.py` | [문서](app/dialogue/evidence_checks.md) |
-| `app/dialogue/meaning_guards.py` | [문서](app/dialogue/meaning_guards.md) |
-| `app/dialogue/output.py` | [문서](app/dialogue/output.md) |
-| `app/dialogue/prompting.py` | [문서](app/dialogue/prompting.md) |
-| `app/dialogue/rag/retriever.py` | [문서](app/dialogue/rag/retriever.md) |
-| `app/dialogue/report_policy.py` | [문서](app/dialogue/report_policy.md) |
-| `app/dialogue/semantic_verification.py` | [문서](app/dialogue/semantic_verification.md) |
-| `app/dialogue/verification.py` | [문서](app/dialogue/verification.md) |
-| `app/dialogue/verification_prompting.py` | [문서](app/dialogue/verification_prompting.md) |
-| `app/dialogue/verification_reports.py` | [문서](app/dialogue/verification_reports.md) |
-| `app/dialogue/verification_units.py` | [문서](app/dialogue/verification_units.md) |
-| `app/domain/engine.py` | [문서](app/domain/engine.md) |
-| `app/domain/planning.py` | [문서](app/domain/planning.md) |
-| `app/investigation/free_questions.py` | [문서](app/investigation/free_questions.md) |
-| `app/investigation/planning.py` | [문서](app/investigation/planning.md) |
-| `app/presentation.py` | [문서](app/presentation.md) |
-| `app/repository.py` | [문서](app/repository.md) |
-| `app/result_display.py` | [문서](app/result_display.md) |
-| `app/schemas.py` | [문서](app/schemas.md) |
-| `app/screen_views.py` | [문서](app/screen_views.md) |
-| `app/service.py` | [문서](app/service.md) |

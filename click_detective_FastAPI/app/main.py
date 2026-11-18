@@ -4,12 +4,13 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from app.investigation.api.material_routes import router as material_router
+from app.investigation.api.routes import router as investigation_router
+from app.investigation.api.view_routes import router as view_router
+
 from .bootstrap import lifespan
 from .cases.routes import router as case_router
 from .config import Settings
-from .investigation.material_routes import router as material_router
-from .investigation.routes import router as investigation_router
-from .investigation.view_routes import router as view_router
 
 
 def create_app(settings: Settings | None = None):

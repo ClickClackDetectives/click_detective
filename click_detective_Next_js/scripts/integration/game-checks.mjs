@@ -9,8 +9,15 @@ export async function completeInvestigation(client) {
     findings = (await client.readCase('findings.private.json')).rules,
     inferences = (await client.readCase('inferences.private.json')).rules;
   for (const phase of [1, 2]) {
-    for (const record of recordsData.filter((r) => r.phase === phase))
+    for (const record of recordsData.filter((r) => r.phase === phase)) {
       await client.act('examinations', { evidence_id: record.id });
+      const detail = await client.request(
+        'materials/' + encodeURIComponent('evidence:' + record.id),
+      );
+      assert.ok(detail.illustration, record.id + ' 이미지 주소 누락');
+      const imageUrl = detail.illustration.replace(/^\/v1\/games\/[^/]+\//, '');
+      await client.request(imageUrl);
+    }
     for (const rule of findings)
       if (
         !client.state.revealed.includes(rule.flag) &&

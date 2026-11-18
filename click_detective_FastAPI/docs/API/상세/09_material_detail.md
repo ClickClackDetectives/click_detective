@@ -37,6 +37,8 @@
 }
 ```
 
+이미지 파일이 없는 원본 자료의 `illustration`은 `null`입니다. 없는 파일의 이미지 주소를 반환하지 않습니다.
+
 ## 실패·주의점
 
 - 422: 접두사 형식·미획득·현재 단계와 맞지 않는 원본.
@@ -46,6 +48,6 @@
 
 ## 코드에서 따라가기
 
-현재 API 진입점은 [app/investigation/material_routes.py의 `material_detail`](../../../app/investigation/material_routes.py#L52)다.
+현재 API 진입점은 [app/investigation/api/material_routes.py의 `material_detail`](../../../app/investigation/api/material_routes.py#L52)다.
 
-처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/presentation.md)에서 확인한다.
+처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/persistence/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.

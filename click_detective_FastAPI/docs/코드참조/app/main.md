@@ -13,9 +13,9 @@ FastAPI 애플리케이션을 만들고 도메인별 API를 연결한다.
 - [app/bootstrap.py](bootstrap.md)
 - [app/cases/routes.py](cases/routes.md)
 - [app/config.py](config.md)
-- [app/investigation/material_routes.py](investigation/material_routes.md)
-- [app/investigation/routes.py](investigation/routes.md)
-- [app/investigation/view_routes.py](investigation/view_routes.md)
+- [app/investigation/api/material_routes.py](investigation/api/material_routes.md)
+- [app/investigation/api/routes.py](investigation/api/routes.md)
+- [app/investigation/api/view_routes.py](investigation/api/view_routes.md)
 
 ## `create_app`
 

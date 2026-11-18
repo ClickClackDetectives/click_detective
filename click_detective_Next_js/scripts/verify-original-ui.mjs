@@ -5,6 +5,7 @@ import { prepareReference, openBrowser } from './ui/reference.mjs';
 import { screenshotComparer } from './ui/screenshots.mjs';
 import { compareScreens } from './ui/compare-screens.mjs';
 import { checkInteractions } from './ui/interactions.mjs';
+import { checkSecondPhaseImages } from './ui/evidence-images.mjs';
 
 /** 같은 상태의 비교 소스와 현재 화면을 실제 브라우저로 확인한다.
  * @param props 검사에 사용할 설정과 데이터.
@@ -78,6 +79,7 @@ export async function runUiChecks({ project, temp, base, state, cookies, start, 
     }
     const compare = screenshotComparer(actual, original, report, output);
     await compareScreens({ actual, original, compare });
+    await checkSecondPhaseImages({ actual, state, report });
     await checkInteractions({ actual, actualContext, base, report });
     assert.deepEqual(report.consoleErrors, []);
     report.passed = report.screens.every((screen) => screen.exactPixels);

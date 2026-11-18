@@ -21,8 +21,10 @@
 ## 서버 처리 순서
 
 1. 수사 토큰과 원본 열람 여부를 검사합니다.
-2. evidence.json의 illustration을 서버에서 선택합니다.
-3. data/public 내부 경로와 파일 존재를 확인합니다.
+2. `evidence_image_path`가 `evidence.json`의 `illustration`을 확인합니다. 비어 있으면 `assets/evidence/{증거ID}.png`를 찾습니다.
+3. `data/public` 내부 경로와 파일 존재를 확인합니다. 파일이 없으면 404를 반환합니다.
+
+[2차 조사 이미지와 기존 수사 유지](../../게임진행/2차_증거_이미지.md)를 참고하세요.
 
 ## 응답
 
@@ -37,6 +39,6 @@ JSON이 아니라 이미지·영상 파일 응답입니다. content-type·파일
 
 ## 코드에서 따라가기
 
-현재 API 진입점은 [app/investigation/material_routes.py의 `evidence_asset`](../../../app/investigation/material_routes.py#L86)다.
+현재 API 진입점은 [app/investigation/api/material_routes.py의 `evidence_asset`](../../../app/investigation/api/material_routes.py#L86)다.
 
-처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/presentation.md)에서 확인한다.
+처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/persistence/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.

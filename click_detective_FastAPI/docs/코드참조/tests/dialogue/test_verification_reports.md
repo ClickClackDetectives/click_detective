@@ -11,7 +11,7 @@
 ## 함께 읽을 코드
 
 - [app/dialogue/interrogation_graph.py](../../app/dialogue/interrogation_graph.md)
-- [app/investigation/schemas.py](../../app/investigation/schemas.md)
+- [app/investigation/api/schemas.py](../../app/investigation/api/schemas.md)
 - [tests/dialogue/models.py](models.md)
 
 ## `ReportErrorModel`

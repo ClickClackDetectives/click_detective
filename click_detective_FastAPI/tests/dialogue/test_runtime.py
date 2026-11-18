@@ -8,7 +8,7 @@ from fastapi import HTTPException
 
 from app.dialogue.interrogation_graph import InterrogationGraph
 from app.dialogue.schemas import CharacterReplyResponse
-from app.schemas import Interrogate, Notes
+from app.investigation.api.schemas import Interrogate, Notes
 
 from .models import ApprovedModel
 

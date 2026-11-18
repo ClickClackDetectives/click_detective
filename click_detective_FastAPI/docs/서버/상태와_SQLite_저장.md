@@ -1,6 +1,6 @@
 # 04. 데이터·수사 상태·SQLite
 
-[목차](../README.md) · [저장 코드 설명](../코드참조/app/investigation/repository.md)
+[목차](../README.md) · [저장 코드 설명](../코드참조/app/investigation/persistence/repository.md)
 
 ## 1. 데이터 복사와 실제 사용
 
@@ -83,6 +83,6 @@ reserve는 짧은 BEGIN IMMEDIATE 트랜잭션에서 요청의 실행권과 nonc
 ## 현재 구현 위치
 
 - [Catalog](../../app/cases/catalog.py): 사건 파일 읽기와 공개 카탈로그
-- [Repository](../../app/investigation/repository.py): 소유권·예약·버전·확정 저장
-- [InvestigationStorage](../../app/investigation/storage.py): SQLite 연결과 트랜잭션
+- [Repository](../../app/investigation/persistence/repository.py): 소유권·예약·버전·확정 저장
+- [InvestigationStorage](../../app/investigation/persistence/storage.py): SQLite 연결과 트랜잭션
 - [GameService](../../app/investigation/service.py): 예약부터 확정까지 처리 순서

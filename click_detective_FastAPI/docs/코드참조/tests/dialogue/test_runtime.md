@@ -12,7 +12,7 @@ dialogue/test_runtime.py의 회귀 동작을 확인한다.
 
 - [app/dialogue/interrogation_graph.py](../../app/dialogue/interrogation_graph.md)
 - [app/dialogue/schemas.py](../../app/dialogue/schemas.md)
-- [app/schemas.py](../../app/schemas.md)
+- [app/schemas.py](../../app/investigation/api/schemas.md)
 - [tests/dialogue/models.py](models.md)
 
 ## `test_three_agents_execute_with_backend_approval`

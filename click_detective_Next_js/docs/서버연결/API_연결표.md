@@ -126,6 +126,8 @@ updateGame('examine', { evidenceId: '1-01' })
 
 `materials`의 기본 목록 필터는 `kind`, `archive_kind`, `search`, `place`입니다. `archive_kind=inference`와 출처 category의 `derived`를 혼동하지 마세요.
 
+이미지 없는 자료는 상세 응답의 `illustration`이 `null`입니다. Next.js는 이 경우 이전 이미지 주소를 지우고 그림을 표시하지 않습니다. 2차 증거의 추가 파일 경로는 [FastAPI 이미지 안내](../../../click_detective_FastAPI/docs/게임진행/2차_증거_이미지.md)를 참고하세요.
+
 ## 8. 자산과 오류 응답
 
 원본 `/assets/...`와 `/manor.jpg`도 같은 중계 로직으로 처리합니다. 영상은 `Range` 요청을 전달하고 `206`, `Content-Range`, `Accept-Ranges` 등의 응답 정보를 유지합니다.

@@ -174,7 +174,7 @@ async def test_real_graph_rejection_recovers_approved_fact(client, monkeypatch):
             """
             return "{invalid output"
 
-    from app.schemas import Interrogate
+    from app.investigation.api.schemas import Interrogate
 
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "fallback_on_error", True)

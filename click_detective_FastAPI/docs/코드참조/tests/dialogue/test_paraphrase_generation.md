@@ -13,11 +13,11 @@
 ## 함께 읽을 코드
 
 - [app/config.py](../../app/config.md)
-- [app/dialogue/critical_facts.py](../../app/dialogue/critical_facts.md)
+- [app/dialogue/critical_facts.py](../../app/dialogue/validation_agent/critical_facts.md)
 - [app/dialogue/interrogation_graph.py](../../app/dialogue/interrogation_graph.md)
 - [app/dialogue/local_model.py](../../app/dialogue/local_model.md)
-- [app/dialogue/prompting.py](../../app/dialogue/prompting.md)
-- [app/schemas.py](../../app/schemas.md)
+- [app/dialogue/prompting.py](../../app/dialogue/preprocess_agent/prompt.md)
+- [app/schemas.py](../../app/investigation/api/schemas.md)
 
 ## `make_request`
 

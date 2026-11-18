@@ -11,9 +11,9 @@
 ## 함께 읽을 코드
 
 - [app/dialogue/interrogation_graph.py](../../app/dialogue/interrogation_graph.md)
-- [app/dialogue/semantic_verification.py](../../app/dialogue/semantic_verification.md)
-- [app/dialogue/verification_units.py](../../app/dialogue/verification_units.md)
-- [app/schemas.py](../../app/schemas.md)
+- [app/dialogue/semantic_verification.py](../../app/dialogue/validation_agent/semantic_verification.md)
+- [app/dialogue/verification_units.py](../../app/dialogue/validation_agent/verification_units.md)
+- [app/schemas.py](../../app/investigation/api/schemas.md)
 
 ## `RetryingModel`
 

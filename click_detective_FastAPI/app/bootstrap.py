@@ -3,12 +3,13 @@
 import asyncio
 from contextlib import asynccontextmanager
 
+from app.investigation.persistence.repository import Repository
+from app.investigation.rules.engine import Engine
+from app.investigation.views.presentation import Presenter
+
 from .cases.catalog import Catalog
 from .config import Settings
 from .dialogue.preprocess_agent.planning import Planner
-from .investigation.engine import Engine
-from .investigation.presentation import Presenter
-from .investigation.repository import Repository
 from .investigation.service import GameService
 
 
