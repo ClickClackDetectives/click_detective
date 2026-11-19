@@ -3,7 +3,7 @@
 from app.dialogue.preprocess_agent.rag.retriever import retrieve_approved_facts
 from app.dialogue.schemas import Fact
 
-from .test_verification_reports import profile_request
+from ..requests import profile_request
 
 
 def facts_request(client):
@@ -15,7 +15,7 @@ def facts_request(client):
     Returns:
         CharacterReplyRequest: 검색 순서와 필수 사실 보존을 확인할 요청.
     """
-    request = profile_request(client)
+    request = profile_request(client.app.state.service)
     facts = [
         Fact(id="low", text="정원에 있었습니다.", nature="본인 진술"),
         Fact(id="required", text="얼굴은 보지 못했습니다.", nature="본인 진술"),

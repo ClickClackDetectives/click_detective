@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/verification_reports.py`
+# `app/dialogue/validation_agent_v1/verification_reports.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/verification_reports.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/verification_reports.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 137줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -13,15 +13,15 @@
 - [app/dialogue/diagnostics.py](../diagnostics.md)
 - [app/dialogue/schemas.py](../schemas.md)
 - [app/dialogue/state.py](../state.md)
-- [app/dialogue/validation_agent/evidence_checks.py](evidence_checks.md)
-- [app/dialogue/validation_agent/report_policy.py](report_policy.md)
-- [app/dialogue/validation_agent/semantic_verification.py](semantic_verification.md)
-- [app/dialogue/validation_agent/verification_prompting.py](verification_prompting.md)
-- [app/dialogue/validation_agent/verification_units.py](verification_units.md)
+- [app/dialogue/validation_agent_v1/evidence_checks.py](evidence_checks.md)
+- [app/dialogue/validation_agent_v1/report_policy.py](report_policy.md)
+- [app/dialogue/validation_agent_v1/semantic_verification.py](semantic_verification.md)
+- [app/dialogue/validation_agent_v1/verification_prompting.py](verification_prompting.md)
+- [app/dialogue/validation_agent_v1/verification_units.py](verification_units.md)
 
 ## `VerificationReporter`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification_reports.py#L22)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification_reports.py#L22)
 
 ```python
 class VerificationReporter:
@@ -41,7 +41,7 @@ VerificationReporter: 의미 검증 보고서 요청을 담당하는 객체.
 
 ## `VerificationReporter.__init__`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification_reports.py#L33)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification_reports.py#L33)
 
 ```python
 def __init__(self, settings, model):
@@ -61,7 +61,7 @@ None: 의존성을 보관한다.
 
 ## `VerificationReporter.request_report`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification_reports.py#L46)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification_reports.py#L46)
 
 ```python
 async def request_report(
@@ -83,7 +83,7 @@ tuple[SemanticReport, set[str]]: 통합 보고서와 모든 문장이 확인된 
 
 ## `VerificationReporter._request_batch`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification_reports.py#L71)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification_reports.py#L71)
 
 ```python
 async def _request_batch(self, request, reply, batch, batch_index):
@@ -105,7 +105,7 @@ SemanticReport: 형식·근거·의미 조건을 모두 통과한 배치 보고�
 
 ## `VerificationReporter._parse_report`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification_reports.py#L116)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification_reports.py#L116)
 
 ```python
 def _parse_report(raw, request, reply, batch):

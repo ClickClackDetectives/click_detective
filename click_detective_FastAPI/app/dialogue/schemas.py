@@ -21,7 +21,7 @@ FactText = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)
 ]
 ReplyText = Annotated[str, StringConstraints(min_length=1, max_length=12000)]
-FinishReason = Literal["stop", "fixed", "fallback"]
+FinishReason = Literal["stop", "fixed", "fallback", "partial", "neutral"]
 
 
 class DTO(BaseModel):
@@ -208,7 +208,7 @@ class CharacterReplyResponse(DTO):
         reply (ReplyText): local 모드에서는 의미 검증된 생성 대사, fixed/fallback에서는 승인 원문 조립 대사
         used_fact_ids (list[Identifier]): 최종 대사에 사용한 사실 ID 목록
         model_version (Identifier): 모델 및 적용 어댑터 식별자 또는 fixed-v1
-        finish_reason (FinishReason): stop: 모델 생성 및 검증 성공, fixed: 고정 모드, fallback: 모델 실패 후 고정 대체
+        finish_reason (FinishReason): 성공, 고정, 복구, 부분 응답 또는 중립 답변.
 
     Returns:
         CharacterReplyResponse: 위 역할을 수행하도록 생성된 객체.
@@ -227,5 +227,5 @@ class CharacterReplyResponse(DTO):
         description="모델 및 적용 어댑터 식별자 또는 fixed-v1"
     )
     finish_reason: FinishReason = Field(
-        description="stop: 모델 생성 및 검증 성공, fixed: 고정 모드, fallback: 모델 실패 후 고정 대체"
+        description="stop: 검증 성공, fixed: 고정 모드, fallback: 승인 원문 복구, partial: 부분 응답, neutral: 중립 답변"
     )

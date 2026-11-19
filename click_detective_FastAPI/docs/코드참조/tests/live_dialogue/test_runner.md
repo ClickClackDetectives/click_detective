@@ -1,6 +1,6 @@
-# `tests/live_dialogue/test_runner.py`
+# `tests/dialogue/test_runner.py`
 
-[코드 참조 목차](../../README.md) · [전체 문서 목차](../../../README.md) · [실제 소스](../../../../tests/live_dialogue/test_runner.py)
+[코드 참조 목차](../../README.md) · [전체 문서 목차](../../../README.md) · [실제 소스](../../../../tests/dialogue/test_runner.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 175줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -17,7 +17,7 @@ live_dialogue/test_runner.py의 회귀 동작을 확인한다.
 
 ## `runner`
 
-[소스 선언 위치](../../../../tests/live_dialogue/test_runner.py#L14)
+[소스 선언 위치](../../../../tests/dialogue/test_runner.py#L14)
 
 ```python
 def runner(client):
@@ -36,7 +36,7 @@ LiveLlmTester: 네트워크 대신 테스트 앱을 호출하는 실서버 검�
 
 ## `runner.send`
 
-[소스 선언 위치](../../../../tests/live_dialogue/test_runner.py#L24)
+[소스 선언 위치](../../../../tests/dialogue/test_runner.py#L24)
 
 ```python
 def send(request):
@@ -55,7 +55,7 @@ httpx.Response: 테스트 앱의 상태 코드·헤더·본문을 옮긴 HTTP �
 
 ## `StubGraph`
 
-[소스 선언 위치](../../../../tests/live_dialogue/test_runner.py#L50)
+[소스 선언 위치](../../../../tests/dialogue/test_runner.py#L50)
 
 ```python
 class StubGraph:
@@ -74,7 +74,7 @@ StubGraph: 위 역할을 수행하도록 생성된 객체.
 
 ## `StubGraph.generate`
 
-[소스 선언 위치](../../../../tests/live_dialogue/test_runner.py#L60)
+[소스 선언 위치](../../../../tests/dialogue/test_runner.py#L60)
 
 ```python
 async def generate(self, request):
@@ -93,7 +93,7 @@ str: 호출 목적에 맞게 생성한 모델 출력 원문.
 
 ## `test_live_runner_rejects_fixture_200`
 
-[소스 선언 위치](../../../../tests/live_dialogue/test_runner.py#L80)
+[소스 선언 위치](../../../../tests/dialogue/test_runner.py#L80)
 
 ```python
 def test_live_runner_rejects_fixture_200(client):
@@ -112,7 +112,7 @@ None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반�
 
 ## `test_live_runner_selected_cases_and_commit_checks`
 
-[소스 선언 위치](../../../../tests/live_dialogue/test_runner.py#L100)
+[소스 선언 위치](../../../../tests/dialogue/test_runner.py#L100)
 
 ```python
 def test_live_runner_selected_cases_and_commit_checks(client, monkeypatch):
@@ -132,7 +132,7 @@ None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반�
 
 ## `test_live_runner_generation_failure_keeps_error_and_input`
 
-[소스 선언 위치](../../../../tests/live_dialogue/test_runner.py#L130)
+[소스 선언 위치](../../../../tests/dialogue/test_runner.py#L130)
 
 ```python
 def test_live_runner_generation_failure_keeps_error_and_input(client, monkeypatch):
@@ -152,7 +152,7 @@ None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반�
 
 ## `test_live_runner_generation_failure_keeps_error_and_input.BrokenGraph`
 
-[소스 선언 위치](../../../../tests/live_dialogue/test_runner.py#L141)
+[소스 선언 위치](../../../../tests/dialogue/test_runner.py#L141)
 
 ```python
 class BrokenGraph:
@@ -171,7 +171,7 @@ BrokenGraph: 위 역할을 수행하도록 생성된 객체.
 
 ## `test_live_runner_generation_failure_keeps_error_and_input.BrokenGraph.generate`
 
-[소스 선언 위치](../../../../tests/live_dialogue/test_runner.py#L151)
+[소스 선언 위치](../../../../tests/dialogue/test_runner.py#L151)
 
 ```python
 async def generate(self, request):

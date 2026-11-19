@@ -13,8 +13,8 @@ from app.config import Settings
 from app.dialogue.interrogation_graph import InterrogationGraph
 from app.dialogue.local_model import decoding_options
 from app.dialogue.preprocess_agent.prompt import build_messages
-from app.dialogue.validation_agent.critical_facts import critical_claim_error
-from app.dialogue.validation_agent.prompt import build_verification_messages
+from app.dialogue.validation_agent_v1.critical_facts import critical_claim_error
+from app.dialogue.validation_agent_v1.prompt import build_verification_messages
 from app.investigation.api.schemas import Interrogate
 
 

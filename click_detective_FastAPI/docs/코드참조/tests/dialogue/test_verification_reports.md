@@ -1,6 +1,6 @@
-# `tests/dialogue/test_verification_reports.py`
+# `tests/dialogue/validation_agent/test_verification_reports.py`
 
-[코드 참조 목차](../../README.md) · [전체 문서 목차](../../../README.md) · [실제 소스](../../../../tests/dialogue/test_verification_reports.py)
+[코드 참조 목차](../../README.md) · [전체 문서 목차](../../../README.md) · [실제 소스](../../../../tests/dialogue/validation_agent/test_verification_reports.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 184줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -16,7 +16,7 @@
 
 ## `ReportErrorModel`
 
-[소스 선언 위치](../../../../tests/dialogue/test_verification_reports.py#L15)
+[소스 선언 위치](../../../../tests/dialogue/validation_agent/test_verification_reports.py#L14)
 
 ```python
 class ReportErrorModel(ApprovedModel):
@@ -36,7 +36,7 @@ ReportErrorModel: 검증 요청을 관찰하고 지정한 오류를 만드는 �
 
 ## `ReportErrorModel.__init__`
 
-[소스 선언 위치](../../../../tests/dialogue/test_verification_reports.py#L26)
+[소스 선언 위치](../../../../tests/dialogue/validation_agent/test_verification_reports.py#L25)
 
 ```python
 def __init__(self, error_kind, bad_reports=1):
@@ -56,7 +56,7 @@ None: 내부 호출 기록과 오류 조건을 초기화한다.
 
 ## `ReportErrorModel.generate`
 
-[소스 선언 위치](../../../../tests/dialogue/test_verification_reports.py#L42)
+[소스 선언 위치](../../../../tests/dialogue/validation_agent/test_verification_reports.py#L41)
 
 ```python
 async def generate(self, messages, *, purpose="dialogue"):
@@ -76,7 +76,7 @@ str: 정상 생성 원문 또는 오류가 주입된 검증 보고서 문자열.
 
 ## `profile_request`
 
-[소스 선언 위치](../../../../tests/dialogue/test_verification_reports.py#L73)
+[소스 선언 위치](../../../../tests/dialogue/requests.py#L8)
 
 ```python
 def profile_request(client):
@@ -95,7 +95,7 @@ CharacterReplyRequest: 윤재혁 소개의 두 문장을 필수로 포함하는 
 
 ## `test_report_format_retry_keeps_same_candidate`
 
-[소스 선언 위치](../../../../tests/dialogue/test_verification_reports.py#L96)
+[소스 선언 위치](../../../../tests/dialogue/validation_agent/test_verification_reports.py#L73)
 
 ```python
 async def test_report_format_retry_keeps_same_candidate(client, error_kind):
@@ -115,7 +115,7 @@ None: 같은 후보로 검증 두 번, 대사 생성 한 번인지 검사한다.
 
 ## `test_report_format_exhaustion_does_not_regenerate`
 
-[소스 선언 위치](../../../../tests/dialogue/test_verification_reports.py#L121)
+[소스 선언 위치](../../../../tests/dialogue/validation_agent/test_verification_reports.py#L98)
 
 ```python
 async def test_report_format_exhaustion_does_not_regenerate(client):
@@ -134,7 +134,7 @@ None: HTTP 502와 검증 오류 코드, 생성 한 번을 확인한다.
 
 ## `test_semantic_rejection_regenerates_instead_of_retrying_report`
 
-[소스 선언 위치](../../../../tests/dialogue/test_verification_reports.py#L140)
+[소스 선언 위치](../../../../tests/dialogue/validation_agent/test_verification_reports.py#L117)
 
 ```python
 async def test_semantic_rejection_regenerates_instead_of_retrying_report(client):
@@ -153,7 +153,7 @@ None: 생성과 검증이 각각 두 번이며 같은 후보 재검사 지시가
 
 ## `test_batches_keep_entire_approval_context`
 
-[소스 선언 위치](../../../../tests/dialogue/test_verification_reports.py#L162)
+[소스 선언 위치](../../../../tests/dialogue/validation_agent/test_verification_reports.py#L139)
 
 ```python
 async def test_batches_keep_entire_approval_context(client):

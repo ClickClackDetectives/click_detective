@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/report_policy.py`
+# `app/dialogue/validation_agent_v1/report_policy.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/report_policy.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/report_policy.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 71줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -11,11 +11,11 @@
 ## 함께 읽을 코드
 
 - [app/dialogue/state.py](../state.md)
-- [app/dialogue/validation_agent/semantic_verification.py](semantic_verification.md)
+- [app/dialogue/validation_agent_v1/semantic_verification.py](semantic_verification.md)
 
 ## `reject_semantic_errors`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/report_policy.py#L16)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/report_policy.py#L16)
 
 ```python
 def reject_semantic_errors(report: SemanticReport) -> None:
@@ -34,7 +34,7 @@ None: 모든 조건을 통과하면 정상 종료한다. 실패하면 OutputReje
 
 ## `combine_reports`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/report_policy.py#L37)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/report_policy.py#L37)
 
 ```python
 def combine_reports(reports: list[SemanticReport]) -> SemanticReport:

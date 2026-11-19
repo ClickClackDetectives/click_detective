@@ -90,37 +90,50 @@ def record(request, results):
     """
     request.node.exchanges = []
     yield
-    report = getattr(request.node, "report_call", None) or getattr(
-        request.node, "report_setup", None
-    )
+    call_report = getattr(request.node, "report_call", None)
+    report = call_report or getattr(request.node, "report_setup", None)
     results.append(
         {
             "name": request.node.nodeid,
             "outcome": report.outcome if report else "unknown",
+            "duration_seconds": call_report.duration if call_report else None,
             "exchanges": request.node.exchanges,
         }
     )
 
 
 @pytest.fixture(scope="session")
-def client(tmp_path_factory):
-    """실제 FastAPI를 GPU 없는 명시적 fixture 모드로 실행한다.
+def fixture_settings(tmp_path_factory):
+    """GPU 없이 실행할 FastAPI 테스트 설정을 구성한다.
 
     Args:
         tmp_path_factory: 테스트용 임시 디렉터리를 만드는 pytest 도구.
 
     Returns:
-        Iterator: with 또는 pytest 실행 동안 필요한 자원을 제공하는 반복자. 종료 시 정리 작업을 수행한다.
+        Settings: fixture 모드와 임시 저장 경로를 담은 설정.
     """
-    config = Settings(
+    return Settings(
         api_key=TOKEN,
         generation_mode="fixture",
+        validation_similarity_backend="char_ngram",
         fallback_on_error=False,
         _env_file=None,
         database_path=tmp_path_factory.mktemp("click-detective") / "test.sqlite3",
         diagnostics_path=tmp_path_factory.mktemp("click-traces") / "trace.jsonl",
     )
-    with TestClient(create_app(config)) as instance:
+
+
+@pytest.fixture(scope="session")
+def client(fixture_settings):
+    """HTTP 테스트용 FastAPI 클라이언트를 실행한다.
+
+    Args:
+        fixture_settings: GPU 없이 실행할 FastAPI 설정.
+
+    Returns:
+        Iterator: 실행 중인 HTTP 테스트 클라이언트.
+    """
+    with TestClient(create_app(fixture_settings)) as instance:
         yield instance
 
 

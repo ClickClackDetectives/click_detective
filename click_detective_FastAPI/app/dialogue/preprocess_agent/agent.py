@@ -6,7 +6,7 @@ from fastapi import HTTPException
 
 from ..diagnostics import trace_event
 from ..state import InterrogationState
-from ..validation_agent.verification_units import build_verification_units
+from ..validation_agent_v1.verification_units import build_verification_units
 from .prompt import build_messages
 from .rag.retriever import retrieve_approved_facts
 

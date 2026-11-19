@@ -46,7 +46,7 @@ class InferenceAgent:
             dict: 후보 대사와 시도 횟수 또는 실행 오류 상태.
         """
         request = state["request"]
-        if not request.allowed_facts:
+        if not request.allowed_facts and self.settings.validation_agent_version == "v1":
             trace_event("empty_approval", policy="deterministic_neutral", model_calls=0)
             reply = assemble_reply(request)
             if self.settings.generation_output_format == "json":

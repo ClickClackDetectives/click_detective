@@ -37,7 +37,7 @@ async def lifespan(app):
 
         model = LocalQwenModel(config)
         await asyncio.to_thread(model.load)
-        graph = InterrogationGraph(config, model)
+        graph = await asyncio.to_thread(InterrogationGraph, config, model)
     service = GameService(
         config,
         catalog,

@@ -73,6 +73,80 @@ class LiveLlmTester:
         """
         return self.transport.redact(value)
 
+    def run_agents(self, inputs, *, progress=False):
+        """게임 API 호출 없이 각 입력을 순서대로 검사한다.
+
+        Args:
+            inputs: 요청 UUID를 포함한 대화 입력 하나 또는 입력 목록.
+            progress: 각 요청을 보내기 전에 진행 상황을 출력할지 여부.
+
+        Returns:
+            dict: 요청·응답·시간 및 대화 응답 검사를 포함한 실서버 보고서.
+        """
+        path = "/internal/agent-test"
+        self.report["mode"] = "live_agents_only"
+        self.report["target_api"] = f"POST {path}"
+        inputs = [inputs] if isinstance(inputs, dict) else inputs
+        for index, body in enumerate(inputs, 1):
+            if progress:
+                print(f"에이전트 검사 {index}/{len(inputs)}", flush=True)
+            self.run_agent_case(path, f"agents-{index:03d}", body)
+        self.report["passed"] = bool(self.report["cases"]) and all(
+            case["passed"] for case in self.report["cases"]
+        )
+        self.report["completed_at"] = datetime.now(timezone.utc).isoformat()
+        return self.report
+
+    def run_agent_case(self, path, name, body):
+        """한 입력의 HTTP 왕복과 검사 결과를 보고서에 추가한다.
+
+        Args:
+            path: 에이전트 검사 API 경로.
+            name: 보고서에 표시할 사례 이름.
+            body: 대화 그래프에 전달할 요청 본문.
+
+        Returns:
+            None: 사례 결과를 보고서에 기록한다.
+        """
+        case = {
+            "name": name,
+            "description": "전처리·추론·검증 에이전트 단독 검사",
+            "request_id": body["request_id"],
+            "exchanges": [],
+            "checks": {},
+            "passed": False,
+        }
+        self.report["cases"].append(case)
+        try:
+            output = self.transport.exchange(
+                case["exchanges"], "POST", path, body, purpose="agent_test"
+            )
+            used_ids = output.get("used_fact_ids")
+            required_ids = body.get("required_fact_ids", [])
+            allowed_ids = [fact["id"] for fact in body.get("allowed_facts", [])]
+            reply = output.get("reply")
+            checks = {
+                "same_request_id": output.get("request_id") == body["request_id"],
+                "matching_context": output.get("suspect_id") == body["suspect_id"]
+                and output.get("state_revision") == body["state_revision"],
+                "generated_reply": output.get("finish_reason") == "stop"
+                and isinstance(reply, str)
+                and bool(reply.strip()),
+                "approved_fact_ids": isinstance(used_ids, list)
+                and all(fact in used_ids for fact in required_ids)
+                and all(fact in allowed_ids for fact in used_ids),
+            }
+            if self.expected_model_version:
+                checks["expected_model_version"] = (
+                    output.get("model_version") == self.expected_model_version
+                )
+            case["checks"] = checks
+            case["passed"] = all(checks.values())
+            if not case["passed"]:
+                case["error"] = ", ".join(key for key, ok in checks.items() if not ok)
+        except LiveTestFailure as error:
+            case["error"] = str(error)
+
     def exchange(
         self, rows, method, path, body=None, token=None, purpose="preparation"
     ):

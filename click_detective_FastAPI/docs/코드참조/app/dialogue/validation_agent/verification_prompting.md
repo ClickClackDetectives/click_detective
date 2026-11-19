@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/verification_prompting.py`
+# `app/dialogue/validation_agent_v1/verification_prompting.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/verification_prompting.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/verification_prompting.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 65줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -10,12 +10,12 @@
 
 ## 함께 읽을 코드
 
-- [app/dialogue/validation_agent/prompt.py](prompt.md)
-- [app/dialogue/validation_agent/semantic_verification.py](semantic_verification.md)
+- [app/dialogue/validation_agent_v1/prompt.py](prompt.md)
+- [app/dialogue/validation_agent_v1/semantic_verification.py](semantic_verification.md)
 
 ## `build_batch_messages`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification_prompting.py#L9)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification_prompting.py#L9)
 
 ```python
 def build_batch_messages(request, settings, reply, batch):
@@ -37,7 +37,7 @@ list[dict[str, str]]: 전체 승인 사실과 이번 검사 항목을 담은 프
 
 ## `build_report_retry`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification_prompting.py#L44)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification_prompting.py#L44)
 
 ```python
 def build_report_retry(reply, batch, error):

@@ -43,13 +43,29 @@ def test_live_runner_requires_matching_local_trace_and_nf4(
             }
         ],
     }
+    trace["events"].extend(
+        {"stage": "agent_timing", "agent": agent, "elapsed_ms": duration}
+        for agent, duration in (
+            ("preprocess_agent", 1.25),
+            ("inference_agent", 20),
+            ("validation_agent", 8),
+            ("inference_agent", 15.5),
+            ("validation_agent", 7),
+        )
+    )
     path.write_text(json.dumps(trace) + "\n")
     attach_traces(report, path, required=True)
     assert report["passed"]
     assert report["quantization"]["status"] == "nf4_observed_in_server_runtime_trace"
+    assert report["cases"][0]["agent_timings"] == {
+        "preprocess_agent": {"calls_ms": [1.25], "total_ms": 1.25},
+        "inference_agent": {"calls_ms": [20, 15.5], "total_ms": 35.5},
+        "validation_agent": {"calls_ms": [8, 7], "total_ms": 15},
+    }
     attach_traces(report, tmp_path / "missing.jsonl", required=True)
     assert not report["passed"]
     assert not report["cases"][0]["checks"]["nf4_runtime_trace"]
+    assert report["cases"][0]["agent_timings"] == {}
 
 
 def test_live_runner_timeout_preserves_uuid_without_automatic_retry(client):
