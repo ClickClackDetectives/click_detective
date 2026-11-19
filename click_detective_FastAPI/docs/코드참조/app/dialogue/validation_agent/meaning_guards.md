@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/meaning_guards.py`
+# `app/dialogue/validation_agent_v1/meaning_guards.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/meaning_guards.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/meaning_guards.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 31줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -10,7 +10,7 @@
 
 ## `has_question_actor_reversal`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/meaning_guards.py#L6)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/meaning_guards.py#L6)
 
 ```python
 def has_question_actor_reversal(approved_text: str, reply: str) -> bool:

@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/evidence_checks.py`
+# `app/dialogue/validation_agent_v1/evidence_checks.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/evidence_checks.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/evidence_checks.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 93줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -13,13 +13,13 @@
 - [app/dialogue/diagnostics.py](../diagnostics.md)
 - [app/dialogue/schemas.py](../schemas.md)
 - [app/dialogue/state.py](../state.md)
-- [app/dialogue/validation_agent/critical_facts.py](critical_facts.md)
-- [app/dialogue/validation_agent/semantic_verification.py](semantic_verification.md)
-- [app/dialogue/validation_agent/verification_units.py](verification_units.md)
+- [app/dialogue/validation_agent_v1/critical_facts.py](critical_facts.md)
+- [app/dialogue/validation_agent_v1/semantic_verification.py](semantic_verification.md)
+- [app/dialogue/validation_agent_v1/verification_units.py](verification_units.md)
 
 ## `check_report_evidence`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/evidence_checks.py#L11)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/evidence_checks.py#L11)
 
 ```python
 def check_report_evidence(

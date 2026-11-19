@@ -17,8 +17,8 @@
 - [app/dialogue/preprocess_agent/agent.py](preprocess_agent/agent.md)
 - [app/dialogue/schemas.py](schemas.md)
 - [app/dialogue/state.py](state.md)
-- [app/dialogue/validation_agent/agent.py](validation_agent/agent.md)
-- [app/dialogue/validation_agent/evidence_checks.py](validation_agent/evidence_checks.md)
+- [app/dialogue/validation_agent_v1/agent.py](validation_agent/agent.md)
+- [app/dialogue/validation_agent_v1/evidence_checks.py](validation_agent/evidence_checks.md)
 
 ## `InterrogationGraph`
 

@@ -3,6 +3,29 @@
 import json
 
 
+def summarize_agent_timings(events):
+    """에이전트별 호출 시간과 합계를 밀리초 단위로 정리한다.
+
+    Args:
+        events: 해당 심문 요청의 서버 진단 이벤트 목록.
+
+    Returns:
+        dict: 측정된 에이전트별 호출 시간 목록과 합계.
+    """
+    durations = {}
+    for event in events:
+        if event.get("stage") != "agent_timing":
+            continue
+        agent = event.get("agent")
+        elapsed_ms = event.get("elapsed_ms")
+        if isinstance(agent, str) and isinstance(elapsed_ms, (int, float)):
+            durations.setdefault(agent, []).append(elapsed_ms)
+    return {
+        agent: {"calls_ms": calls, "total_ms": round(sum(calls), 2)}
+        for agent, calls in durations.items()
+    }
+
+
 def attach_traces(report, trace_path, required=False):
     """같은 서버의 진단 JSONL을 선택적으로 읽어 요청별 3단계 호출 증거를 연결한다.
 
@@ -30,16 +53,36 @@ def attach_traces(report, trace_path, required=False):
         error = str(exception)
     for case in report["cases"]:
         trace = traces.get(case["request_id"])
-        stages = {event.get("stage") for event in (trace or {}).get("events", [])}
+        events = (trace or {}).get("events", [])
+        stages = {event.get("stage") for event in events}
+        case["agent_timings"] = summarize_agent_timings(events)
+        settings = (trace or {}).get("settings") or {}
+        expected_version = report.get("expected_validation_agent_version")
+        if expected_version:
+            observed = settings.get("validation_agent_version")
+            case["validation_agent_version"] = observed
+            version_ok = observed == expected_version
+            timings_ok = {
+                "preprocess_agent",
+                "inference_agent",
+                "validation_agent",
+            } <= case["agent_timings"].keys()
+            case["checks"]["validation_agent_version"] = version_ok
+            case["checks"]["agent_timings_present"] = timings_ok
+            case["passed"] = case["passed"] and version_ok and timings_ok
+            if not version_ok or not timings_ok:
+                case["error"] = (
+                    case.get("error", "")
+                    + " 일치하는 검증 버전 또는 에이전트 시간 기록이 부족합니다."
+                ).strip()
         confirmed = (
             bool(trace)
-            and (trace.get("settings") or {}).get("generation_mode") == "local"
-            and {"retrieval", "generation", "verification"} <= stages
+            and settings.get("generation_mode") == "local"
+            and {"retrieval", "generation"} <= stages
+            and bool({"verification", "verification_policy"} & stages)
         )
         resources = [
-            event
-            for event in (trace or {}).get("events", [])
-            if event.get("stage") == "model_resources"
+            event for event in events if event.get("stage") == "model_resources"
         ]
         quantized = bool(resources) and all(
             event.get("loaded_in_4bit") is True

@@ -34,7 +34,13 @@ def record_plan(catalog, state, plan, response):
             },
         ]
     )
+    incomplete = response.finish_reason in {"partial", "neutral"}
+    delivered = set(response.used_fact_ids)
     for rule in plan.new_findings:
+        entry = catalog.testimony["admissionEntries"].get(rule["flag"])
+        key = entry["key"] if entry else "finding-" + rule["flag"]
+        if incomplete and f"{plan.suspect_id}-{key}" not in delivered:
+            continue
         if rule["flag"] not in state["revealed"]:
             state["revealed"].append(rule["flag"])
             state["contradictions"].append(rule["label"])
@@ -50,7 +56,7 @@ def record_plan(catalog, state, plan, response):
         if entry["key"] == "profile":
             continue
         key = plan.suspect_id + "-" + entry["key"]
-        if key in state["statements"]:
+        if key in state["statements"] or (incomplete and key not in delivered):
             continue
         section = (
             "다른 사람들에 대해"

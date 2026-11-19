@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from langgraph.graph import END, START, StateGraph
 
 from ..config import Settings
-from .diagnostics import finish_trace, start_trace
+from .diagnostics import finish_trace, start_trace, trace_agent_time
 from .inference_agent.agent import InferenceAgent
 from .local_model import ReplyModel
 from .preprocess_agent.agent import PreprocessAgent
@@ -15,8 +15,9 @@ from .schemas import CharacterReplyRequest, CharacterReplyResponse
 from .state import GeneratedReply as GeneratedReply
 from .state import InterrogationState
 from .state import OutputRejected as OutputRejected
-from .validation_agent.agent import ValidationAgent
-from .validation_agent.evidence_checks import check_report_evidence
+from .validation_agent_v1.agent import ValidationAgent
+from .validation_agent_v1.evidence_checks import check_report_evidence
+from .validation_agent_v2.agent import ValidationAgentV2, neutral_response
 
 
 class InterrogationGraph:
@@ -44,7 +45,11 @@ class InterrogationGraph:
         self.model = model
         self.preprocessor = PreprocessAgent(settings)
         self.generator = InferenceAgent(settings, model)
-        self.validator = ValidationAgent(settings, model)
+        self.validator = (
+            ValidationAgent(settings, model)
+            if settings.validation_agent_version == "v1"
+            else ValidationAgentV2(settings, model)
+        )
         builder = StateGraph(InterrogationState)
         builder.add_node("preprocess_agent", self.preprocess_agent)
         builder.add_node("inference_agent", self.inference_agent)
@@ -85,7 +90,8 @@ class InterrogationGraph:
         Returns:
             dict: 생성 프롬프트, 검색 결과와 초기 생성 횟수.
         """
-        return await self.preprocessor.preprocess_agent(state)
+        with trace_agent_time("preprocess_agent"):
+            return await self.preprocessor.preprocess_agent(state)
 
     async def inference_agent(self, state: InterrogationState) -> dict:
         """생성 에이전트에 후보 대사 작성을 맡긴다.
@@ -96,7 +102,8 @@ class InterrogationGraph:
         Returns:
             dict: 후보 대사와 시도 횟수 또는 실행 오류 상태.
         """
-        return await self.generator.inference_agent(state)
+        with trace_agent_time("inference_agent"):
+            return await self.generator.inference_agent(state)
 
     async def validation_agent(self, state: InterrogationState) -> dict:
         """검증 에이전트에 후보 검사와 재생성 판단을 맡긴다.
@@ -107,7 +114,8 @@ class InterrogationGraph:
         Returns:
             dict: 최종 응답 또는 재생성 여부와 거절 코드.
         """
-        return await self.validator.validation_agent(state)
+        with trace_agent_time("validation_agent"):
+            return await self.validator.validation_agent(state)
 
     # 기존 보고서 검사 호출 경로를 유지한다.
     _check_report_evidence = staticmethod(check_report_evidence)
@@ -129,9 +137,12 @@ class InterrogationGraph:
                     result = await self.graph.ainvoke({"request": request})
                 response = result["response"]
             except TimeoutError:
-                response = self.validator.output.failure(
-                    request, 504, "pipeline_timeout"
-                )
+                if self.settings.validation_agent_version == "v1":
+                    response = self.validator.output.failure(
+                        request, 504, "pipeline_timeout"
+                    )
+                else:
+                    response = neutral_response(request)
             trace["finish_reason"] = response.finish_reason
             trace["model_version"] = response.model_version
             return response

@@ -29,19 +29,19 @@
 
 | 소스 파일 | 설명 |
 |---|---|
-| `app/dialogue/validation_agent/__init__.py` | [문서](app/dialogue/validation_agent/__init__.md) |
-| `app/dialogue/validation_agent/agent.py` | [문서](app/dialogue/validation_agent/agent.md) |
-| `app/dialogue/validation_agent/critical_facts.py` | [문서](app/dialogue/validation_agent/critical_facts.md) |
-| `app/dialogue/validation_agent/evidence_checks.py` | [문서](app/dialogue/validation_agent/evidence_checks.md) |
-| `app/dialogue/validation_agent/meaning_guards.py` | [문서](app/dialogue/validation_agent/meaning_guards.md) |
-| `app/dialogue/validation_agent/output.py` | [문서](app/dialogue/validation_agent/output.md) |
-| `app/dialogue/validation_agent/prompt.py` | [문서](app/dialogue/validation_agent/prompt.md) |
-| `app/dialogue/validation_agent/report_policy.py` | [문서](app/dialogue/validation_agent/report_policy.md) |
-| `app/dialogue/validation_agent/semantic_verification.py` | [문서](app/dialogue/validation_agent/semantic_verification.md) |
-| `app/dialogue/validation_agent/verification.py` | [문서](app/dialogue/validation_agent/verification.md) |
-| `app/dialogue/validation_agent/verification_prompting.py` | [문서](app/dialogue/validation_agent/verification_prompting.md) |
-| `app/dialogue/validation_agent/verification_reports.py` | [문서](app/dialogue/validation_agent/verification_reports.md) |
-| `app/dialogue/validation_agent/verification_units.py` | [문서](app/dialogue/validation_agent/verification_units.md) |
+| `app/dialogue/validation_agent_v1/__init__.py` | [문서](app/dialogue/validation_agent/__init__.md) |
+| `app/dialogue/validation_agent_v1/agent.py` | [문서](app/dialogue/validation_agent/agent.md) |
+| `app/dialogue/validation_agent_v1/critical_facts.py` | [문서](app/dialogue/validation_agent/critical_facts.md) |
+| `app/dialogue/validation_agent_v1/evidence_checks.py` | [문서](app/dialogue/validation_agent/evidence_checks.md) |
+| `app/dialogue/validation_agent_v1/meaning_guards.py` | [문서](app/dialogue/validation_agent/meaning_guards.md) |
+| `app/dialogue/validation_agent_v1/output.py` | [문서](app/dialogue/validation_agent/output.md) |
+| `app/dialogue/validation_agent_v1/prompt.py` | [문서](app/dialogue/validation_agent/prompt.md) |
+| `app/dialogue/validation_agent_v1/report_policy.py` | [문서](app/dialogue/validation_agent/report_policy.md) |
+| `app/dialogue/validation_agent_v1/semantic_verification.py` | [문서](app/dialogue/validation_agent/semantic_verification.md) |
+| `app/dialogue/validation_agent_v1/verification.py` | [문서](app/dialogue/validation_agent/verification.md) |
+| `app/dialogue/validation_agent_v1/verification_prompting.py` | [문서](app/dialogue/validation_agent/verification_prompting.md) |
+| `app/dialogue/validation_agent_v1/verification_reports.py` | [문서](app/dialogue/validation_agent/verification_reports.md) |
+| `app/dialogue/validation_agent_v1/verification_units.py` | [문서](app/dialogue/validation_agent/verification_units.md) |
 
 ## 앱 시작과 공용 코드
 
@@ -120,11 +120,11 @@
 | `tests/dialogue/__init__.py` | [문서](tests/dialogue/__init__.md) |
 | `tests/dialogue/models.py` | [문서](tests/dialogue/models.md) |
 | `tests/dialogue/test_free_question_recovery.py` | [문서](tests/dialogue/test_free_question_recovery.md) |
-| `tests/dialogue/test_paraphrase_generation.py` | [문서](tests/dialogue/test_paraphrase_generation.md) |
+| `tests/dialogue/inference_agent/test_paraphrase_generation.py` | [문서](tests/dialogue/test_paraphrase_generation.md) |
 | `tests/dialogue/test_reply_availability.py` | [문서](tests/dialogue/test_reply_availability.md) |
-| `tests/dialogue/test_retrieval.py` | [문서](tests/dialogue/test_retrieval.md) |
+| `tests/dialogue/preprocess_agent/test_retrieval.py` | [문서](tests/dialogue/test_retrieval.md) |
 | `tests/dialogue/test_runtime.py` | [문서](tests/dialogue/test_runtime.md) |
-| `tests/dialogue/test_verification_reports.py` | [문서](tests/dialogue/test_verification_reports.md) |
+| `tests/dialogue/validation_agent/test_verification_reports.py` | [문서](tests/dialogue/test_verification_reports.md) |
 | `tests/investigation/__init__.py` | [문서](tests/investigation/__init__.md) |
 | `tests/investigation/data_helpers.py` | [문서](tests/investigation/data_helpers.md) |
 | `tests/investigation/player.py` | [문서](tests/investigation/player.md) |
@@ -134,9 +134,8 @@
 | `tests/investigation/test_minimum_success_route.py` | [문서](tests/investigation/test_minimum_success_route.md) |
 | `tests/investigation/test_open_accusation.py` | [문서](tests/investigation/test_open_accusation.md) |
 | `tests/investigation/test_screen_views.py` | [문서](tests/investigation/test_screen_views.md) |
-| `tests/live_dialogue/__init__.py` | [문서](tests/live_dialogue/__init__.md) |
-| `tests/live_dialogue/test_runner.py` | [문서](tests/live_dialogue/test_runner.md) |
-| `tests/live_dialogue/test_trace_and_timeout.py` | [문서](tests/live_dialogue/test_trace_and_timeout.md) |
+| `tests/dialogue/test_runner.py` | [문서](tests/live_dialogue/test_runner.md) |
+| `tests/dialogue/test_trace_and_timeout.py` | [문서](tests/live_dialogue/test_trace_and_timeout.md) |
 | `tests/test_code_conventions.py` | [문서](tests/test_code_conventions.md) |
 
 ## 호환 경로

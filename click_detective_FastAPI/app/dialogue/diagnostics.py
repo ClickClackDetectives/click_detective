@@ -2,6 +2,7 @@
 
 import json
 import logging
+from contextlib import contextmanager
 from contextvars import ContextVar
 from datetime import datetime, timezone
 from time import perf_counter
@@ -28,6 +29,27 @@ def trace_event(stage: str, **values) -> None:
         trace["events"].append({"stage": stage, **values})
 
 
+@contextmanager
+def trace_agent_time(agent: str):
+    """에이전트의 한 번의 호출에 걸린 시간을 기록한다.
+
+    Args:
+        agent: 그래프에 등록된 에이전트 이름.
+
+    Returns:
+        Iterator: 예외나 취소가 발생해도 종료 시점까지 측정하는 문맥.
+    """
+    started = perf_counter()
+    try:
+        yield
+    finally:
+        trace_event(
+            "agent_timing",
+            agent=agent,
+            elapsed_ms=round((perf_counter() - started) * 1000, 2),
+        )
+
+
 def start_trace(request, settings) -> tuple[dict, object]:
     """실행 ID·시나리오 버전·비밀값을 제외한 유효 설정의 명시적 목록을 만든다.
 
@@ -50,6 +72,9 @@ def start_trace(request, settings) -> tuple[dict, object]:
             key: getattr(settings, key)
             for key in (
                 "generation_mode",
+                "validation_agent_version",
+                "validation_similarity_threshold",
+                "validation_similarity_backend",
                 "generation_output_format",
                 "local_model_version",
                 "adapter_version",

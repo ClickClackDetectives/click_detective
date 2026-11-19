@@ -11,6 +11,7 @@ def validate_generation(
     response: CharacterReplyResponse,
     *,
     require_verbatim: bool = True,
+    require_all_facts: bool = True,
 ) -> None:
     """식별 정보·사실 ID·필수 사실을 검사한다. 고정 모드는 원문까지 대조한다. 실패하면 ValueError를 낸다.
 
@@ -23,6 +24,7 @@ def validate_generation(
         request (CharacterReplyRequest): 승인 사실, 필수 사실 ID와 인물·대화 문맥을 담은 요청.
         response (CharacterReplyResponse): 검사하거나 저장할 최종 대사 응답.
         require_verbatim (bool): 응답에 승인 원문이 그대로 들어 있는지 검사할지 여부.
+        require_all_facts (bool): 모든 필수 사실 ID의 포함을 강제할지 여부.
 
     Returns:
         None: 반환값 없음.
@@ -44,7 +46,7 @@ def validate_generation(
     has_unapproved_ids = not used_fact_ids.issubset(allowed_fact_texts)
     if has_duplicate_ids or has_unapproved_ids:
         raise ValueError("Invalid used fact IDs")
-    if not required_fact_ids.issubset(used_fact_ids):
+    if require_all_facts and not required_fact_ids.issubset(used_fact_ids):
         raise ValueError("Missing required facts")
 
     missing_fact_text = any(

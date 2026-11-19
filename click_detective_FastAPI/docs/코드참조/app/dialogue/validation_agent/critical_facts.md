@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/critical_facts.py`
+# `app/dialogue/validation_agent_v1/critical_facts.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/critical_facts.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/critical_facts.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 207줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -14,12 +14,12 @@
 ## 함께 읽을 코드
 
 - [app/dialogue/schemas.py](../schemas.md)
-- [app/dialogue/validation_agent/semantic_verification.py](semantic_verification.md)
-- [app/dialogue/validation_agent/verification_units.py](verification_units.md)
+- [app/dialogue/validation_agent_v1/semantic_verification.py](semantic_verification.md)
+- [app/dialogue/validation_agent_v1/verification_units.py](verification_units.md)
 
 ## `quantity_anchors`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/critical_facts.py#L31)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/critical_facts.py#L31)
 
 ```python
 def quantity_anchors(text: str) -> set[tuple[int, str]]:
@@ -38,7 +38,7 @@ set[tuple[int, str]]: 수량과 단위를 정규화한 집합.
 
 ## `time_anchors`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/critical_facts.py#L49)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/critical_facts.py#L49)
 
 ```python
 def time_anchors(text: str) -> set[tuple[int, int]]:
@@ -57,7 +57,7 @@ set[tuple[int, int]]: 비교할 시각의 시·분 집합.
 
 ## `time_actions`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/critical_facts.py#L64)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/critical_facts.py#L64)
 
 ```python
 def time_actions(text: str) -> set[tuple[tuple[int, int], str]]:
@@ -76,7 +76,7 @@ set[tuple[tuple[int, int], str]]: 같은 문장에 명시된 숨기기·방문 �
 
 ## `postponement_target`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/critical_facts.py#L88)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/critical_facts.py#L88)
 
 ```python
 def postponement_target(text: str) -> str | None:
@@ -95,7 +95,7 @@ str | None: 미루려는 대상으로 명시된 단어. 없으면 None.
 
 ## `critical_claim_error`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/critical_facts.py#L103)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/critical_facts.py#L103)
 
 ```python
 def critical_claim_error(request: CharacterReplyRequest, reply: str) -> str | None:
@@ -118,7 +118,7 @@ str | None: 의미 변형 오류 코드. 규칙상 오류가 없으면 None.
 
 ## `critical_evidence_error`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/critical_facts.py#L147)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/critical_facts.py#L147)
 
 ```python
 def critical_evidence_error(unit_text: str, evidence_text: str) -> str | None:
@@ -138,7 +138,7 @@ str | None: 실제 근거에 빠진 중요 의미의 오류 코드. 없으면 No
 
 ## `predicate_anchors`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/critical_facts.py#L174)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/critical_facts.py#L174)
 
 ```python
 def predicate_anchors(text: str) -> set[str]:

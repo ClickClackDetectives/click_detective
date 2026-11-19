@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/semantic_verification.py`
+# `app/dialogue/validation_agent_v1/semantic_verification.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/semantic_verification.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/semantic_verification.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 80줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -14,7 +14,7 @@
 
 ## `CandidateSentence`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/semantic_verification.py#L12)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/semantic_verification.py#L12)
 
 ```python
 class CandidateSentence:
@@ -36,7 +36,7 @@ CandidateSentence: 위 역할을 수행하도록 생성된 객체.
 
 ## `candidate_sentences`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/semantic_verification.py#L31)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/semantic_verification.py#L31)
 
 ```python
 def candidate_sentences(reply: str) -> list[CandidateSentence]:
@@ -55,7 +55,7 @@ list[CandidateSentence]: 후보 문장의 번호, 원문 위치와 텍스트.
 
 ## `SemanticReport`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/semantic_verification.py#L60)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/semantic_verification.py#L60)
 
 ```python
 class SemanticReport(DTO):

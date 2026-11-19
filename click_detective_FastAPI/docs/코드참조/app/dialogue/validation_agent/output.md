@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/output.py`
+# `app/dialogue/validation_agent_v1/output.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/output.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/output.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 122줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -17,7 +17,7 @@
 
 ## `ReplyOutput`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/output.py#L13)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/output.py#L13)
 
 ```python
 class ReplyOutput:
@@ -37,7 +37,7 @@ ReplyOutput: 위 역할을 수행하도록 생성된 객체.
 
 ## `ReplyOutput.__init__`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/output.py#L24)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/output.py#L24)
 
 ```python
 def __init__(self, settings, model):
@@ -57,7 +57,7 @@ None: 필요한 설정과 초기값을 저장한다.
 
 ## `ReplyOutput.parse`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/output.py#L37)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/output.py#L37)
 
 ```python
 def parse(self, request: CharacterReplyRequest, raw: str) -> CharacterReplyResponse:
@@ -77,7 +77,7 @@ CharacterReplyResponse: 출력 형식과 사실 ID를 검사한 후보 응답.
 
 ## `ReplyOutput.failure`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/output.py#L92)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/output.py#L92)
 
 ```python
 def failure(

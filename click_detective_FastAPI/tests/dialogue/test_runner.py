@@ -6,9 +6,13 @@ import httpx
 from fastapi import HTTPException
 
 from app.config import PROJECT_ROOT
+from app.dialogue.interrogation_graph import InterrogationGraph
 from app.dialogue.schemas import CharacterReplyResponse
-from scripts.test_llm_api_live import LiveLlmTester
+from scripts.live_dialogue.agent_inputs import load_agent_inputs
+from scripts.test_llm_api_live import LiveLlmTester, attach_traces
 from tests.conftest import TOKEN
+
+from .models import ApprovedModel
 
 
 def runner(client):
@@ -75,6 +79,59 @@ class StubGraph:
             model_version="Qwen2.5-7B-Instruct-nf4+test-adapter",
             finish_reason="stop",
         )
+
+
+def test_live_agents_only_calls_graph_without_game(client, monkeypatch, tmp_path):
+    """인증과 활성화 조건을 확인하고 게임 없이 에이전트 결과를 보고한다.
+
+    Args:
+        client: 테스트 앱 HTTP 클라이언트.
+        monkeypatch: 테스트 동안 서버 설정과 그래프를 교체하는 도구.
+        tmp_path: 진단 JSONL을 저장할 임시 경로.
+
+    Returns:
+        None: 권한 검사와 입출력·시간 보고서를 검증한다.
+    """
+    body = load_agent_inputs([], limit=1)[0]
+    body["allowed_facts"] = body["allowed_facts"][:1]
+    path = "/internal/agent-test"
+    service = client.app.state.service
+    monkeypatch.setattr(service.settings, "agent_test_enabled", False)
+    assert client.post(path, json=body).status_code == 401
+    assert (
+        client.post(
+            path, json=body, headers={"Authorization": f"Bearer {TOKEN}"}
+        ).status_code
+        == 404
+    )
+
+    diagnostics = tmp_path / "agents.jsonl"
+    monkeypatch.setattr(service.settings, "agent_test_enabled", True)
+    assert not runner(client).run_agents(body)["passed"]
+    monkeypatch.setattr(service.settings, "generation_mode", "local")
+    monkeypatch.setattr(service.settings, "diagnostics_enabled", True)
+    monkeypatch.setattr(service.settings, "diagnostics_path", diagnostics)
+    monkeypatch.setattr(
+        service, "graph", InterrogationGraph(service.settings, ApprovedModel())
+    )
+
+    tester = runner(client)
+    report = tester.redact(tester.run_agents(body))
+    attach_traces(report, diagnostics)
+    assert report["passed"]
+    assert report["preparation"] == []
+    (case,) = report["cases"]
+    (exchange,) = case["exchanges"]
+    assert exchange["input"]["path"] == path
+    assert exchange["input"]["headers"]["Authorization"] == "[REDACTED]"
+    assert exchange["input"]["body"] == body
+    assert "visit-reason" in exchange["output"]["body"]["used_fact_ids"]
+    assert case["trace"]["three_stage_calls_observed"]
+    assert set(case["agent_timings"]) == {
+        "preprocess_agent",
+        "inference_agent",
+        "validation_agent",
+    }
 
 
 def test_live_runner_rejects_fixture_200(client):

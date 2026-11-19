@@ -1,6 +1,6 @@
-# `tests/dialogue/test_paraphrase_generation.py`
+# `tests/dialogue/inference_agent/test_paraphrase_generation.py`
 
-[코드 참조 목차](../../README.md) · [전체 문서 목차](../../../README.md) · [실제 소스](../../../../tests/dialogue/test_paraphrase_generation.py)
+[코드 참조 목차](../../README.md) · [전체 문서 목차](../../../README.md) · [실제 소스](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 204줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -21,7 +21,7 @@
 
 ## `make_request`
 
-[소스 선언 위치](../../../../tests/dialogue/test_paraphrase_generation.py#L20)
+[소스 선언 위치](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py#L20)
 
 ```python
 def make_request(client):
@@ -40,7 +40,7 @@ CharacterReplyRequest: 현재 사건의 승인 계획으로 구성한 테스트 
 
 ## `test_generation_samples_but_verification_does_not`
 
-[소스 선언 위치](../../../../tests/dialogue/test_paraphrase_generation.py#L42)
+[소스 선언 위치](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py#L42)
 
 ```python
 def test_generation_samples_but_verification_does_not():
@@ -59,7 +59,7 @@ None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반�
 
 ## `test_sampling_settings_reject_invalid_values`
 
-[소스 선언 위치](../../../../tests/dialogue/test_paraphrase_generation.py#L81)
+[소스 선언 위치](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py#L81)
 
 ```python
 def test_sampling_settings_reject_invalid_values(field, value):
@@ -79,7 +79,7 @@ None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반�
 
 ## `test_nonverbatim_reply_passes_graph_with_semantic_evidence`
 
-[소스 선언 위치](../../../../tests/dialogue/test_paraphrase_generation.py#L95)
+[소스 선언 위치](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py#L95)
 
 ```python
 async def test_nonverbatim_reply_passes_graph_with_semantic_evidence(client):
@@ -98,7 +98,7 @@ None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반�
 
 ## `test_nonverbatim_reply_passes_graph_with_semantic_evidence.ParaphraseModel`
 
-[소스 선언 위치](../../../../tests/dialogue/test_paraphrase_generation.py#L108)
+[소스 선언 위치](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py#L108)
 
 ```python
 class ParaphraseModel:
@@ -117,7 +117,7 @@ ParaphraseModel: 위 역할을 수행하도록 생성된 객체.
 
 ## `test_nonverbatim_reply_passes_graph_with_semantic_evidence.ParaphraseModel.__init__`
 
-[소스 선언 위치](../../../../tests/dialogue/test_paraphrase_generation.py#L120)
+[소스 선언 위치](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py#L120)
 
 ```python
 def __init__(self):
@@ -136,7 +136,7 @@ None: 의존성과 초기 상태를 준비하며 값을 반환하지 않는다.
 
 ## `test_nonverbatim_reply_passes_graph_with_semantic_evidence.ParaphraseModel.generate`
 
-[소스 선언 위치](../../../../tests/dialogue/test_paraphrase_generation.py#L131)
+[소스 선언 위치](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py#L131)
 
 ```python
 async def generate(self, messages, *, purpose="dialogue"):
@@ -156,7 +156,7 @@ str: 호출 목적에 맞게 생성한 모델 출력 원문.
 
 ## `test_style_freedom_does_not_authorize_new_quantities`
 
-[소스 선언 위치](../../../../tests/dialogue/test_paraphrase_generation.py#L167)
+[소스 선언 위치](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py#L167)
 
 ```python
 def test_style_freedom_does_not_authorize_new_quantities(client):
@@ -175,7 +175,7 @@ None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반�
 
 ## `test_prompts_preserve_facts_but_allow_rewording`
 
-[소스 선언 위치](../../../../tests/dialogue/test_paraphrase_generation.py#L185)
+[소스 선언 위치](../../../../tests/dialogue/inference_agent/test_paraphrase_generation.py#L185)
 
 ```python
 def test_prompts_preserve_facts_but_allow_rewording(client):

@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/verification.py`
+# `app/dialogue/validation_agent_v1/verification.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/verification.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/verification.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 66줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -14,13 +14,13 @@
 - [app/dialogue/reply_validation.py](../reply_validation.md)
 - [app/dialogue/schemas.py](../schemas.md)
 - [app/dialogue/state.py](../state.md)
-- [app/dialogue/validation_agent/critical_facts.py](critical_facts.md)
-- [app/dialogue/validation_agent/report_policy.py](report_policy.md)
-- [app/dialogue/validation_agent/verification_reports.py](verification_reports.md)
+- [app/dialogue/validation_agent_v1/critical_facts.py](critical_facts.md)
+- [app/dialogue/validation_agent_v1/report_policy.py](report_policy.md)
+- [app/dialogue/validation_agent_v1/verification_reports.py](verification_reports.md)
 
 ## `SemanticVerifier`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification.py#L12)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification.py#L12)
 
 ```python
 class SemanticVerifier:
@@ -40,7 +40,7 @@ SemanticVerifier: 위 역할을 수행하도록 생성된 객체.
 
 ## `SemanticVerifier.__init__`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification.py#L23)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification.py#L23)
 
 ```python
 def __init__(self, settings, model):
@@ -60,7 +60,7 @@ None: 필요한 설정과 초기값을 저장한다.
 
 ## `SemanticVerifier.verify`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification.py#L35)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification.py#L35)
 
 ```python
 async def verify(

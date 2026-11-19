@@ -1,6 +1,7 @@
 """dialogue/test_runtime.py의 회귀 동작을 확인한다."""
 
 import asyncio
+import json
 from uuid import uuid4
 
 import pytest
@@ -13,12 +14,13 @@ from app.investigation.api.schemas import Interrogate, Notes
 from .models import ApprovedModel
 
 
-async def test_three_agents_execute_with_backend_approval(client, game):
+async def test_three_agents_execute_with_backend_approval(client, game, tmp_path):
     """전처리·생성·검증 노드와 내부 승인 DTO가 실제로 연결되는지 검사한다.
 
     Args:
         client: HTTP 요청을 실행하는 클라이언트.
         game: 테스트에서 생성한 수사의 ID, 토큰과 상태.
+        tmp_path: 이 요청의 실행 진단을 저장할 임시 경로.
 
     Returns:
         None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반환하지 않는다.
@@ -34,7 +36,11 @@ async def test_three_agents_execute_with_backend_approval(client, game):
     plan = service.planner.prepare(state, command)
     request = service.dialogue_request(state, command, plan)
     model = ApprovedModel()
-    graph = InterrogationGraph(service.settings, model)
+    trace_path = tmp_path / "trace.jsonl"
+    settings = service.settings.model_copy(
+        update={"diagnostics_enabled": True, "diagnostics_path": trace_path}
+    )
+    graph = InterrogationGraph(settings, model)
     assert {"preprocess_agent", "inference_agent", "validation_agent"} <= set(
         graph.graph.get_graph().nodes
     )
@@ -42,6 +48,14 @@ async def test_three_agents_execute_with_backend_approval(client, game):
     assert response.finish_reason == "stop"
     assert response.used_fact_ids == [fact.id for fact in request.allowed_facts]
     assert len(model.calls) == 2
+    trace = json.loads(trace_path.read_text())
+    timings = [event for event in trace["events"] if event["stage"] == "agent_timing"]
+    assert [event["agent"] for event in timings] == [
+        "preprocess_agent",
+        "inference_agent",
+        "validation_agent",
+    ]
+    assert all(event["elapsed_ms"] >= 0 for event in timings)
     assert service.read(game["game_id"], game["game_token"])["questions"] == 0
 
 

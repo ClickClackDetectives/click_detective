@@ -37,6 +37,12 @@ class Settings(BaseSettings):
         history_limit (int): 프롬프트에 담을 최근 대화 항목 수.
         diagnostics_enabled (bool): 대화 생성 진단을 파일에 기록할지 여부.
         diagnostics_path (Path): 대화 생성 진단 JSONL 파일 경로.
+        agent_test_enabled (bool): 인증된 에이전트 단독 검사 API를 활성화할지 여부.
+        validation_agent_version: 적용할 검증 에이전트 버전.
+        validation_similarity_threshold: v2 문장 후보를 거르는 유사도 기준.
+        validation_similarity_backend: v2 문장 임베딩 방식.
+        validation_embedding_model: 로컬 경로나 캐시에 준비한 SentenceTransformer 모델 ID.
+        validation_embedding_device: 임베딩 모델 실행 장치.
 
     Returns:
         Settings: 위 역할을 수행하도록 생성된 객체.
@@ -72,6 +78,16 @@ class Settings(BaseSettings):
     history_limit: int = Field(default=6, ge=0, le=20)
     diagnostics_enabled: bool = True
     diagnostics_path: Path = PROJECT_ROOT / ".data/dialogue-traces.jsonl"
+    agent_test_enabled: bool = False
+    validation_agent_version: Literal["v1", "v2.1", "v2.2"] = "v1"
+    validation_similarity_threshold: float = Field(default=0.35, ge=0, le=1)
+    validation_similarity_backend: Literal["sentence_transformer", "char_ngram"] = (
+        "sentence_transformer"
+    )
+    validation_embedding_model: str = (
+        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    )
+    validation_embedding_device: str = "cpu"
 
     @field_validator(
         "database_path",

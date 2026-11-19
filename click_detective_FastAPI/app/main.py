@@ -11,6 +11,7 @@ from app.investigation.api.view_routes import router as view_router
 from .bootstrap import lifespan
 from .cases.routes import router as case_router
 from .config import Settings
+from .dialogue.test_routes import router as agent_test_router
 
 
 def create_app(settings: Settings | None = None):
@@ -78,7 +79,13 @@ def create_app(settings: Settings | None = None):
         """
         return {"status": "ok"}
 
-    for router in (case_router, investigation_router, material_router, view_router):
+    for router in (
+        case_router,
+        investigation_router,
+        material_router,
+        view_router,
+        agent_test_router,
+    ):
         app.include_router(router)
     return app
 

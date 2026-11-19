@@ -11,10 +11,12 @@ import httpx
 from dotenv import dotenv_values
 
 if __package__:
+    from .live_dialogue.agent_inputs import load_agent_inputs
     from .live_dialogue.errors import LiveTestFailure as LiveTestFailure
     from .live_dialogue.tester import LiveLlmTester
     from .live_dialogue.traces import attach_traces
 else:
+    from live_dialogue.agent_inputs import load_agent_inputs
     from live_dialogue.errors import LiveTestFailure as LiveTestFailure
     from live_dialogue.tester import LiveLlmTester
     from live_dialogue.traces import attach_traces
@@ -45,13 +47,28 @@ def parser():
         "--timeout", type=float, default=240, help="요청별 초 단위 대기시간"
     )
     result.add_argument(
-        "--report", type=Path, default=PROJECT_ROOT / ".reports/llm-api-live.json"
+        "--agents-only", action="store_true", help="게임 API 없이 대화 에이전트만 검사"
     )
+    result.add_argument(
+        "--agent-input",
+        type=Path,
+        action="append",
+        help="객체 또는 객체 배열을 담은 입력 JSON 파일. 여러 번 지정 가능",
+    )
+    result.add_argument(
+        "--agent-limit", type=int, help="agents-only 검사에서 실행할 최대 입력 수"
+    )
+    result.add_argument("--report", type=Path, help="결과 JSON 경로")
     result.add_argument("--env-file", type=Path, default=PROJECT_ROOT / ".env")
     result.add_argument("--data-dir", type=Path, default=PROJECT_ROOT / "data")
     result.add_argument("--api-key-env", default="CLICK_API_KEY")
     result.add_argument(
         "--expected-model-version", help="서버가 보고한 모델 버전의 정확한 일치 검사"
+    )
+    result.add_argument(
+        "--validation-version",
+        choices=("v2.1", "v2.2"),
+        help="에이전트 120건 실행 전에 확인할 실제 서버의 검증 버전",
     )
     result.add_argument(
         "--trace-path", type=Path, help="같은 실행 서버의 diagnostics JSONL 파일"
@@ -62,6 +79,40 @@ def parser():
         help="local 3단계 진단 증거도 성공 필수 조건으로 검사",
     )
     return result
+
+
+def run_agents_for_version(tester, inputs, version):
+    """버전이 일치하는 서버에서만 에이전트 요청을 시작한다.
+
+    Args:
+        tester: 현재 서버의 실서버 검사기.
+        inputs: 검사할 입력의 순서 있는 목록.
+        version: 확인해야 할 서버 버전. None이면 기존 방식으로 실행한다.
+
+    Returns:
+        dict: 배치 결과 또는 사전 확인이 실패한 보고서.
+    """
+    if version:
+        report = tester.report
+        report["expected_validation_agent_version"] = version
+        report["mode"] = "live_agents_only"
+        report["target_api"] = "POST /internal/agent-test"
+        try:
+            config = tester.exchange(
+                report["preparation"], "GET", "/internal/agent-test"
+            )
+            observed = config.get("validation_agent_version")
+            report["validation_agent_version"] = observed
+            if observed != version:
+                raise LiveTestFailure(
+                    f"서버 검증 버전 불일치 (기대 {version}, 실제 {observed})"
+                )
+            if config.get("diagnostics_enabled") is not True:
+                raise LiveTestFailure("서버의 대화 실행 진단이 비활성화되어 있습니다.")
+        except LiveTestFailure as error:
+            report["error"] = str(error)
+            return report
+    return tester.run_agents(inputs, progress=True)
 
 
 def main(argv=None):
@@ -92,8 +143,29 @@ def main(argv=None):
         arguments.error("timeout은 0보다 큰 유한한 초 값이어야 합니다.")
     if args.require_trace and not args.trace_path:
         arguments.error("require-trace에는 trace-path가 필요합니다.")
+    if args.validation_version and (not args.agents_only or not args.trace_path):
+        arguments.error("validation-version에는 agents-only와 trace-path가 필요합니다.")
+    if (args.agent_input or args.agent_limit is not None) and not args.agents_only:
+        arguments.error("agent-input과 agent-limit은 agents-only와 함께 사용하세요.")
+    if args.agent_limit is not None and args.agent_limit < 1:
+        arguments.error("agent-limit은 1 이상이어야 합니다.")
+    if args.agents_only and args.cases:
+        arguments.error("agents-only에서는 case 옵션을 사용할 수 없습니다.")
+    if args.report is None:
+        name = (
+            f"llm-agents-{args.validation_version}-live.json"
+            if args.validation_version
+            else "llm-api-live.json"
+        )
+        args.report = PROJECT_ROOT / ".reports" / name
     if args.report.suffix.lower() != ".json":
         arguments.error("report에는 .json 파일을 지정하세요.")
+    agent_inputs = None
+    if args.agents_only:
+        try:
+            agent_inputs = load_agent_inputs(args.agent_input, args.agent_limit)
+        except (OSError, ValueError) as error:
+            arguments.error(f"agent-input JSON을 읽을 수 없습니다: {error}")
     key = os.environ.get(args.api_key_env) or dotenv_values(args.env_file).get(
         args.api_key_env
     )
@@ -109,7 +181,12 @@ def main(argv=None):
         follow_redirects=False,
     ) as client:
         tester = LiveLlmTester(client, key, args.data_dir, args.expected_model_version)
-        report = tester.run(list(dict.fromkeys(args.cases or CASE_NAMES)))
+        if agent_inputs is not None:
+            report = run_agents_for_version(
+                tester, agent_inputs, args.validation_version
+            )
+        else:
+            report = tester.run(list(dict.fromkeys(args.cases or CASE_NAMES)))
     if args.trace_path:
         attach_traces(report, args.trace_path, args.require_trace)
     report = tester.redact(report)

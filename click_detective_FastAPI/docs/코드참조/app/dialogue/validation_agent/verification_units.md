@@ -1,6 +1,6 @@
-# `app/dialogue/validation_agent/verification_units.py`
+# `app/dialogue/validation_agent_v1/verification_units.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent/verification_units.py)
+[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/validation_agent_v1/verification_units.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 52줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -14,7 +14,7 @@
 
 ## `VerificationUnit`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification_units.py#L10)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification_units.py#L10)
 
 ```python
 class VerificationUnit:
@@ -35,7 +35,7 @@ VerificationUnit: 위 역할을 수행하도록 생성된 객체.
 
 ## `build_verification_units`
 
-[소스 선언 위치](../../../../../app/dialogue/validation_agent/verification_units.py#L27)
+[소스 선언 위치](../../../../../app/dialogue/validation_agent_v1/verification_units.py#L27)
 
 ```python
 def build_verification_units(request: CharacterReplyRequest) -> list[VerificationUnit]:

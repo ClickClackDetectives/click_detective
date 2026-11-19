@@ -10,6 +10,7 @@ from ..dialogue.reply_validation import (
     validate_generation,
 )
 from ..dialogue.schemas import CharacterReplyRequest, CharacterReplyResponse
+from ..dialogue.validation_agent_v2.agent import neutral_response
 
 logger = logging.getLogger(__name__)
 
@@ -156,8 +157,15 @@ class GameService:
             )
         try:
             response = await self.graph.generate(request)
+            incomplete = (
+                self.settings.validation_agent_version != "v1"
+                and response.finish_reason in {"partial", "neutral"}
+            )
             validate_generation(
-                request, response, require_verbatim=response.finish_reason != "stop"
+                request,
+                response,
+                require_verbatim=response.finish_reason in {"fixed", "fallback"},
+                require_all_facts=not incomplete,
             )
             return response
         except Exception as error:
@@ -165,6 +173,8 @@ class GameService:
             # 오류나 취소 신호(asyncio.CancelledError)는 성공 응답으로 바꾸지 않는다.
             if not self.settings.fallback_on_error:
                 raise
+            if self.settings.validation_agent_version != "v1":
+                return neutral_response(request)
             logger.warning(
                 "Dialogue recovered with approved facts: error_type=%s status=%s",
                 type(error).__name__,

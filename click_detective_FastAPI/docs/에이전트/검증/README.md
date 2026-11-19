@@ -11,7 +11,7 @@ async def validation_agent(self, state: InterrogationState) -> dict:
     ...
 ```
 
-담당: `ValidationAgent.validation_agent` — [실제 코드](../../../app/dialogue/validation_agent/agent.py) · [코드 참조](../../코드참조/app/dialogue/validation_agent/agent.md)
+담당: `ValidationAgent.validation_agent` — [실제 코드](../../../app/dialogue/validation_agent_v1/agent.py) · [코드 참조](../../코드참조/app/dialogue/validation_agent/agent.md)
 
 - `state`: 후보 원문, 생성 횟수와 실행 오류가 담긴 작업 기록
 - 반환값: 최종 `response` 또는 재생성 여부와 거절 코드를 담은 딕셔너리
@@ -22,7 +22,7 @@ async def validation_agent(self, state: InterrogationState) -> dict:
 
 이어 질문자와 행위자가 뒤바뀐 오류를 확인한다. 승인 사실이 없는 요청은 정확한 중립 대사와 빈 사실 ID인지 검사하고 `fixed`로 종료한다. 이 경로에서는 생성·검증 모델을 모두 호출하지 않는다.
 
-[출력 처리 코드](../../../app/dialogue/validation_agent/output.py)
+[출력 처리 코드](../../../app/dialogue/validation_agent_v1/output.py)
 
 ## 2. 후보 전체의 중요 의미 검사
 
@@ -33,7 +33,7 @@ async def verify(
     ...
 ```
 
-담당: `SemanticVerifier.verify` — [실제 코드](../../../app/dialogue/validation_agent/verification.py)
+담당: `SemanticVerifier.verify` — [실제 코드](../../../app/dialogue/validation_agent_v1/verification.py)
 
 먼저 `critical_claim_error`가 승인되지 않은 수량·시각·행동 연결이나 필수 의미 누락 등 알려진 오류를 확인한다. 제한된 정규식과 표현 사전이므로 일반적인 한국어 의미 전체를 판정하지는 않는다.
 
@@ -43,7 +43,7 @@ async def verify(
 
 검증 프롬프트는 승인 문장, 후보 문장의 실제 번호, 인물 설정과 최근 대화를 전달한다. 모델에는 `purpose="verification"`을 지정하고 샘플링하지 않는다.
 
-[보고서 요청 코드](../../../app/dialogue/validation_agent/verification_reports.py) · [검증 프롬프트](../../../app/dialogue/validation_agent/prompt.py)
+[보고서 요청 코드](../../../app/dialogue/validation_agent_v1/verification_reports.py) · [검증 프롬프트](../../../app/dialogue/validation_agent_v1/prompt.py)
 
 ## 4. 보고서의 근거도 검사
 
@@ -56,11 +56,11 @@ async def verify(
 
 한 사실에 여러 승인 문장이 있으면 모든 문장이 확인되어야 그 사실의 ID를 인정한다.
 
-[근거 검사 코드](../../../app/dialogue/validation_agent/evidence_checks.py)
+[근거 검사 코드](../../../app/dialogue/validation_agent_v1/evidence_checks.py)
 
 ## 5. 의미 거절과 최종 사실 ID
 
-[report_policy.py](../../../app/dialogue/validation_agent/report_policy.py)의 `reject_semantic_errors`는 불확실성, 모순, 승인되지 않은 추가 주장, 과거 대화 충돌, 인물 설정 불일치를 거절한다. 여러 배치의 결과는 어느 하나의 부정 판정도 긍정 판정으로 덮어쓰지 않고 합친다.
+[report_policy.py](../../../app/dialogue/validation_agent_v1/report_policy.py)의 `reject_semantic_errors`는 불확실성, 모순, 승인되지 않은 추가 주장, 과거 대화 충돌, 인물 설정 불일치를 거절한다. 여러 배치의 결과는 어느 하나의 부정 판정도 긍정 판정으로 덮어쓰지 않고 합친다.
 
 필수 사실 전체가 포함되었는지 확인한 뒤 최종 `used_fact_ids`를 검증 결과로 다시 구성한다. 생성자가 “이 사실을 사용했다”고 신고한 목록을 그대로 믿지 않는다.
 

@@ -5,7 +5,7 @@ import unicodedata
 
 from ...config import Settings
 from ..schemas import CharacterReplyRequest
-from ..validation_agent.verification_units import build_verification_units
+from ..validation_agent_v1.verification_units import build_verification_units
 from .rag.retriever import RetrievalContext
 
 SYSTEM_PROMPT = """당신은 수사 게임에서 지정된 인물입니다. 질문에 자연스러운 직접 발화로 답하세요.
@@ -114,8 +114,16 @@ def build_messages(
         "recent_history": history,
     }
     system_prompt = SYSTEM_PROMPT
+    if not approved_facts and settings.validation_agent_version != "v1":
+        system_prompt = system_prompt.replace(
+            "승인 사실이 없으면 추가로 말씀드릴 내용이 없다는 중립 답변을 하세요.",
+            "승인 사실이 없으면 새 사건 정보를 주장하지 마세요. "
+            "공개된 이름·역할 또는 자신의 이전 공개 진술을 그대로 되풀이하거나, "
+            "어떤 부분을 말씀하시는 건가요? 라고 확인할 수 있습니다. "
+            "질문의 전제를 긍정하지 마세요.",
+        )
     if settings.generation_output_format == "text":
-        system_prompt = SYSTEM_PROMPT.replace(
+        system_prompt = system_prompt.replace(
             'JSON 객체 하나만 출력하세요: {"reply":"캐릭터 대사"}',
             "캐릭터의 대사 원문만 출력하세요. JSON·코드 블록·답변 해설은 출력하지 마세요.",
         )
