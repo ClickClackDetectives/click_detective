@@ -12,7 +12,7 @@ PreprocessAgent의 처리 순서를 담는다.
 
 - [app/dialogue/diagnostics.py](../diagnostics.md)
 - [app/dialogue/preprocess_agent/prompt.py](prompt.md)
-- [app/dialogue/preprocess_agent/retriever.py](retriever.md)
+- [app/dialogue/preprocess_agent/rag/retriever.py](rag/retriever.md)
 - [app/dialogue/state.py](../state.md)
 - [app/dialogue/validation_agent/verification_units.py](../validation_agent/verification_units.md)
 

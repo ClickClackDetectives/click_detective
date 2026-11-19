@@ -10,7 +10,7 @@
 
 ## 함께 읽을 코드
 
-- [app/dialogue/preprocess_agent/retriever.py](../../app/dialogue/preprocess_agent/retriever.md)
+- [app/dialogue/preprocess_agent/rag/retriever.py](../../app/dialogue/preprocess_agent/rag/retriever.md)
 - [app/dialogue/schemas.py](../../app/dialogue/schemas.md)
 - [tests/dialogue/test_verification_reports.py](test_verification_reports.md)
 

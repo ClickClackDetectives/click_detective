@@ -1,6 +1,6 @@
-# `app/dialogue/rag/__init__.py`
+# `app/dialogue/preprocess_agent/rag/__init__.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/rag/__init__.py)
+[코드 참조 목차](../../../../README.md) · [전체 문서 목차](../../../../../README.md) · [실제 소스](../../../../../../app/dialogue/preprocess_agent/rag/__init__.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 1줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 

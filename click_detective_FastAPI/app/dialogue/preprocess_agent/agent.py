@@ -5,10 +5,10 @@ from time import perf_counter
 from fastapi import HTTPException
 
 from ..diagnostics import trace_event
-from ..preprocess_agent.prompt import build_messages
-from ..preprocess_agent.retriever import retrieve_approved_facts
 from ..state import InterrogationState
 from ..validation_agent.verification_units import build_verification_units
+from .prompt import build_messages
+from .rag.retriever import retrieve_approved_facts
 
 
 class PreprocessAgent:

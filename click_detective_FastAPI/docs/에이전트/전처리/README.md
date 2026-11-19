@@ -62,7 +62,7 @@ def retrieve_approved_facts(
     ...
 ```
 
-[실제 코드](../../../app/dialogue/preprocess_agent/retriever.py)
+[실제 코드](../../../app/dialogue/preprocess_agent/rag/retriever.py)
 
 검색 대상은 `request.allowed_facts`다. 단어·두 글자 조각·명시적 사실 ID 일치로 점수를 계산한다. 벡터 DB나 새로운 검색 모델을 사용하지 않는다.
 
