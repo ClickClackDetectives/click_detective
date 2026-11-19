@@ -1,6 +1,6 @@
 """쉬운 반복문으로 바꾼 검색이 필수 사실과 원래 순서를 유지하는지 검사한다."""
 
-from app.dialogue.preprocess_agent.retriever import retrieve_approved_facts
+from app.dialogue.preprocess_agent.rag.retriever import retrieve_approved_facts
 from app.dialogue.schemas import Fact
 
 from .test_verification_reports import profile_request

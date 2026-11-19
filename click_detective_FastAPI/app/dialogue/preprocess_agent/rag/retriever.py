@@ -8,7 +8,7 @@ import re
 import unicodedata
 from dataclasses import dataclass
 
-from ..schemas import CharacterReplyRequest, Fact
+from ...schemas import CharacterReplyRequest, Fact
 
 
 @dataclass(frozen=True)

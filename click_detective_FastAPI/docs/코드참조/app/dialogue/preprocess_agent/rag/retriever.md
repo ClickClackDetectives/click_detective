@@ -1,6 +1,6 @@
-# `app/dialogue/preprocess_agent/retriever.py`
+# `app/dialogue/preprocess_agent/rag/retriever.py`
 
-[코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/preprocess_agent/retriever.py)
+[코드 참조 목차](../../../../README.md) · [전체 문서 목차](../../../../../README.md) · [실제 소스](../../../../../../app/dialogue/preprocess_agent/rag/retriever.py)
 
 > 현재 소스 기준: 2026-11-16. 파일 길이: 189줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
@@ -13,11 +13,11 @@
 
 ## 함께 읽을 코드
 
-- [app/dialogue/schemas.py](../schemas.md)
+- [app/dialogue/schemas.py](../../schemas.md)
 
 ## `RetrievedFact`
 
-[소스 선언 위치](../../../../../app/dialogue/preprocess_agent/retriever.py#L15)
+[소스 선언 위치](../../../../../../app/dialogue/preprocess_agent/rag/retriever.py#L15)
 
 ```python
 class RetrievedFact:
@@ -39,7 +39,7 @@ RetrievedFact: 위 역할을 수행하도록 생성된 객체.
 
 ## `RetrievalContext`
 
-[소스 선언 위치](../../../../../app/dialogue/preprocess_agent/retriever.py#L35)
+[소스 선언 위치](../../../../../../app/dialogue/preprocess_agent/rag/retriever.py#L35)
 
 ```python
 class RetrievalContext:
@@ -63,7 +63,7 @@ RetrievalContext: 위 역할을 수행하도록 생성된 객체.
 
 ## `_terms`
 
-[소스 선언 위치](../../../../../app/dialogue/preprocess_agent/retriever.py#L58)
+[소스 선언 위치](../../../../../../app/dialogue/preprocess_agent/rag/retriever.py#L58)
 
 ```python
 def _terms(text: str) -> set[str]:
@@ -82,7 +82,7 @@ set[str]: 표기와 대소문자를 정규화한 검색 단어.
 
 ## `_bigrams`
 
-[소스 선언 위치](../../../../../app/dialogue/preprocess_agent/retriever.py#L71)
+[소스 선언 위치](../../../../../../app/dialogue/preprocess_agent/rag/retriever.py#L71)
 
 ```python
 def _bigrams(terms: set[str]) -> set[str]:
@@ -101,7 +101,7 @@ set[str]: 부분 일치 검색에 사용할 두 글자 조각.
 
 ## `relevance_score`
 
-[소스 선언 위치](../../../../../app/dialogue/preprocess_agent/retriever.py#L87)
+[소스 선언 위치](../../../../../../app/dialogue/preprocess_agent/rag/retriever.py#L87)
 
 ```python
 def relevance_score(question: str, fact: Fact) -> float:
@@ -121,7 +121,7 @@ float: 질문과 승인 사실의 단어·부분 일치 점수.
 
 ## `retrieve_approved_facts`
 
-[소스 선언 위치](../../../../../app/dialogue/preprocess_agent/retriever.py#L110)
+[소스 선언 위치](../../../../../../app/dialogue/preprocess_agent/rag/retriever.py#L110)
 
 ```python
 def retrieve_approved_facts(

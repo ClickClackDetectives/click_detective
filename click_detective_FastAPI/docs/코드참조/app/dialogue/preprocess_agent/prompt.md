@@ -13,7 +13,7 @@
 - [app/config.py](../../config.md)
 - [app/dialogue/schemas.py](../schemas.md)
 - [app/dialogue/validation_agent/verification_units.py](../validation_agent/verification_units.md)
-- [app/dialogue/preprocess_agent/retriever.py](retriever.md)
+- [app/dialogue/preprocess_agent/rag/retriever.py](rag/retriever.md)
 
 ## `normalize_question`
 

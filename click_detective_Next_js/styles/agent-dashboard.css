@@ -1,0 +1,146 @@
+.agent-board {
+  max-width: 1120px;
+  margin: auto;
+  padding: clamp(16px, 5vw, 48px);
+  color: #f1eee6;
+}
+.agent-board header,
+.agent-board section {
+  border: 1px solid #46483c;
+  background: #20241e;
+  padding: clamp(16px, 3vw, 28px);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.agent-board h1,
+.agent-board h2 {
+  margin: 0.4em 0;
+}
+.agent-board p {
+  color: #d6d5c6;
+}
+.agent-board a {
+  color: #e0c886;
+}
+.agent-board button,
+.agent-board select {
+  border: 1px solid #777c62;
+  border-radius: 6px;
+  background: #30362a;
+  color: inherit;
+  padding: 0.5rem 0.75rem;
+}
+.agent-board button[aria-pressed='true'] {
+  background: #e0c886;
+  color: #1b2119;
+}
+.agent-board :focus-visible {
+  outline: 2px solid #e0c886;
+  outline-offset: 3px;
+}
+.agent-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.agent-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 10px;
+}
+.agent-cards > div {
+  padding: 14px;
+  background: #2e3428;
+  border-radius: 8px;
+}
+.agent-cards dd {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #e0c886;
+}
+.agent-board li {
+  margin-block: 0.35rem;
+}
+.agent-table {
+  overflow-x: auto;
+}
+.agent-board table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.agent-board th,
+.agent-board td {
+  padding: 0.65rem;
+  border-bottom: 1px solid #46483c;
+}
+
+.agent-experiment {
+  border-top: 1px solid #46483c;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.agent-tabs {
+  margin-block: 1rem;
+}
+.agent-donut {
+  display: grid;
+  grid-template-columns: minmax(120px, 196px) minmax(0, 1fr);
+  gap: clamp(12px, 4vw, 32px);
+  align-items: center;
+  margin: 20px 0 0;
+}
+.agent-donut-chart {
+  position: relative;
+  min-width: 0;
+}
+.agent-donut-total {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  font-size: 1.2rem;
+}
+.agent-model-values {
+  padding-left: 1.25rem;
+  overflow-wrap: anywhere;
+}
+.agent-donut svg,
+.agent-trend svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.agent-legend {
+  padding: 0;
+  list-style: none;
+}
+.agent-legend li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+.agent-dot {
+  width: 10px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+.agent-trend {
+  margin: 20px 0 0;
+}
+.agent-trend figcaption {
+  color: #d6d5c6;
+  font-size: 0.875rem;
+}
+@media (max-width: 540px) {
+  .agent-donut {
+    grid-template-columns: 1fr;
+  }
+  .agent-donut-chart {
+    width: min(100%, 196px);
+    margin-inline: auto;
+  }
+}

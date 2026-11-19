@@ -4,7 +4,7 @@ from typing import TypedDict
 
 from pydantic import Field
 
-from .preprocess_agent.retriever import RetrievalContext
+from .preprocess_agent.rag.retriever import RetrievalContext
 from .schemas import (
     DTO,
     CharacterReplyRequest,

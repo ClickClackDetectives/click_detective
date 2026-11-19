@@ -6,7 +6,7 @@ import unicodedata
 from ...config import Settings
 from ..schemas import CharacterReplyRequest
 from ..validation_agent.verification_units import build_verification_units
-from .retriever import RetrievalContext
+from .rag.retriever import RetrievalContext
 
 SYSTEM_PROMPT = """당신은 수사 게임에서 지정된 인물입니다. 질문에 자연스러운 직접 발화로 답하세요.
 approved_facts는 외워서 복사할 대본이 아니라 답변에 사용할 사실 자료입니다.

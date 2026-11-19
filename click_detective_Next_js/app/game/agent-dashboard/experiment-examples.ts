@@ -1,0 +1,90 @@
+import type { Run } from './metrics';
+
+// UI를 설명하기 위한 가상 기록. 실제 프로젝트의 버전이나 측정 결과를 뜻하지 않는다.
+export const experimentExamples: Run[] = [
+  {
+    label: '검색 끔',
+    version: '가상 v1',
+    mode: 'demo',
+    elapsed: 1200,
+    outcome: 'retried',
+    experiment: { rag: false },
+    events: [{ stage: 'retrieval', ms: 8, selected: 8 }],
+  },
+  {
+    label: '기본 검색',
+    evaluation: { rouge1: 0.62, rouge2: 0.38, rougeL: 0.55 },
+    version: '가상 v1',
+    mode: 'demo',
+    elapsed: 900,
+    outcome: 'first',
+    experiment: {
+      rag: true,
+      embedding: false,
+      chunking: false,
+      ragVersion: '가상 RAG v1',
+      model: '가상 모델 A',
+      qlora: false,
+      generationVersion: '가상 생성 v1',
+    },
+    events: [
+      { stage: 'retrieval', ms: 22, selected: 5, relevanceMean: 1.2, relevanceMax: 2.7 },
+      { stage: 'generation', ms: 570 },
+    ],
+  },
+  {
+    label: '임베딩',
+    evaluation: { rouge1: 0.68, rouge2: 0.44, rougeL: 0.61 },
+    version: '가상 v2',
+    mode: 'demo',
+    elapsed: 850,
+    outcome: 'first',
+    experiment: {
+      rag: true,
+      embedding: true,
+      chunking: false,
+      ragVersion: '가상 RAG v2',
+      model: '가상 모델 A',
+      qlora: true,
+      generationVersion: '가상 생성 v2',
+    },
+    events: [
+      { stage: 'retrieval', ms: 43, selected: 4, relevanceMean: 1.5, relevanceMax: 2.9 },
+      { stage: 'generation', ms: 495 },
+    ],
+  },
+  {
+    label: '임베딩과 청킹',
+    evaluation: { rouge1: 0.72, rouge2: 0.47, rougeL: 0.64 },
+    version: '가상 v3',
+    mode: 'demo',
+    elapsed: 810,
+    outcome: 'first',
+    experiment: {
+      rag: true,
+      embedding: true,
+      chunking: true,
+      ragVersion: '가상 RAG v3',
+      model: '가상 모델 B',
+      qlora: true,
+      generationVersion: '가상 생성 v3',
+    },
+    events: [
+      { stage: 'retrieval', ms: 55, selected: 3, relevanceMean: 1.8, relevanceMax: 3.2 },
+      { stage: 'generation', ms: 430 },
+    ],
+  },
+  {
+    label: '기본 모델 반복',
+    evaluation: { rouge1: 0.48, rouge2: 0.21, rougeL: 0.42 },
+    version: '가상 v1',
+    mode: 'demo',
+    elapsed: 1340,
+    outcome: 'retried',
+    experiment: { model: '가상 모델 A', qlora: false, generationVersion: '가상 생성 v1' },
+    events: [
+      { stage: 'generation', ms: 610 },
+      { stage: 'generation', ms: 560 },
+    ],
+  },
+];

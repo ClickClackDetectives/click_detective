@@ -16,7 +16,7 @@
 | `app/dialogue/preprocess_agent/free_questions.py` | [문서](app/dialogue/preprocess_agent/free_questions.md) |
 | `app/dialogue/preprocess_agent/planning.py` | [문서](app/dialogue/preprocess_agent/planning.md) |
 | `app/dialogue/preprocess_agent/prompt.py` | [문서](app/dialogue/preprocess_agent/prompt.md) |
-| `app/dialogue/preprocess_agent/retriever.py` | [문서](app/dialogue/preprocess_agent/retriever.md) |
+| `app/dialogue/preprocess_agent/rag/retriever.py` | [문서](app/dialogue/preprocess_agent/rag/retriever.md) |
 
 ## 생성 에이전트
 
@@ -56,7 +56,7 @@
 | `app/dialogue/interrogation_graph.py` | [문서](app/dialogue/interrogation_graph.md) |
 | `app/dialogue/local_model.py` | [문서](app/dialogue/local_model.md) |
 | `app/dialogue/model_loading.py` | [문서](app/dialogue/model_loading.md) |
-| `app/dialogue/rag/__init__.py` | [문서](app/dialogue/rag/__init__.md) |
+| `app/dialogue/preprocess_agent/rag/__init__.py` | [문서](app/dialogue/preprocess_agent/rag/__init__.md) |
 | `app/dialogue/reply_validation.py` | [문서](app/dialogue/reply_validation.md) |
 | `app/dialogue/schemas.py` | [문서](app/dialogue/schemas.md) |
 | `app/dialogue/state.py` | [문서](app/dialogue/state.md) |
