@@ -11,7 +11,7 @@ dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.34,<1", "httpx>=0.28,<1", "pyda
 
 [project.optional-dependencies]
 local = ["torch>=2.6,<3", "transformers>=4.51,<5", "accelerate>=1,<2", "bitsandbytes>=0.45,<1", "peft>=0.15,<1"]
-dev = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2"]
+dev = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.17,<1"]
 
 [tool.setuptools.packages.find]
 include = ["app", "app.*"]
@@ -21,3 +21,10 @@ pythonpath = ["."]
 testpaths = ["tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]

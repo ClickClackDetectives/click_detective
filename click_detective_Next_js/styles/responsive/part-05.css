@@ -1,0 +1,217 @@
+@media (max-width: 560px) {
+  .suspect-list button strong {
+    font-size: 9px;
+    white-space: nowrap;
+  }
+  .suspect-list button span {
+    font-size: 7px;
+  }
+  .avatar {
+    width: 22px;
+    height: 31px;
+    font-size: 8px;
+  }
+  .chat-heading {
+    padding: 15px;
+  }
+  .messages {
+    padding: 15px;
+    height: 350px;
+  }
+  .message {
+    width: 94%;
+  }
+  .message p {
+    padding: 12px;
+    font-size: 11px;
+  }
+  .composer {
+    padding: 14px;
+  }
+  .composer-bottom > span {
+    font-size: 7px;
+  }
+  .composer-bottom .primary {
+    padding: 10px;
+    font-size: 10px;
+    gap: 7px;
+  }
+  .timeline article {
+    gap: 17px;
+  }
+  .timeline article:before {
+    left: 69px;
+  }
+  .timeline h3 {
+    font-size: 14px;
+  }
+  .timeline p {
+    font-size: 10px;
+  }
+  .timeline time {
+    font-size: 12px;
+  }
+  .timeline .eyebrow {
+    font-size: 6px;
+  }
+  .notebook-top {
+    padding: 15px;
+    font-size: 8px;
+    align-items: flex-start;
+  }
+  .notebook-top > span:last-child {
+    text-align: right;
+    max-width: 100px;
+    line-height: 1.7;
+  }
+  .notebook textarea {
+    padding: 18px;
+    font-size: 12px;
+  }
+  .notebook-bottom {
+    padding: 15px;
+    font-size: 8px;
+  }
+  .accusation {
+    padding: 20px;
+  }
+  .evidence-selection h3 small {
+    display: block;
+    margin: 8px 0 0;
+  }
+  .evidence-selection label {
+    gap: 8px;
+    font-size: 10px;
+  }
+  .evidence-selection .mono {
+    font-size: 8px;
+  }
+  .evidence-selection small {
+    font-size: 7px;
+  }
+  .accusation-bottom .primary {
+    width: 100%;
+  }
+  .results {
+    margin-top: 40px;
+  }
+  .results h1 {
+    font-size: 23px;
+  }
+  .results > p {
+    font-size: 10px;
+  }
+  .result-checks {
+    padding: 4px 15px;
+  }
+  .result-checks > details > summary {
+    font-size: 10px;
+  }
+  .solution p {
+    font-size: 11px;
+  }
+  .result-actions {
+    gap: 10px;
+  }
+  .result-actions button {
+    padding: 13px;
+    font-size: 10px;
+  }
+  .modal-backdrop {
+    padding: 17px;
+  }
+  .modal {
+    padding: 32px 24px;
+  }
+  .modal h2 {
+    font-size: 22px;
+  }
+  .modal p {
+    font-size: 11px;
+  }
+  .document-body {
+    font-size: 12px;
+  }
+  .modal-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .document-modal .modal-bottom .primary {
+    width: 100%;
+  }
+  .modal-actions button {
+    padding: 12px 15px;
+    font-size: 11px;
+  }
+  .error-toast {
+    font-size: 11px;
+    width: calc(100% - 35px);
+    top: 85px;
+  }
+  .notebook-bottom .text-button {
+    font-size: 9px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* 심문 인물 카드를 선택 목록보다 먼저, 사진은 크게 표시 */
+@media (min-width: 801px) and (max-width: 1200px) {
+  .interrogation-grid {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+}
+@media (max-width: 800px) {
+  .suspect-bio {
+    display: block;
+    grid-column: 1 / -1;
+  }
+  .suspect-portrait {
+    width: 100%;
+    max-width: 360px;
+  }
+}
+/* 읽기 편한 심문 기록과 수사 노트 */
+.interrogation-grid {
+  grid-template-columns: minmax(260px, 30%) minmax(0, 1fr);
+  align-items: start;
+}
+.chat {
+  background: #171f1e;
+  border-color: #45524b;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.chat-heading {
+  background: #222d29;
+  border-color: #4d5b50;
+  color: #e9e6d9;
+}
+.chat-heading > span:not(.live-dot) {
+  color: #aab9af;
+}
+.messages {
+  height: clamp(460px, 58vh, 680px);
+  min-height: 460px;
+  padding: 26px;
+  background: #171f1e;
+  scrollbar-color: #677c71 #171f1e;
+}
+.transcript-divider {
+  color: #8faaa0;
+  font-size: 9px;
+}
+.message {
+  width: 94%;
+  margin-bottom: 24px;
+}
+.message > span {
+  color: #b7c7bc;
+  font-size: 11px;
+}

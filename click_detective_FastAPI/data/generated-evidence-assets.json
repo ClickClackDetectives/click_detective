@@ -1,0 +1,85 @@
+{
+  "generatedDate": "2026-11-17",
+  "generator": "built-in imagegen",
+  "role": "reference illustrations; clue text is authoritative",
+  "versionPolicy": "supplementary images do not change scenarioVersion",
+  "files": [
+    {
+      "evidenceId": "2-01",
+      "title": "열린 금고",
+      "path": "public/assets/evidence/2-01.png",
+      "bytes": 2378700,
+      "sha256": "a6c460b58341fe614f55f1a6317368f9ac7327f26d74bccebdfde701a67ecda4"
+    },
+    {
+      "evidenceId": "2-02",
+      "title": "일기장의 눌린 글씨",
+      "path": "public/assets/evidence/2-02.png",
+      "bytes": 2520101,
+      "sha256": "ed29da839d4c420b68eeaa073310274804bcbd5ee5193207b096a873f8128600"
+    },
+    {
+      "evidenceId": "2-03",
+      "title": "검시 소견 메모",
+      "path": "public/assets/evidence/2-03.png",
+      "bytes": 2788968,
+      "sha256": "b4f91c1ac97ba1730f17841958ef345640f95b94a126f066bc0b4a50e21d85c5"
+    },
+    {
+      "evidenceId": "2-04",
+      "title": "벽난로의 잔해",
+      "path": "public/assets/evidence/2-04.png",
+      "bytes": 2625504,
+      "sha256": "3963dc9e7211943377b3030ac8b5111cae72e3e982d0912d99b02f003ab12ee3"
+    },
+    {
+      "evidenceId": "2-05",
+      "title": "톱니 없는 괘종시계",
+      "path": "public/assets/evidence/2-05.png",
+      "bytes": 2233223,
+      "sha256": "30d55d8bee63053787faed149848bfca7d5294c08b384b5f15dfd4c65ec92051"
+    },
+    {
+      "evidenceId": "2-06",
+      "title": "날짜 없는 메뉴판",
+      "path": "public/assets/evidence/2-06.png",
+      "bytes": 2774704,
+      "sha256": "3cb7ccb24b0a46befa1065bb314e5fa4906d781f311e473f5b7730351a095e8f"
+    },
+    {
+      "evidenceId": "2-07",
+      "title": "감정용 장갑 상자",
+      "path": "public/assets/evidence/2-07.png",
+      "bytes": 2645300,
+      "sha256": "723e15b06576b10cdf15406387e29313bcf247253429e4e56ea2b9d43a3c1459"
+    },
+    {
+      "evidenceId": "2-08",
+      "title": "접힌 해임 통지",
+      "path": "public/assets/evidence/2-08.png",
+      "bytes": 2443617,
+      "sha256": "f0668028cbc7ead809b101c3d165c0b721e4bcf155546a8672937ca43629056c"
+    },
+    {
+      "evidenceId": "2-09",
+      "title": "취재수첩 뒷장",
+      "path": "public/assets/evidence/2-09.png",
+      "bytes": 2648894,
+      "sha256": "dd243aee27a9d005652419a92fce261978cae1f67b5cb9e3b43cf5829b38aa2a"
+    },
+    {
+      "evidenceId": "2-10",
+      "title": "백세라의 회색 숄",
+      "path": "public/assets/evidence/2-10.png",
+      "bytes": 2462189,
+      "sha256": "fd0d7e22d3dbfb2a75890231b5cd38f2ea2a9a11da58d434000c5221657e4fc9"
+    },
+    {
+      "evidenceId": "2-11",
+      "title": "서하은의 회색 숄",
+      "path": "public/assets/evidence/2-11.png",
+      "bytes": 2706666,
+      "sha256": "a83f89f69cf245e41f0938ccdbc423c35bf50a17aa70ebc8f25ac393a099f957"
+    }
+  ]
+}

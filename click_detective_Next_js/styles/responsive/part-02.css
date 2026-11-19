@@ -1,0 +1,220 @@
+@media (max-width: 800px) {
+  .topbar {
+    height: 75px;
+    gap: 28px;
+  }
+  .brand {
+    font-size: 18px;
+  }
+  .brand small {
+    font-size: 6px;
+  }
+  .brand-mark {
+    height: 33px;
+    width: 33px;
+    font-size: 21px;
+  }
+  .topbar nav {
+    gap: 20px;
+    font-size: 10px;
+  }
+  .top-right .outline {
+    padding: 8px;
+    font-size: 0;
+    min-height: 33px;
+  }
+  .top-right .outline svg {
+    width: 17px;
+  }
+  .hero {
+    padding-top: 65px;
+    padding-bottom: 85px;
+    min-height: 580px;
+  }
+  .hero-file {
+    width: 220px;
+    height: 325px;
+    margin-left: 10px;
+  }
+  .file-bottom {
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+  }
+  .file-bottom h2 {
+    font-size: 33px;
+  }
+  .hero h1 {
+    font-size: 45px;
+  }
+  .hero-content > p {
+    font-size: 11px;
+  }
+  .hero-actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .hero-actions .primary {
+    padding: 14px 16px;
+    font-size: 11px;
+    min-height: 44px;
+  }
+  .hero-meta {
+    gap: 12px;
+    font-size: 8px;
+  }
+  .hero-meta svg {
+    width: 10px;
+  }
+  .process {
+    padding: 35px 6%;
+  }
+  .process-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px 0;
+  }
+  .process-grid article:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .process-grid article:nth-child(2) {
+    padding-right: 0;
+  }
+  .section-label {
+    gap: 18px;
+  }
+  .section-label > span {
+    font-size: 7px;
+  }
+  .section-label p {
+    font-size: 11px;
+  }
+  .archive-teaser {
+    padding: 40px 6%;
+  }
+  .archive-teaser h2 {
+    font-size: 26px;
+  }
+  footer {
+    flex-wrap: wrap;
+    padding: 25px 6%;
+  }
+  footer > p {
+    order: 3;
+    width: 100%;
+    font-size: 9px;
+  }
+  .workspace {
+    min-height: calc(100vh - 75px);
+  }
+  .sidebar {
+    width: 185px;
+    padding: 28px 10px;
+  }
+  .sidebar-file {
+    padding: 0 10px 20px;
+  }
+  .sidebar-file h3 {
+    font-size: 14px;
+  }
+  .sidebar nav button {
+    font-size: 10px;
+    gap: 9px;
+    padding: 13px 10px;
+  }
+  .sidebar nav svg {
+    width: 14px;
+  }
+  .desk {
+    padding: 0 20px 35px;
+  }
+  .desk-top .live-status {
+    display: none;
+  }
+  .desk-heading {
+    margin: 30px 0 25px;
+  }
+  .desk-heading h1 {
+    font-size: 27px;
+  }
+  .desk-heading p {
+    font-size: 11px;
+  }
+  .brief-grid {
+    grid-template-columns: 1fr;
+  }
+  .brief-side {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .evidence-grid {
+    gap: 12px;
+  }
+  .evidence-card {
+    padding: 15px;
+  }
+  .evidence-card h3 {
+    font-size: 13px;
+  }
+  .evidence-card-top {
+    font-size: 8px;
+  }
+  .read-label {
+    font-size: 7px;
+  }
+  .interrogation-grid {
+    grid-template-columns: 1fr;
+  }
+  .suspect-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+  .suspect-list > button {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0;
+    padding: 12px 9px;
+    gap: 9px;
+  }
+  .avatar {
+    width: 28px;
+    height: 32px;
+    font-size: 10px;
+  }
+  .suspect-list button span {
+    font-size: 8px;
+    line-height: 1.8;
+  }
+  .suspect-bio {
+    display: none;
+  }
+  .contradiction-list {
+    grid-column: 1/-1;
+    padding: 10px 0;
+  }
+  .contradiction-list p {
+    margin: 9px 0;
+  }
+  .messages {
+    height: 330px;
+  }
+  .accusation-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .results h1 {
+    font-size: 25px;
+  }
+  .toolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .search {
+    width: 100%;
+  }
+  .search input {
+    flex: 1;
+  }
+}
