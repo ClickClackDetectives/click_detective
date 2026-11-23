@@ -18,6 +18,7 @@ from .state import OutputRejected as OutputRejected
 from .validation_agent_v1.agent import ValidationAgent
 from .validation_agent_v1.evidence_checks import check_report_evidence
 from .validation_agent_v2.agent import ValidationAgentV2, neutral_response
+from .validation_agent_v2.neutral import classify_neutral_question
 
 
 class InterrogationGraph:
@@ -133,9 +134,16 @@ class InterrogationGraph:
         trace, token = start_trace(request, self.settings)
         try:
             try:
-                async with asyncio.timeout(self.settings.timeout_seconds):
-                    result = await self.graph.ainvoke({"request": request})
-                response = result["response"]
+                if (
+                    self.settings.validation_agent_version != "v1"
+                    and not request.allowed_facts
+                    and classify_neutral_question(request.question) == "out_of_scope"
+                ):
+                    response = neutral_response(request)
+                else:
+                    async with asyncio.timeout(self.settings.timeout_seconds):
+                        result = await self.graph.ainvoke({"request": request})
+                    response = result["response"]
             except TimeoutError:
                 if self.settings.validation_agent_version == "v1":
                     response = self.validator.output.failure(

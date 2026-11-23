@@ -11,9 +11,8 @@ from ...config import PROJECT_ROOT
 from ..validation_agent_v1.critical_facts import critical_evidence_error
 from ..validation_agent_v1.meaning_guards import has_question_actor_reversal
 from ..validation_agent_v1.semantic_verification import candidate_sentences
+from .neutral import NO_APPROVAL_REPLY
 
-NO_APPROVAL_REPLY = "그 부분에 대해서는 말씀드릴 내용이 없습니다."
-UNVERIFIED_REPLY = "그 질문에는 지금 답변드리기 어렵습니다."
 NEUTRAL_PROMPTS = frozenset(
     {
         NO_APPROVAL_REPLY,

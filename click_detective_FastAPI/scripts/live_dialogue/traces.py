@@ -58,17 +58,47 @@ def attach_traces(report, trace_path, required=False):
         case["agent_timings"] = summarize_agent_timings(events)
         settings = (trace or {}).get("settings") or {}
         expected_version = report.get("expected_validation_agent_version")
+        neutral_category = case.get("expected_neutral_category")
+        skips_model = neutral_category == "out_of_scope"
+        if neutral_category:
+            category_ok = any(
+                event.get("stage") == "validation_outcome"
+                and event.get("neutral_category") == neutral_category
+                for event in events
+            )
+            if skips_model:
+                category_ok = (
+                    category_ok
+                    and not {
+                        "agent_timing",
+                        "generation",
+                        "verification",
+                    }
+                    & stages
+                )
+            case["checks"]["expected_neutral_category"] = category_ok
+            if (required or expected_version) and not category_ok:
+                case["passed"] = False
+                case["error"] = (
+                    case.get("error", "")
+                    + " 중립 분류 또는 실행 진단이 일치하지 않습니다."
+                ).strip()
         if expected_version:
             observed = settings.get("validation_agent_version")
             case["validation_agent_version"] = observed
             version_ok = observed == expected_version
-            timings_ok = {
-                "preprocess_agent",
-                "inference_agent",
-                "validation_agent",
-            } <= case["agent_timings"].keys()
+            timings_ok = (
+                skips_model
+                or {
+                    "preprocess_agent",
+                    "inference_agent",
+                    "validation_agent",
+                }
+                <= case["agent_timings"].keys()
+            )
             case["checks"]["validation_agent_version"] = version_ok
-            case["checks"]["agent_timings_present"] = timings_ok
+            if not skips_model:
+                case["checks"]["agent_timings_present"] = timings_ok
             case["passed"] = case["passed"] and version_ok and timings_ok
             if not version_ok or not timings_ok:
                 case["error"] = (
@@ -96,7 +126,7 @@ def attach_traces(report, trace_path, required=False):
             "record": trace,
             "read_error": error,
         }
-        if required:
+        if required and not skips_model:
             case["checks"]["local_three_stage_trace"] = confirmed
             case["checks"]["nf4_runtime_trace"] = quantized
             case["passed"] = case["passed"] and confirmed and quantized
@@ -105,8 +135,13 @@ def attach_traces(report, trace_path, required=False):
                     case.get("error", "")
                     + " local 3단계 또는 NF4 실행 진단이 부족합니다."
                 ).strip()
-    if report["cases"] and all(
-        case["trace"]["nf4_runtime_observed"] for case in report["cases"]
+    model_cases = [
+        case
+        for case in report["cases"]
+        if case.get("expected_neutral_category") != "out_of_scope"
+    ]
+    if model_cases and all(
+        case["trace"]["nf4_runtime_observed"] for case in model_cases
     ):
         report["quantization"] = {
             "status": "nf4_observed_in_server_runtime_trace",
@@ -115,7 +150,7 @@ def attach_traces(report, trace_path, required=False):
     else:
         report["quantization"] = {
             "status": "not_confirmed_in_runtime_trace",
-            "explanation": "선택한 모든 심문의 NF4 실행 진단이 확인되지는 않았습니다.",
+            "explanation": "모델을 호출하는 검사 사례의 NF4 실행 진단이 확인되지는 않았습니다.",
         }
     report["passed"] = report["passed"] and all(
         case["passed"] for case in report["cases"]
