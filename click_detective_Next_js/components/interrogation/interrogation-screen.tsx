@@ -191,7 +191,12 @@ export function InterrogationScreen({
               }}
               onKeyDown={(e) => {
                 // Enter = 질문 보내기, Shift+Enter = 줄바꿈. 한글 조합 중 Enter는 무시한다.
-                if (e.key !== 'Enter' || e.shiftKey || e.nativeEvent.isComposing || e.keyCode === 229)
+                if (
+                  e.key !== 'Enter' ||
+                  e.shiftKey ||
+                  e.nativeEvent.isComposing ||
+                  e.keyCode === 229
+                )
                   return;
                 e.preventDefault();
                 if (busy || !question.trim() || !!state.verdict || state.questions >= questionLimit)
