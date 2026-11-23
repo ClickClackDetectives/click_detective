@@ -116,6 +116,15 @@ class LiveLlmTester:
             "checks": {},
             "passed": False,
         }
+        neutral_category = body.get("expected_neutral_category")
+        if neutral_category:
+            case["expected_neutral_category"] = neutral_category
+            case["description"] = f"승인 사실 없는 중립 응답 검사 ({neutral_category})"
+            body = {
+                key: value
+                for key, value in body.items()
+                if key != "expected_neutral_category"
+            }
         self.report["cases"].append(case)
         try:
             output = self.transport.exchange(
@@ -129,17 +138,26 @@ class LiveLlmTester:
                 "same_request_id": output.get("request_id") == body["request_id"],
                 "matching_context": output.get("suspect_id") == body["suspect_id"]
                 and output.get("state_revision") == body["state_revision"],
-                "generated_reply": output.get("finish_reason") == "stop"
-                and isinstance(reply, str)
-                and bool(reply.strip()),
-                "approved_fact_ids": isinstance(used_ids, list)
-                and all(fact in used_ids for fact in required_ids)
-                and all(fact in allowed_ids for fact in used_ids),
+                "reply_present": isinstance(reply, str) and bool(reply.strip()),
             }
-            if self.expected_model_version:
-                checks["expected_model_version"] = (
-                    output.get("model_version") == self.expected_model_version
+            if neutral_category:
+                checks.update(
+                    neutral_finish=output.get("finish_reason") == "neutral",
+                    neutral_model=output.get("model_version") == "fixed-neutral-v2",
+                    neutral_no_used_facts=used_ids == [],
                 )
+            else:
+                checks.update(
+                    generated_reply=output.get("finish_reason") == "stop"
+                    and checks["reply_present"],
+                    approved_fact_ids=isinstance(used_ids, list)
+                    and all(fact in used_ids for fact in required_ids)
+                    and all(fact in allowed_ids for fact in used_ids),
+                )
+                if self.expected_model_version:
+                    checks["expected_model_version"] = (
+                        output.get("model_version") == self.expected_model_version
+                    )
             case["checks"] = checks
             case["passed"] = all(checks.values())
             if not case["passed"]:

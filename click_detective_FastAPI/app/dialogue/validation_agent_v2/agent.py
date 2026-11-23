@@ -9,13 +9,8 @@ from ..schemas import CharacterReplyResponse
 from ..validation_agent_v1.output import ReplyOutput
 from ..validation_agent_v1.semantic_verification import candidate_sentences
 from ..validation_agent_v1.verification_units import build_verification_units
-from .rules import (
-    NO_APPROVAL_REPLY,
-    UNVERIFIED_REPLY,
-    SentenceTransformerSimilarity,
-    public_sources,
-    rule_match,
-)
+from .neutral import select_neutral_reply
+from .rules import SentenceTransformerSimilarity, public_sources, rule_match
 from .v2_1.policy import HybridPolicy
 from .v2_2.policy import RulePolicy
 
@@ -31,8 +26,10 @@ def neutral_response(request):
     Returns:
         CharacterReplyResponse: 승인 사실 전달을 기록하지 않는 중립 응답.
     """
+    category, reply = select_neutral_reply(request)
     trace_event(
         "validation_outcome",
+        neutral_category=category,
         code="filtered_reply_validation_failed"
         if request.allowed_facts
         else "no_approved_facts_out_of_scope",
@@ -43,7 +40,7 @@ def neutral_response(request):
         request_id=request.request_id,
         suspect_id=request.suspect_id,
         state_revision=request.state_revision,
-        reply=UNVERIFIED_REPLY if request.allowed_facts else NO_APPROVAL_REPLY,
+        reply=reply,
         used_fact_ids=[],
         model_version=NEUTRAL_MODEL,
         finish_reason="neutral",

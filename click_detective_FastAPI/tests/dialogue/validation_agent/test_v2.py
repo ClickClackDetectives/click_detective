@@ -12,6 +12,7 @@ from app.config import Settings
 from app.dialogue.interrogation_graph import InterrogationGraph
 from app.dialogue.schemas import CharacterReplyRequest
 from app.dialogue.validation_agent_v2 import rules
+from app.dialogue.validation_agent_v2.neutral import NEUTRAL_REPLIES
 from app.dialogue.validation_agent_v2.rules import preserves_anchors
 from scripts.live_dialogue.agent_inputs import load_agent_inputs
 
@@ -130,7 +131,7 @@ async def test_v2_public_scope_checks_no_fact_candidates(fixture_settings, versi
         assert response.used_fact_ids == []
         assert model.calls == ["dialogue"]
         if reason == "neutral":
-            assert response.reply == "그 부분에 대해서는 말씀드릴 내용이 없습니다."
+            assert response.reply in NEUTRAL_REPLIES["timeline"]
 
 
 def test_v2_neutral_does_not_unlock_unspoken_finding(client, play, monkeypatch):

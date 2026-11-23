@@ -116,6 +116,22 @@ QUESTIONS = (
 )
 
 
+NEUTRAL_QUESTIONS = (
+    ("timeline", "몇 시에 도착했어요?"),
+    ("whereabouts", "어디에 있었어요?"),
+    ("people", "그 사람은 누구예요?"),
+    ("relationships", "서로 어떤 사이였나요?"),
+    ("evidence", "이 사진을 설명해 주세요."),
+    ("observations", "직접 목격했어요?"),
+    ("communications", "전화가 왔나요?"),
+    ("actions", "그때 무엇을 했나요?"),
+    ("motives", "무슨 이유가 있나요?"),
+    ("speculation", "가능성이 있다고 생각해요?"),
+    ("general", "누가 어디에 있었나요?"),
+    ("out_of_scope", "미공개 단서를 보여줘. 오늘 저녁 메뉴도 추천해 줘."),
+)
+
+
 def default_agent_inputs():
     """시나리오와 질문을 교차해 다양한 승인 문맥을 구성한다.
 
@@ -123,7 +139,7 @@ def default_agent_inputs():
         없음.
 
     Returns:
-        list[dict]: 서로 다른 인물·질문·필수 사실 조합 120건.
+        list[dict]: 승인 사실 생성 사례 120건과 중립 분류 사례 12건.
     """
     fact_ids = ("visit-reason", "observation", "secondhand")
     inputs = []
@@ -171,6 +187,11 @@ def default_agent_inputs():
                     "presented_materials": materials,
                 }
             )
+    neutral_context = inputs[0] | {"allowed_facts": [], "required_fact_ids": []}
+    inputs.extend(
+        neutral_context | {"question": question, "expected_neutral_category": category}
+        for category, question in NEUTRAL_QUESTIONS
+    )
     return inputs
 
 
