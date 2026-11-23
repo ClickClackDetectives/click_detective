@@ -1,11 +1,10 @@
 """문장 코사인 유사도와 근거 검사 규칙."""
 
-import math
 import re
 import unicodedata
-from collections import Counter
 from pathlib import Path
 from threading import Lock
+
 from sentence_transformers import SentenceTransformer
 
 from ...config import PROJECT_ROOT
@@ -48,38 +47,6 @@ def normalize(text: str) -> str:
     return " ".join(unicodedata.normalize("NFC", text).casefold().split()).rstrip(".。")
 
 
-def sentence_vector(text: str) -> Counter:
-    """문자 2그램 빈도를 희소 벡터로 변환한다.
-
-    Args:
-        text: 유사도를 계산할 문자열.
-
-    Returns:
-        Counter: 문자 2그램별 출현 횟수.
-    """
-    compact = re.sub(r"\s+", "", normalize(text))
-    return Counter((compact[i : i + 2] for i in range(len(compact) - 1))) or Counter(
-        [compact]
-    )
-
-
-def cosine(left: Counter, right: Counter) -> float:
-    """두 희소 벡터의 코사인 유사도를 계산한다.
-
-    Args:
-        left: 후보 문장 벡터.
-        right: 승인 사실 문장 벡터.
-
-    Returns:
-        float: 0에서 1 사이의 유사도.
-    """
-    dot = sum(value * right[key] for key, value in left.items())
-    magnitude = math.sqrt(
-        sum(v * v for v in left.values()) * sum(v * v for v in right.values())
-    )
-    return dot / magnitude
-
-
 class SentenceTransformerSimilarity:
     """요청에 포함된 문장들을 한 배치로 임베딩한다.
 
@@ -101,7 +68,7 @@ class SentenceTransformerSimilarity:
         Returns:
             None: 모델을 한 번 로드한다.
         """
-        
+
         path = Path(model_name).expanduser()
         if model_name.startswith("."):
             path = PROJECT_ROOT / path
@@ -136,23 +103,6 @@ class SentenceTransformerSimilarity:
         left = vectors[[indexes[text] for text in candidates]]
         right = vectors[[indexes[text] for text in approved]]
         return left @ right.T
-
-
-def char_ngram_scores(candidates: list[str], approved: list[str]):
-    """문자 2그램 벡터로 코사인 유사도 행렬을 계산한다.
-
-    Args:
-        candidates: 생성된 후보 문장 목록.
-        approved: 승인 사실의 검증 단위 목록.
-
-    Returns:
-        list[list[float]]: 후보 문장별 승인 단위 유사도.
-    """
-    vectors = [sentence_vector(text) for text in approved]
-    candidate_vectors = [sentence_vector(text) for text in candidates]
-    return [
-        [cosine(candidate, fact) for fact in vectors] for candidate in candidate_vectors
-    ]
 
 
 def preserves_anchors(source: str, candidate: str) -> bool:

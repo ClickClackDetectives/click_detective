@@ -13,7 +13,6 @@ from .rules import (
     NO_APPROVAL_REPLY,
     UNVERIFIED_REPLY,
     SentenceTransformerSimilarity,
-    char_ngram_scores,
     public_sources,
     rule_match,
 )
@@ -74,13 +73,8 @@ class ValidationAgentV2:
         """
         self.settings = settings
         self.output = ReplyOutput(settings, model)
-        self.embedding = (
-            SentenceTransformerSimilarity(
-                settings.validation_embedding_model,
-                settings.validation_embedding_device,
-            )
-            if settings.validation_similarity_backend == "sentence_transformer"
-            else None
+        self.embedding = SentenceTransformerSimilarity(
+            settings.validation_embedding_model, settings.validation_embedding_device
         )
         self.policy = (
             HybridPolicy(settings, model)
@@ -211,12 +205,7 @@ class ValidationAgentV2:
         """
         candidates = [part.text for part in sentences]
         approved = [unit.text for unit in units]
-        if self.embedding:
-            scores = await asyncio.to_thread(
-                self.embedding.scores, candidates, approved
-            )
-        else:
-            scores = char_ngram_scores(candidates, approved)
+        scores = await asyncio.to_thread(self.embedding.scores, candidates, approved)
         eligible = {}
         for part, row in zip(sentences, scores, strict=True):
             eligible[part.id] = [
