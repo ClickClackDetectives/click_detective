@@ -77,9 +77,9 @@ def attach_traces(report, trace_path, required=False):
                 ).strip()
         confirmed = (
             bool(trace)
-            and settings.get("generation_mode") == "local"
-            and {"retrieval", "generation"} <= stages
-            and bool({"verification", "verification_policy"} & stages)
+            and (trace.get("settings") or {}).get("generation_mode") == "local"
+            and bool({"preprocess", "retrieval"} & stages)
+            and {"generation", "verification"} <= stages
         )
         resources = [
             event for event in events if event.get("stage") == "model_resources"

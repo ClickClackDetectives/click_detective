@@ -82,7 +82,7 @@ python scripts/test_llm_api_live.py \
 
 스크립트는 해당 심문의 request_id와 일치하는 기록만 찾습니다. 다음 두 묶음을 함께 확인합니다.
 
-- `generation_mode=local`이며 retrieval·generation·verification 이벤트가 있음: 전처리 검색·생성·검증 호출 경로의 증거
+- `generation_mode=local`이고 `preprocess`·`generation`·`verification` 이벤트가 있으면 전처리·생성·검증 경로가 실행된 것이다. 과거 보고서의 전처리 이벤트 이름은 `retrieval`이다.
 - model_resources에 `loaded_in_4bit=true`, `quantization=nf4-double`이 있음: 그 요청에서 서버가 기록한 실제 모델 양자화 상태
 
 `--require-trace`를 켜면 이 증거가 부족해도 실패입니다. `--trace-path`만 사용하면 참고 정보를 붙이고 진단 부족 자체를 필수 실패 조건으로 만들지는 않습니다.

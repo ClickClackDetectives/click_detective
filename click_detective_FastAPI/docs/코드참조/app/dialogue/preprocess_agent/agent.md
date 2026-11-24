@@ -2,7 +2,6 @@
 
 [코드 참조 목차](../../../README.md) · [전체 문서 목차](../../../../README.md) · [실제 소스](../../../../../app/dialogue/preprocess_agent/agent.py)
 
-> 현재 소스 기준: 2026-11-16. 파일 길이: 62줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
 ## 파일의 역할
 
@@ -12,7 +11,6 @@ PreprocessAgent의 처리 순서를 담는다.
 
 - [app/dialogue/diagnostics.py](../diagnostics.md)
 - [app/dialogue/preprocess_agent/prompt.py](prompt.md)
-- [app/dialogue/preprocess_agent/rag/retriever.py](rag/retriever.md)
 - [app/dialogue/state.py](../state.md)
 - [app/dialogue/validation_agent_v1/verification_units.py](../validation_agent/verification_units.md)
 
@@ -29,7 +27,7 @@ class PreprocessAgent:
 
 **파라미터**
 
-- settings: 검색과 생성 실행에 사용할 설정.
+- settings: 생성 프롬프트에 사용할 설정.
 
 **반환값**
 
@@ -48,7 +46,7 @@ def __init__(self, settings):
 
 **파라미터**
 
-- settings: 모델 실행과 검색에 사용할 설정.
+- settings: 생성 프롬프트에 사용할 설정.
 
 **반환값**
 
@@ -63,7 +61,7 @@ async def preprocess_agent(self, state: InterrogationState) -> dict:
     ...
 ```
 
-에이전트 1: 승인 사실 안에서 검색하고 필수 사실을 보존하여 문맥을 만든다.
+승인된 사실과 검증 문장으로 생성 문맥을 만든다.
 
 **파라미터**
 
@@ -71,4 +69,4 @@ async def preprocess_agent(self, state: InterrogationState) -> dict:
 
 **반환값**
 
-dict: 생성 프롬프트, 검색 결과와 초기 생성 횟수.
+dict: 생성 프롬프트와 초기 생성 횟수.

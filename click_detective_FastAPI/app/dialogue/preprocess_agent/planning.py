@@ -1,4 +1,4 @@
-"""심문 승인 계획. LLM은 공개 사실·쟁점·기록 ID를 결정하지 않는다."""
+"""게임 규칙으로 공개 가능한 심문 진술과 쟁점을 준비한다."""
 
 import re
 from copy import deepcopy
@@ -8,6 +8,25 @@ from fastapi import HTTPException
 
 from .approval_materials import collect_findings, collect_materials
 from .free_questions import free_entries, movement
+
+
+def facts_from_entries(suspect_id, entries):
+    """수사 기록용 진술을 생성에 쓸 승인 사실로 변환한다.
+
+    Args:
+        suspect_id: 진술을 한 인물의 식별자.
+        entries: 현재 공개 상태에서 선택된 원문 진술.
+    Returns:
+        list[dict]: 생성과 검증에 사용하는 승인 사실.
+    """
+    return [
+        {
+            "id": f"{suspect_id}-{entry['key']}",
+            "text": entry["text"],
+            "nature": entry["nature"].replace("추측·인상", "추측/인상"),
+        }
+        for entry in entries
+    ]
 
 
 @dataclass
@@ -121,12 +140,13 @@ class Planner:
             raise HTTPException(422, "먼저 해당 자료를 열람하세요.")
         return [{"kind": "evidence", "id": material_id}]
 
-    def prepare(self, state, command):
+    def prepare(self, state, command, *, search_free=False):
         """질문·자료를 검사하고 원래 상태를 바꾸지 않은 채 승인 계획을 반환한다.
 
         Args:
             state: 질문·대화·획득 자료를 담은 현재 수사 상태.
             command: 사용자 행동과 요청 ID, 예상 상태 버전을 담은 입력.
+            search_free: 자유 질문의 진술 선택을 벡터 검색에 맡길지 여부.
 
         Returns:
             ReplyPlan: 공개할 사실과 저장할 진술·쟁점 정보. 입력 상태는 확정 변경하지 않는다.
@@ -136,7 +156,9 @@ class Planner:
             raise HTTPException(422, "인물을 확인하세요.")
         if state["questions"] >= self.catalog.rules["questionLimit"]:
             raise HTTPException(429, "심문 한도를 모두 사용했습니다.")
-        topic = self.resolve_topic(suspect, command.question, command.topic_id)
+        topic = None
+        if command.topic_id or not search_free:
+            topic = self.resolve_topic(suspect, command.question, command.topic_id)
         physical_ids, sources = collect_materials(self, state, command)
         findings = collect_findings(self.catalog, state, command, physical_ids)
         flags = list(state["revealed"])
@@ -176,17 +198,10 @@ class Planner:
                     break
             else:
                 raise StopIteration
-        else:
+        elif not search_free:
             entries = self.free_entries(suspect, command.question, flags)
         if not facts:
-            for entry in entries:
-                facts.append(
-                    {
-                        "id": suspect + "-" + entry["key"],
-                        "text": entry["text"],
-                        "nature": entry["nature"].replace("추측·인상", "추측/인상"),
-                    }
-                )
+            facts = facts_from_entries(suspect, entries)
         return ReplyPlan(
             suspect,
             command.question,

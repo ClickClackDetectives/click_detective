@@ -13,7 +13,7 @@ GenerationPurpose = Literal["dialogue", "verification"]
 
 
 def decoding_options(settings: Settings, purpose: GenerationPurpose) -> dict:
-    """대사는 표현을 샘플링하고 검증은 greedy로 실행한다.
+    """대사는 표현을 샘플링하고 구조화된 질문 해석과 검증은 greedy로 실행한다.
 
     temperature는 다음 단어 선택의 자유도, top_p는 선택 후보의 누적 확률 범위다.
     사실 공개 권한을 늘리는 설정이 아니며 생성 후 의미 검증은 그대로 수행한다.
@@ -21,14 +21,14 @@ def decoding_options(settings: Settings, purpose: GenerationPurpose) -> dict:
 
     Args:
         settings (Settings): 모델 실행과 검색에 사용할 설정.
-        purpose (GenerationPurpose): 모델 호출 목적. dialogue는 생성, verification은 검증이다.
+        purpose (GenerationPurpose): 대사 생성, 의미 검증 또는 질문 분석.
 
     Returns:
         dict: 대사 샘플링 또는 검증 greedy 실행 옵션.
     """
     if purpose not in {"dialogue", "verification"}:
         raise ValueError("Unknown generation purpose")
-    if purpose == "verification" or settings.dialogue_temperature == 0:
+    if purpose != "dialogue" or settings.dialogue_temperature == 0:
         return {"do_sample": False}
     return {
         "do_sample": True,
@@ -57,7 +57,7 @@ class ReplyModel(Protocol):
 
         Args:
             messages (list[dict[str, str]]): 모델에 전달할 역할별 프롬프트 목록.
-            purpose (GenerationPurpose): 모델 호출 목적. dialogue는 생성, verification은 검증이다.
+            purpose (GenerationPurpose): 대사 생성, 의미 검증 또는 질문 분석.
 
         Returns:
             str: 호출 목적에 맞게 생성한 모델 출력 원문.
@@ -124,7 +124,7 @@ class LocalQwenModel:
 
         Args:
             messages (list[dict[str, str]]): 모델에 전달할 역할별 프롬프트 목록.
-            purpose (GenerationPurpose): 모델 호출 목적. dialogue는 생성, verification은 검증이다.
+            purpose (GenerationPurpose): 대사 생성, 의미 검증 또는 질문 분석.
 
         Returns:
             str: 입력 프롬프트를 제외하고 디코딩한 생성 원문.
@@ -151,13 +151,14 @@ class LocalQwenModel:
         inputs = {name: value.to(self.model.device) for name, value in inputs.items()}
         started = perf_counter()
         options = decoding_options(self.settings, purpose)
+        max_new_tokens = self.settings.max_new_tokens
         trace_event("model_decoding", purpose=purpose, **options)
         torch.cuda.reset_peak_memory_stats()
         try:
             with torch.inference_mode():
                 output = self.model.generate(
                     **inputs,
-                    max_new_tokens=self.settings.max_new_tokens,
+                    max_new_tokens=max_new_tokens,
                     **options,
                     use_cache=True,
                     pad_token_id=self.tokenizer.eos_token_id,
@@ -167,7 +168,7 @@ class LocalQwenModel:
                 "model_output",
                 input_tokens=input_length,
                 output_tokens=generated_tokens,
-                reached_token_limit=generated_tokens >= self.settings.max_new_tokens,
+                reached_token_limit=generated_tokens >= max_new_tokens,
             )
             return self.tokenizer.decode(
                 output[0, input_length:], skip_special_tokens=True
@@ -192,7 +193,7 @@ class LocalQwenModel:
 
         Args:
             messages (list[dict[str, str]]): 모델에 전달할 역할별 프롬프트 목록.
-            purpose (GenerationPurpose): 모델 호출 목적. dialogue는 생성, verification은 검증이다.
+            purpose (GenerationPurpose): 대사 생성, 의미 검증 또는 질문 분석.
 
         Returns:
             str: 호출 목적에 맞게 생성한 모델 출력 원문.

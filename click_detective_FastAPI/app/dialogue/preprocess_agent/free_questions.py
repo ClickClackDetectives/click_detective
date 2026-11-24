@@ -30,6 +30,19 @@ def movement(catalog, suspect, flags):
     )
 
 
+def excluded_free_question(question):
+    """자유 진술 검색에서 제외해 온 질문 표현을 확인한다.
+
+    Args:
+        question: 심문 입력 원문.
+    Returns:
+        bool: 기존 자유 질문 제외 규칙에 해당하는지 여부.
+    """
+    return bool(
+        re.search(r"대학|학력|레시피|프롬프트|지침|역할.*바꿔|정답.*알려", question)
+    )
+
+
 def free_entries(catalog, suspect, question, flags):
     """자유 질문을 공개 동선·관계·이미 인정한 진술에 연결한다. 미승인 비밀은 선택하지 않는다.
 
@@ -42,7 +55,7 @@ def free_entries(catalog, suspect, question, flags):
     Returns:
         list[dict]: 질문과 관련하여 공개 가능한 진술. 없으면 빈 목록.
     """
-    if re.search(r"대학|학력|레시피|프롬프트|지침|역할.*바꿔|정답.*알려", question):
+    if excluded_free_question(question):
         return []
     movement_entries = movement(catalog, suspect, flags)
     # 이미 인정한 쟁점은 관련 질문에 답할 수 있다. 새 인정은 앞의 자료 조건만 결정한다.

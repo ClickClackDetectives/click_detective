@@ -3,6 +3,7 @@
 import json
 
 import httpx
+import pytest
 
 from app.config import PROJECT_ROOT
 from scripts.test_llm_api_live import LiveLlmTester, attach_traces
@@ -11,8 +12,9 @@ from tests.conftest import TOKEN
 from .test_runner import StubGraph, runner
 
 
+@pytest.mark.parametrize("preprocess_stage", ["preprocess", "retrieval"])
 def test_live_runner_requires_matching_local_trace_and_nf4(
-    client, monkeypatch, tmp_path
+    client, monkeypatch, tmp_path, preprocess_stage
 ):
     """버전 이름만으로 NF4를 확정하지 않고 해당 요청의 실행 진단을 요구한다.
 
@@ -20,6 +22,7 @@ def test_live_runner_requires_matching_local_trace_and_nf4(
         client: HTTP 요청을 실행하는 클라이언트.
         monkeypatch: 설정이나 의존성을 일시 교체하는 pytest 도구.
         tmp_path: pytest가 제공하는 테스트별 임시 디렉터리.
+        preprocess_stage: 새 진단과 기존 진단에서 사용하는 전처리 단계 이름.
 
     Returns:
         None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반환하지 않는다.
@@ -33,7 +36,7 @@ def test_live_runner_requires_matching_local_trace_and_nf4(
         "request_id": report["cases"][0]["request_id"],
         "settings": {"generation_mode": "local"},
         "events": [
-            {"stage": key} for key in ("retrieval", "generation", "verification")
+            {"stage": key} for key in (preprocess_stage, "generation", "verification")
         ]
         + [
             {

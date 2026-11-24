@@ -58,9 +58,10 @@ def record_plan(catalog, state, plan, response):
         key = plan.suspect_id + "-" + entry["key"]
         if key in state["statements"] or (incomplete and key not in delivered):
             continue
+        topic = entry.get("_topic", plan.topic)
         section = (
             "다른 사람들에 대해"
-            if (plan.topic or "").startswith("about-")
+            if (topic or "").startswith("about-")
             else "그날 밤 당신의 행동"
         )
         script = catalog.scripts["characters"][plan.suspect_id]
@@ -68,7 +69,7 @@ def record_plan(catalog, state, plan, response):
             "id": key,
             "code": f"ST-{len(state['statements']) + 1:03}",
             "speaker": plan.suspect_id,
-            "topic": "admission" if plan.new_findings else plan.topic or "movement",
+            "topic": "admission" if plan.new_findings else topic or "movement",
             "title": entry["title"],
             "excerpt": entry["text"],
             "nature": entry["nature"],
