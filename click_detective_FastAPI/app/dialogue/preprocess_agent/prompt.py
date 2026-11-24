@@ -119,6 +119,12 @@ def build_messages(
             'JSON 객체 하나만 출력하세요: {"reply":"캐릭터 대사"}',
             "캐릭터의 대사 원문만 출력하세요. JSON·코드 블록·답변 해설은 출력하지 마세요.",
         )
+    if request.interpreted_question:
+        context["interpreted_question"] = request.interpreted_question
+        system_prompt += (
+            "interpreted_question은 질문 범위에 대한 힌트입니다. "
+            "질문 원문을 기준으로 답하고 사건 사실은 approved_facts에서만 가져오세요."
+        )
     return [
         {"role": "system", "content": system_prompt},
         {

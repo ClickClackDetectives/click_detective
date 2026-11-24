@@ -25,13 +25,22 @@ class GameService:
         planner: 현재 공개할 사실을 선택하는 객체.
         presenter: 내부 상태를 화면용 정보로 변환하는 객체.
         graph: 대사를 생성·검증하는 그래프. fixture 모드에서는 생략할 수 있다.
+        question_search: 공개 가능한 진술에서 자유 질문에 답할 사실을 찾는 검색기.
 
     Returns:
         GameService: 위 역할을 수행하도록 생성된 객체.
     """
 
     def __init__(
-        self, settings, catalog, repository, engine, planner, presenter, graph=None
+        self,
+        settings,
+        catalog,
+        repository,
+        engine,
+        planner,
+        presenter,
+        graph=None,
+        question_search=None,
     ):
         """공용 객체를 연결한다. 모델은 서버 시작 시 한 번만 준비한다.
 
@@ -43,6 +52,7 @@ class GameService:
             planner: 현재 공개할 사실을 선택하는 객체.
             presenter: 내부 상태를 화면용 정보로 변환하는 객체.
             graph: 대사를 생성·검증하는 그래프. fixture 모드에서는 생략할 수 있다.
+            question_search: 공개 가능한 진술에서 자유 질문에 답할 사실을 찾는 검색기.
 
         Returns:
             None: 필요한 설정과 초기값을 저장한다.
@@ -57,6 +67,7 @@ class GameService:
         self.planner = planner
         self.presenter = presenter
         self.graph = graph
+        self.question_search = question_search
 
     def read(self, game_id, token):
         """소유권과 사건 버전을 검사해 저장 상태를 복원한다.
@@ -110,6 +121,9 @@ class GameService:
                     history.append({"role": message["role"], "text": message["text"]})
             history = history[-self.settings.history_limit :]
         person = self.catalog.people[plan.suspect_id]
+        speech_style = person.get("speech_style")
+        if not isinstance(speech_style, str) or not speech_style.strip():
+            speech_style = "존댓말. 승인 원문의 말투와 관찰 한계를 유지하세요."
         return CharacterReplyRequest(
             request_id=command.request_id,
             game_id=state["id"],
@@ -120,11 +134,12 @@ class GameService:
             suspect_id=plan.suspect_id,
             phase=state["phase"],
             question=plan.question,
+            interpreted_question=plan.interpreted_question,
             topic_id=plan.topic,
             persona={
                 "name": person["name"],
                 "role": person["role"],
-                "speech_style": "존댓말. 승인 원문의 말투와 관찰 한계를 유지하세요.",
+                "speech_style": speech_style,
             },
             allowed_facts=plan.facts,
             required_fact_ids=required_ids,
@@ -214,9 +229,13 @@ class GameService:
             elif action == "accuse":
                 result = self.engine.accuse(state, command)
             elif action == "interrogate":
-                plan = self.planner.prepare(state, command)
-                request = self.dialogue_request(state, command, plan)
-                response = await self.reply(request)
+                search_free = (
+                    self.settings.rag_enabled and self.question_search is not None
+                )
+                plan = self.planner.prepare(state, command, search_free=search_free)
+                if search_free:
+                    plan = await self.question_search.refine(state, command, plan)
+                response = await self.reply(self.dialogue_request(state, command, plan))
                 result = self.engine.record_plan(state, plan, response)
             else:
                 raise HTTPException(404, "행동을 찾을 수 없습니다.")

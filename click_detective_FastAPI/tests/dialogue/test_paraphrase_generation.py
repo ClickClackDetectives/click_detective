@@ -203,3 +203,36 @@ def test_prompts_preserve_facts_but_allow_rewording(client):
     assert "문장 자체를 복사할 필요는 없지만" in messages[0]["content"]
     verification = build_verification_messages(request, settings, "대사 예시")
     assert "같은 의미이면 허용" in verification[0]["content"]
+
+
+@pytest.mark.parametrize("style", ["  짧은 문장으로 답하세요.  ", "  ", None])
+def test_character_speech_style_reaches_both_prompts(client, monkeypatch, style):
+    """인물 지침이 생성·검증에 전달되고 미작성 상태에서는 공통 지침이 적용된다.
+
+    Args:
+        client: 실제 사건 카탈로그를 읽은 FastAPI 테스트 클라이언트.
+        monkeypatch: 카탈로그를 테스트 중에만 수정하는 도구.
+        style: 인물에게 설정할 문구 또는 필드 미설정을 나타내는 None.
+    Returns:
+        None: 생성과 검증의 페르소나에 설정한 문구가 반영됐는지 확인한다.
+    """
+    service = client.app.state.service
+    person = service.catalog.people["yoon"]
+    if style is None:
+        monkeypatch.delitem(person, "speech_style", raising=False)
+    else:
+        monkeypatch.setitem(person, "speech_style", style)
+    expected = (
+        style or ""
+    ).strip() or "존댓말. 승인 원문의 말투와 관찰 한계를 유지하세요."
+    request = make_request(client)
+    generation = build_messages(request, service.settings)
+    verification = build_verification_messages(request, service.settings, "대사 예시")
+
+    for messages in (generation, verification):
+        persona = json.loads(messages[1]["content"])["persona"]
+        assert persona == {
+            "name": person["name"],
+            "role": person["role"],
+            "speech_style": expected,
+        }

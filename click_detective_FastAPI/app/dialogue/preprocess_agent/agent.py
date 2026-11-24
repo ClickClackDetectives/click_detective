@@ -52,9 +52,7 @@ class PreprocessAgent:
             request, self.settings.rag_top_k, self.settings.rag_enabled
         )
         elapsed_ms = round((perf_counter() - started) * 1000, 2)
-        scores = (
-            [hit.score for hit in retrieval.hits] if self.settings.rag_enabled else []
-        )
+        scores = [hit.score for hit in retrieval.hits if hit.reason == "related"]
         trace_event(
             "retrieval",
             elapsed_ms=elapsed_ms,

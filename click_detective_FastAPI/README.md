@@ -73,6 +73,9 @@ CLICK_GENERATION_MODE=fixture
 | `CLICK_DATA_DIR` | 사건 데이터 경로, 기본값 `./data` |
 | `CLICK_LOCAL_MODEL_PATH` | 로컬 모델 경로 |
 | `CLICK_LORA_ADAPTER_PATH` | 기존 LoRA 어댑터 경로 |
+| `CLICK_RAG_EMBEDDING_DIR` | E5 모델 디렉터리. local 기본 경로는 `./models/retrieval` |
+| `CLICK_RAG_TOP_K` | 자유 질문의 개별 진술 검색 결과 상한. 기본 3. 전체 동선 묶음은 한 후보로 검색 |
+| `CLICK_RAG_MIN_SCORE` | E5 코사인 유사도 하한. 기본 0.8322 |
 
 상대 경로는 백엔드 프로젝트 폴더를 기준으로 해석됩니다. 설정 변경 후 서버를 재시작합니다.
 
@@ -85,6 +88,8 @@ CLICK_GENERATION_MODE=fixture python -m uvicorn app.main:app --host 127.0.0.1 --
 ```
 
 `fixture`는 실제 LLM 대신 원문을 조립하는 개발·테스트 모드로, 게임 흐름과 저장·화면 연결을 확인할 수 있습니다.
+
+GPU 없이 자유 질문의 벡터 검색까지 확인하려면 `python -m pip install -e '.[retrieval]'`을 실행하고 `CLICK_RAG_EMBEDDING_DIR=./models/retrieval`을 설정합니다. 이 설정이 없는 fixture는 기존 테스트용 진술 선택을 사용합니다.
 
 - 상태 확인: http://127.0.0.1:8000/healthz — 정상 응답 `{"status":"ok"}`
 - Swagger API 문서: http://127.0.0.1:8000/docs
@@ -103,12 +108,14 @@ python -m pip install -e '.[local]'
 
 - **로컬 LLM 모델**: Qwen2.5-7B-Instruct 모델 가중치와 토크나이저 파일
 - **QLoRA 어댑터**: 해당 기본 모델에 호환되는, QLoRA로 학습된 LoRA 어댑터 파일(`adapter_config.json`, `adapter_model.safetensors` 등)
+- **자유 질문 검색 모델**: [multilingual-e5-small ONNX](https://huggingface.co/intfloat/multilingual-e5-small/tree/main/onnx)의 `model_qint8_avx512_vnni.onnx`를 `e5.onnx`로 저장하고 같은 폴더의 `tokenizer.json`을 함께 배치합니다.
 
 준비한 파일을 아래 위치에 배치하거나 `.env`에 실제 저장 경로를 지정합니다.
 
 ```text
 models/Qwen2.5-7B-Instruct/   # 모델·토크나이저 파일
 adapters/best_adapter/       # adapter_config.json, adapter_model.safetensors 등
+models/retrieval/           # e5.onnx, tokenizer.json
 ```
 
 `.env`에 실제 경로를 설정합니다.
@@ -124,6 +131,8 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 ```
 
 모델 로딩과 서버 시작이 완료된 후 Next.js를 실행합니다. 모델이나 설정된 어댑터가 없으면 시작에 실패합니다. 파일 구성은 `models/README.md`, `adapters/README.md`를 참고하세요.
+
+자유 질문은 현재 인물과 공개 쟁점에서 읽을 수 있는 원문을 E5로 검색합니다. 벡터 검색 결과가 없으면 고정 대사를 반환합니다. 명시적으로 선택한 주제와 증거로 새로 열린 인정 진술은 서버 규칙으로 처리합니다. `CLICK_RAG_ENABLED=false`로 설정하면 기존 선택 경로를 사용합니다.
 
 ## 테스트 및 추가 문서
 

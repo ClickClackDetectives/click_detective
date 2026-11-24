@@ -8,7 +8,7 @@ from app.investigation.rules.engine import Engine
 from app.investigation.views.presentation import Presenter
 
 from .cases.catalog import Catalog
-from .config import Settings
+from .config import PROJECT_ROOT, Settings
 from .dialogue.preprocess_agent.planning import Planner
 from .investigation.service import GameService
 
@@ -31,6 +31,16 @@ async def lifespan(app):
     engine = Engine(catalog)
     presenter = Presenter(catalog, engine)
     graph = None
+    question_search = None
+    embedding_dir = config.rag_embedding_dir
+    if config.generation_mode == "local":
+        embedding_dir = embedding_dir or PROJECT_ROOT / "models/retrieval"
+    if config.rag_enabled and embedding_dir is not None:
+        from .dialogue.preprocess_agent.embeddings import E5Encoder
+        from .dialogue.preprocess_agent.question_search import QuestionSearch
+
+        encoder = await asyncio.to_thread(E5Encoder, embedding_dir)
+        question_search = QuestionSearch(catalog, config, encoder)
     if config.generation_mode == "local":
         from .dialogue.interrogation_graph import InterrogationGraph
         from .dialogue.local_model import LocalQwenModel
@@ -46,6 +56,7 @@ async def lifespan(app):
         Planner(catalog),
         presenter,
         graph,
+        question_search=question_search,
     )
     app.state.settings = config
     app.state.service = service

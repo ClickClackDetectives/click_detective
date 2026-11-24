@@ -94,11 +94,24 @@ def relevance_score(question: str, fact: Fact) -> float:
     Returns:
         float: 질문과 승인 사실의 단어·부분 일치 점수.
     """
+    return text_relevance(question, fact.id, fact.text)
+
+
+def text_relevance(question: str, fact_id: str, text: str) -> float:
+    """진술 본문과 검색용 메타데이터의 문자 관련성을 계산한다.
+
+    Args:
+        question: 플레이어가 입력한 질문 원문.
+        fact_id: 사실 또는 진술의 식별자.
+        text: 검색할 원문 또는 메타데이터를 포함한 문자열.
+    Returns:
+        float: 완전 일치와 두 글자 부분 일치를 합친 점수.
+    """
     query_terms = _terms(question)
-    fact_terms = _terms(fact.text)
+    fact_terms = _terms(text)
     query_parts = _bigrams(query_terms)
     shared_parts = query_parts & _bigrams(fact_terms)
-    if fact.id.casefold() in question.casefold():
+    if fact_id.casefold() in question.casefold():
         id_match = 10.0
     else:
         id_match = 0.0
@@ -131,12 +144,12 @@ def retrieve_approved_facts(
 
     approved = {}
     scores = {}
+    required_ids = set(request.required_fact_ids)
     for fact in request.allowed_facts:
         approved[fact.id] = fact
-        if enabled:
+        if enabled and fact.id not in required_ids:
             scores[fact.id] = relevance_score(request.question, fact)
 
-    required_ids = set(request.required_fact_ids)
     for fact_id in required_ids:
         if fact_id not in approved:
             raise ValueError("Required facts must be approved")
@@ -148,8 +161,6 @@ def retrieve_approved_facts(
     for fact_id in ranked_ids:
         if optional_count >= top_k:
             break
-        if fact_id in required_ids:
-            continue
         if scores[fact_id] <= 0:
             continue
         selected_ids.add(fact_id)
