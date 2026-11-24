@@ -34,7 +34,8 @@ def attach_traces(report, trace_path, required=False):
         confirmed = (
             bool(trace)
             and (trace.get("settings") or {}).get("generation_mode") == "local"
-            and {"retrieval", "generation", "verification"} <= stages
+            and bool({"preprocess", "retrieval"} & stages)
+            and {"generation", "verification"} <= stages
         )
         resources = [
             event

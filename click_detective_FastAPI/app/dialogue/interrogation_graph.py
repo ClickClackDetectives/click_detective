@@ -83,7 +83,7 @@ class InterrogationGraph:
             state (InterrogationState): 이번 질문의 입력, 후보 대사와 시도 횟수.
 
         Returns:
-            dict: 생성 프롬프트, 검색 결과와 초기 생성 횟수.
+            dict: 생성 프롬프트와 초기 생성 횟수.
         """
         return await self.preprocessor.preprocess_agent(state)
 

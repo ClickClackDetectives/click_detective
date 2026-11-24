@@ -96,7 +96,7 @@ async def preprocess_agent(self, state: InterrogationState) -> dict:
 
 **반환값**
 
-dict: 생성 프롬프트, 검색 결과와 초기 생성 횟수.
+dict: 생성 프롬프트와 초기 생성 횟수.
 
 ## `InterrogationGraph.inference_agent`
 

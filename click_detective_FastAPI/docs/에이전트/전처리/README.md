@@ -7,7 +7,7 @@
 ## 1. 그래프 실행 전에 말해도 되는 사실 선택
 
 ```python
-def prepare(self, state, command):
+def prepare(self, state, command, *, search_free=False):
     ...
 ```
 
@@ -20,14 +20,14 @@ def prepare(self, state, command):
 처리 순서는 다음과 같다.
 
 1. 존재하는 인물인지, 질문 한도가 남았는지 확인한다.
-2. 명시한 주제를 검사하거나 질문에서 알려진 주제를 찾는다.
+2. 명시한 주제가 있으면 해당 인물의 심문 주제인지 확인한다.
 3. 같은 인물에게 과거에 제시한 자료와 이번 자료를 중복 없이 모은다.
 4. 실제 획득한 자료인지 검사하고 원본 출처를 확인한다.
 5. 자료 조건으로 새로 공개할 쟁점이 있으면 인정 진술을 선택한다.
-6. 그 외에는 동선·관계·자유 질문에 맞는 공개 진술을 고른다.
+6. 명시한 주제에 해당하는 진술을 고른다. E5가 켜진 자유 질문은 이 단계의 선택을 벡터 검색에 맡긴다.
 7. 원래 수사 상태를 확정 변경하지 않고 계획을 반환한다.
 
-자료 확인은 [approval_materials.py](../../../app/dialogue/preprocess_agent/approval_materials.py), 자유 질문 선택은 [free_questions.py](../../../app/dialogue/preprocess_agent/free_questions.py)에서 읽을 수 있다.
+자료 확인은 [approval_materials.py](../../../app/dialogue/preprocess_agent/approval_materials.py)에서 담당한다. [question_search.py](../../../app/dialogue/preprocess_agent/question_search.py)는 현재 인물과 공개 쟁점을 기준으로 개별 동선, 관계, 자기소개, 인정 진술을 검색한다. 개별 동선과 인정 진술은 제목·시각·본문을 한 문자열로 벡터화한다. 명시 주제와 새 인정 진술은 서버가 정한 원문을 곧바로 사용한다. 벡터 검색을 쓰지 않는 모드의 자유 질문은 [free_questions.py](../../../app/dialogue/preprocess_agent/free_questions.py)의 규칙으로 처리한다.
 
 `GameService.dialogue_request`는 이 계획을 대화 요청으로 바꾼다. 현재 서비스는 계획의 사실 전체를 승인 사실이자 필수 사실로 지정한다.
 
@@ -41,37 +41,14 @@ async def preprocess_agent(self, state: InterrogationState) -> dict:
 담당: `PreprocessAgent.preprocess_agent` — [실제 코드](../../../app/dialogue/preprocess_agent/agent.py) · [코드 참조](../../코드참조/app/dialogue/preprocess_agent/agent.md)
 
 - `state`: 승인 사실을 담은 요청을 포함하는 작업 기록
-- 반환값: `messages`, `retrieval`, 초기 `attempt=0`을 담은 딕셔너리
+- 반환값: `messages`와 초기 `attempt=0`을 담은 딕셔너리
 
 1. 승인 사실을 문장 단위로 나눈다. 검증 문장이 256개를 넘으면 HTTP 422로 거절한다.
-2. `retrieve_approved_facts`로 승인 사실 안에서 관련 내용을 찾는다.
-3. 필수 사실은 점수·선택 개수와 무관하게 보존한다.
-4. `build_messages`로 인물 설정, 질문, 승인 사실, 필수 문장, 최근 대화를 묶는다.
-5. 다음 생성 단계가 사용할 작업 기록을 반환한다.
+2. 같은 검증 문장으로 `build_messages`를 호출해 인물 설정, 질문, 승인 사실, 필수 문장, 최근 대화를 묶는다.
+3. 생성 단계에 프롬프트와 초기 생성 횟수를 전달한다.
 
 전처리 에이전트는 모델을 직접 호출하지 않는다. 생성과 검증에서 사용하는 공용 모델 객체를 전처리에 전달할 필요도 없다.
 
-## 3. 검색은 어디까지 가능한가?
+## 3. 생성 프롬프트 만들기
 
-```python
-def retrieve_approved_facts(
-    request: CharacterReplyRequest,
-    top_k: int = 3,
-    enabled: bool = True,
-) -> RetrievalContext:
-    ...
-```
-
-[실제 코드](../../../app/dialogue/preprocess_agent/rag/retriever.py)
-
-검색 대상은 `request.allowed_facts`다. 단어·두 글자 조각·명시적 사실 ID 일치로 점수를 계산한다. 벡터 DB나 새로운 검색 모델을 사용하지 않는다.
-
-필수 사실을 먼저 포함하고 관련성이 있는 선택적 사실만 `top_k`개까지 추가한다. 점수가 같으면 먼저 승인된 사실을 선택하며, 최종 결과는 원래 승인 순서로 돌려준다. 검색이 꺼져 있으면 승인 사실 전체를 반환한다.
-
-현재 게임 서비스는 승인 사실 전부를 필수로 지정한다. 따라서 `top_k=3`이라고 승인 사실을 세 개만 남기는 것은 아니다.
-
-## 4. 생성 프롬프트 만들기
-
-`build_messages`는 검색 결과가 같은 수사·사건 버전·인물에 속하는지 확인한다. 승인되지 않거나 바뀐 사실, 중복 ID, 누락된 필수 사실을 거절한다.
-
-[프롬프트 코드](../../../app/dialogue/preprocess_agent/prompt.py)는 목록을 먼저 만든 뒤 하나의 자료 묶음으로 정리한다. 질문·이력·자료는 참고 데이터이며, 새 비밀을 공개할 권한은 승인 사실에서만 나온다.
+[프롬프트 코드](../../../app/dialogue/preprocess_agent/prompt.py)는 승인 사실을 입력받은 순서대로 전달한다. [대화 요청 형식](../../../app/dialogue/schemas.py)은 사실 ID가 중복되거나 필수 ID가 승인 범위를 벗어나면 요청을 거절한다. 질문·이력·자료는 참고 데이터이며, 공개 범위는 승인 사실에서 정한다.

@@ -21,13 +21,13 @@ function cssValue(value: string): string {
     .join('');
 }
 
-/** 내부 CSS import를 펼쳐 순서가 있는 규칙 목록을 만든다.
+/** 줄바꿈 표기를 통일하고 내부 CSS import를 펼쳐 순서가 있는 규칙 목록을 만든다.
  * @param file 현재 읽을 파일.
  * @param conditions CSS 규칙을 감싸는 조건 목록.
  * @returns 적용 조건과 순서를 보존한 CSS 규칙 목록.
  */
 export function styleRules(file: string, conditions: string[] = []): unknown[] {
-  const parsed = postcss.parse(fs.readFileSync(file, 'utf8'));
+  const parsed = postcss.parse(fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n'));
   const entries: unknown[] = [];
   /** 현재 구문과 하위 항목을 차례로 확인한다.
    * @param nodes 순서대로 확인할 구문 목록.

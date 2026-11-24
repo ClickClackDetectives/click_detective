@@ -42,7 +42,6 @@ class ReplyPlan:
         new_findings (list[dict]): 이번 심문으로 새로 공개할 쟁점.
         sources (list[dict]): 진술과 쟁점의 실제 근거.
         material_id (str | None): 이번 심문에 제시한 자료 식별자.
-        interpreted_question (str | None): 자유 질문의 응답 범위를 설명하는 힌트.
 
     Returns:
         ReplyPlan: 위 역할을 수행하도록 생성된 객체.
@@ -56,7 +55,6 @@ class ReplyPlan:
     new_findings: list[dict]
     sources: list[dict]
     material_id: str | None
-    interpreted_question: str | None = None
 
 
 class Planner:

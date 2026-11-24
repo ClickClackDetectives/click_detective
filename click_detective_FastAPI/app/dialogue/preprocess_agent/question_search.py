@@ -3,7 +3,6 @@
 import asyncio
 import logging
 from dataclasses import dataclass, replace
-from threading import Lock
 
 from fastapi import HTTPException
 
@@ -28,7 +27,7 @@ class Candidate:
     """임베딩할 문장과 선택 시 공개할 진술을 연결한다.
 
     Args:
-        text: E5로 검색할 진술 본문 또는 비교용 질문 표현.
+        text: 검색용 제목·시각·본문 또는 비교용 질문 표현.
         entries: 후보가 선택되면 공개할 원문. 사건 외 비교 문장은 빈 값.
         topic: 전체 동선처럼 묶음으로 반환하는 주제의 ID.
     Returns:
@@ -76,6 +75,11 @@ def public_candidates(catalog, suspect, flags):
             text = f"{target}에 대해 무엇을 알고 있나요? 어떤 사이인가요? {text}"
         elif entry["key"] == "profile":
             text = f"자기소개를 해 주세요. 어떤 일을 하나요? 직업은 무엇인가요? {text}"
+        else:
+            label = " ".join(
+                part for part in (entry["title"], entry.get("time")) if part
+            )
+            text = f"{label}. {text}"
         candidates.append(Candidate(text, (entry,)))
     if timeline:
         candidates.append(Candidate(OVERVIEW, tuple(timeline), "movement"))
@@ -83,34 +87,35 @@ def public_candidates(catalog, suspect, flags):
 
 
 class QuestionSearch:
-    """승인 후보를 E5 코사인 유사도로 정렬한다.
+    """ChromaDB 유사도와 Kiwi BM25 순위로 승인 진술을 고른다.
 
     Args:
         catalog: 현재 사건 카탈로그.
         settings: 검색 개수, 점수 하한과 장애 복구 설정.
-        encoder: 질문과 진술을 단위 벡터로 인코딩하는 모델.
+        index: 현재 요청에 승인된 후보의 유사도를 반환하는 인덱스.
+        reranker: 유사도 기준을 통과한 후보를 재정렬하는 검색기.
     Returns:
         QuestionSearch: 자유 질문의 승인 계획을 완성하는 객체.
     """
 
-    def __init__(self, catalog, settings, encoder):
-        """서버가 공유하는 모델과 진술 벡터 캐시를 준비한다.
+    def __init__(self, catalog, settings, index, reranker=None):
+        """사건 데이터와 검색 인덱스를 연결한다.
 
         Args:
             catalog: 현재 사건 카탈로그.
             settings: 검색 및 복구 설정.
-            encoder: 문장 임베딩을 계산하는 모델.
+            index: 승인 후보의 유사도를 구하는 인덱스.
+            reranker: 설정에 따라 적용할 BM25 재정렬기.
         Returns:
             None: 상태 초기화만 수행한다.
         """
         self.catalog = catalog
         self.settings = settings
-        self.encoder = encoder
-        self.passage_vectors = {}
-        self.index_lock = Lock()
+        self.index = index
+        self.reranker = reranker
 
     def rank(self, question, candidates):
-        """후보 원문의 벡터를 재사용하고 질문과의 유사도를 계산한다.
+        """유사도 점수를 승인 후보에 연결해 정렬한다.
 
         Args:
             question: 플레이어가 입력한 원문.
@@ -118,25 +123,10 @@ class QuestionSearch:
         Returns:
             list[tuple]: 점수가 높은 순서로 정렬한 (점수, 후보).
         """
-        with self.index_lock:
-            missing = list(
-                dict.fromkeys(
-                    candidate.text
-                    for candidate in candidates
-                    if candidate.text not in self.passage_vectors
-                )
-            )
-            if missing:
-                vectors = self.encoder.encode(missing, prefix="passage: ")
-                self.passage_vectors.update(zip(missing, vectors, strict=True))
-            passages = [
-                self.passage_vectors[candidate.text] for candidate in candidates
-            ]
-        (query,) = self.encoder.encode([question], prefix="query: ")
-        scored = [
-            (float(query @ passage), candidate)
-            for passage, candidate in zip(passages, candidates, strict=True)
-        ]
+        scores = self.index.score(
+            question, [candidate.text for candidate in candidates]
+        )
+        scored = [(scores[candidate.text], candidate) for candidate in candidates]
         return sorted(scored, key=lambda item: item[0], reverse=True)
 
     async def refine(self, state, command, plan):
@@ -151,11 +141,10 @@ class QuestionSearch:
         """
         if command.topic_id or plan.new_findings or not self.settings.rag_top_k:
             return plan
-        candidates = public_candidates(self.catalog, plan.suspect_id, state["revealed"])
         try:
             async with asyncio.timeout(self.settings.timeout_seconds):
-                ranked = await asyncio.to_thread(
-                    self.rank, command.question, candidates
+                selected = await asyncio.to_thread(
+                    self.select, command.question, plan.suspect_id, state["revealed"]
                 )
         except (RuntimeError, TimeoutError, ValueError) as error:
             if not self.settings.fallback_on_error:
@@ -166,7 +155,29 @@ class QuestionSearch:
             )
             return plan
 
-        minute = exact_minute(command.question)
+        if selected is None:
+            return plan
+        entries, topic = selected
+        return replace(
+            plan,
+            topic=topic,
+            entries=entries,
+            facts=facts_from_entries(plan.suspect_id, entries),
+        )
+
+    def select(self, question, suspect, flags):
+        """공개 범위와 시각, 유사도 조건을 거쳐 최종 진술을 선택한다.
+
+        Args:
+            question: 플레이어가 입력한 원문.
+            suspect: 심문 중인 인물 ID.
+            flags: 현재 수사에서 이미 공개된 쟁점 ID.
+        Returns:
+            tuple | None: 최종 진술과 주제 또는 매칭 없음.
+        """
+        candidates = public_candidates(self.catalog, suspect, flags)
+        ranked = self.rank(question, candidates)
+        minute = exact_minute(question)
         eligible = [
             (score, candidate)
             for score, candidate in ranked
@@ -174,23 +185,34 @@ class QuestionSearch:
         ]
         best, first = eligible[0]  # 사건 외 비교 문장은 시각과 관계없이 남는다.
         if best < self.settings.rag_min_score or not first.entries:
-            return plan
+            return None
+        if first.topic:
+            return list(first.entries), first.topic
+
+        individual = [
+            (score, hit) for score, hit in eligible if hit.entries and not hit.topic
+        ]
         cutoff = max(self.settings.rag_min_score, best - MAX_SCORE_GAP)
-        matches = [
-            candidate
-            for score, candidate in eligible
-            if score >= cutoff and candidate.entries and not candidate.topic
-        ][: self.settings.rag_top_k]
-        selected = (
-            list(first.entries)
-            if first.topic
-            else [entry for match in matches for entry in match.entries]
-        )
+        pool = [i for i, (score, _) in enumerate(individual) if score >= cutoff]
+        if self.reranker is not None and len(pool) > 1:
+            documents = tuple(
+                dict.fromkeys(
+                    hit.text for hit in candidates if hit.entries and not hit.topic
+                )
+            )
+            ranked_texts = [hit.text for _, hit in individual]
+            try:
+                pool = self.reranker.rerank(question, documents, ranked_texts, pool)
+            except (RuntimeError, ValueError) as error:
+                if not self.settings.fallback_on_error:
+                    raise
+                logger.warning(
+                    "Kiwi BM25 reranking recovered: %s", type(error).__name__
+                )
+        selected = [
+            entry
+            for i in pool[: self.settings.rag_top_k]
+            for entry in individual[i][1].entries
+        ]
         topics = {entry.get("_topic") for entry in selected}
-        topic = first.topic or (topics.pop() if len(topics) == 1 else None)
-        return replace(
-            plan,
-            topic=topic,
-            entries=selected,
-            facts=facts_from_entries(plan.suspect_id, selected),
-        )
+        return selected, topics.pop() if len(topics) == 1 else None

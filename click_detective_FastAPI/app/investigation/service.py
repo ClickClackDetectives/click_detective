@@ -134,7 +134,6 @@ class GameService:
             suspect_id=plan.suspect_id,
             phase=state["phase"],
             question=plan.question,
-            interpreted_question=plan.interpreted_question,
             topic_id=plan.topic,
             persona={
                 "name": person["name"],

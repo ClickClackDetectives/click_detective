@@ -15,37 +15,17 @@ from app.dialogue.reply_validation import NO_FACTS
 from tests.dialogue.models import ApprovedModel
 
 
-class ScoredQuery:
-    """테스트에서 미리 정한 유사도를 반환하는 질문 벡터.
+class FakeIndex:
+    """벡터 모델 없이 진술 선택 정책과 API 연결을 검증한다.
 
     Args:
         없음.
     Returns:
-        ScoredQuery: E5와 같은 내적 인터페이스를 제공하는 값.
-    """
-
-    def __matmul__(self, passage):
-        """테스트가 정한 내적을 돌려준다.
-
-        Args:
-            passage: 모의 진술 벡터의 점수.
-        Returns:
-            float: 테스트가 정한 유사도.
-        """
-        return passage
-
-
-class FakeEncoder:
-    """E5 파일 없이 진술 선택 정책과 API 연결을 검증한다.
-
-    Args:
-        없음.
-    Returns:
-        FakeEncoder: 요청과 후보를 기록하는 인코더.
+        FakeIndex: 요청과 후보를 기록하는 인덱스.
     """
 
     def __init__(self):
-        """초기 점수와 요청 기록을 준비한다.
+        """기본 점수와 요청 기록을 준비한다.
 
         Args:
             없음.
@@ -56,21 +36,18 @@ class FakeEncoder:
         self.passages = []
         self.questions = []
 
-    def encode(self, texts, *, prefix):
-        """모의 벡터를 반환한다.
+    def score(self, question, texts):
+        """후보별로 테스트가 정한 유사도를 반환한다.
 
         Args:
-            texts: 원문 문자열들.
-            prefix: 질문과 본문을 구별하는 E5 접두어.
+            question: 원문 질문.
+            texts: 승인된 검색용 문장.
         Returns:
-            list: 입력 종류에 맞는 모의 벡터.
+            dict: 문장별 유사도.
         """
-        if prefix == "query: ":
-            self.questions.extend(texts)
-            return [ScoredQuery() for _ in texts]
-        assert prefix == "passage: "
+        self.questions.append(question)
         self.passages.extend(texts)
-        return [self.scores.get(text, 0.7) for text in texts]
+        return {text: self.scores.get(text, 0.7) for text in texts}
 
 
 @pytest.fixture
@@ -81,19 +58,19 @@ def vector_route(client, monkeypatch):
         client: FastAPI 테스트 클라이언트.
         monkeypatch: 서버 의존성을 교체하는 도구.
     Returns:
-        tuple: 심문 서비스, 모의 인코더, 대사 생성·검증 모델.
+        tuple: 심문 서비스, 모의 인덱스, 대사 생성·검증 모델.
     """
     service = client.app.state.service
     model = ApprovedModel()
-    encoder = FakeEncoder()
+    index = FakeIndex()
     monkeypatch.setattr(service.settings, "generation_mode", "local")
     monkeypatch.setattr(service, "graph", InterrogationGraph(service.settings, model))
     monkeypatch.setattr(
         service,
         "question_search",
-        QuestionSearch(service.catalog, service.settings, encoder),
+        QuestionSearch(service.catalog, service.settings, index),
     )
-    return service, encoder, model
+    return service, index, model
 
 
 def ask(api, game, question, **fields):
@@ -134,26 +111,29 @@ def ask(api, game, question, **fields):
 def test_vector_search_selects_the_fact_before_generation(
     api, game, vector_route, monkeypatch, question
 ):
-    """원문을 바로 인코딩하고 선택된 진술만 생성·검증과 수사 기록에 넘긴다.
+    """원문을 바로 검색에 사용하고 선택된 진술만 생성·검증과 수사 기록에 넘긴다.
 
     Args:
         api: 심문 API 호출 함수.
         game: 초기 수사 상태.
-        vector_route: 인코더와 모델 호출 기록을 제공하는 구성.
+        vector_route: 인덱스와 모델 호출 기록을 제공하는 구성.
         monkeypatch: 기존 정규식 경로를 호출 시 실패하도록 교체한다.
         question: 표현이 다른 소리 관련 질문.
     Returns:
         None: 검색 입력과 승인 원문이 전달되는 경로를 검사한다.
     """
-    service, encoder, model = vector_route
+    service, index, model = vector_route
     monkeypatch.delattr(type(service.planner), "resolve_topic")
     monkeypatch.delattr(type(service.planner), "free_entries")
     snoring = service.planner.movement("yoon", [])[2]
     assert snoring["key"] == "snoring"
-    encoder.scores[snoring["text"]] = 0.9
+    passage = f"{snoring['title']} {snoring['time']}. {snoring['text']}"
+    index.scores[passage] = 0.9
 
     assert ask(api, game, question)["used_fact_ids"] == ["yoon-snoring"]
-    assert encoder.questions == [question]
+    assert index.questions == [question]
+    assert passage in index.passages
+    assert snoring["text"] not in index.passages
     generation, verification = model.calls
     assert generation["question"] == question
     assert generation["approved_facts"][0]["text"] == snoring["text"]
@@ -186,16 +166,16 @@ def test_no_match_skips_both_llm_calls(
     Returns:
         None: 원문 사용, LLM 호출, 진술 기록이 없는지 검사한다.
     """
-    service, encoder, model = vector_route
+    service, index, model = vector_route
     if reject or minute_conflict:
         snoring = service.planner.movement("yoon", [])[2]
-        encoder.scores[snoring["text"]] = 0.9
+        index.scores[f"{snoring['title']} {snoring['time']}. {snoring['text']}"] = 0.9
     if reject:
-        encoder.scores[OFF_TOPIC] = 0.92
+        index.scores[OFF_TOPIC] = 0.92
     result = ask(api, game, question)
     assert result["reply"] == NO_FACTS
     assert result["used_fact_ids"] == model.calls == []
-    assert encoder.questions == [question]
+    assert index.questions == [question]
     assert not service.read(game["game_id"], game["game_token"])["statements"]
 
 
@@ -206,19 +186,19 @@ def test_full_timeline_keeps_structured_path(api, game, vector_route, explicit):
     Args:
         api: 심문 API 호출 함수.
         game: 초기 수사 상태.
-        vector_route: 인코더와 모델 호출 기록을 제공하는 구성.
+        vector_route: 인덱스와 모델 호출 기록을 제공하는 구성.
         explicit: 플레이어가 동선 주제 버튼을 선택했는지 여부.
     Returns:
         None: 승인된 동선 원문 전체와 검색 우회 여부를 검증한다.
     """
-    service, encoder, _ = vector_route
-    encoder.scores[OVERVIEW] = 0.93
+    service, index, _ = vector_route
+    index.scores[OVERVIEW] = 0.93
     question = "그날 밤 어떤 순서로 움직였나요?"
     result = ask(api, game, question, topic_id="movement" if explicit else None)
     assert result["used_fact_ids"] == [
         "yoon-" + entry["key"] for entry in service.planner.movement("yoon", [])
     ]
-    assert encoder.questions == ([] if explicit else [question])
+    assert index.questions == ([] if explicit else [question])
 
 
 def test_candidates_keep_revealed_admissions_scoped_to_the_speaker(vector_route):
@@ -231,10 +211,14 @@ def test_candidates_keep_revealed_admissions_scoped_to_the_speaker(vector_route)
     """
     service, _, _ = vector_route
     before = public_candidates(service.catalog, "yoon", [])
-    after = public_candidates(service.catalog, "yoon", ["yoon_visit", "cha_identity"])
+    after = public_candidates(
+        service.catalog, "yoon", ["yoon_visit", "yoon_money", "cha_identity"]
+    )
     keys = {entry["key"] for item in after for entry in item.entries}
     assert not any(
         entry["key"].startswith("admit-") for item in before for entry in item.entries
     )
     assert "admit-yoon_visit" in keys
     assert "admit-cha_identity" not in keys
+    money = service.catalog.testimony["admissionEntries"]["yoon_money"]
+    assert any(item.text == f"{money['title']}. {money['text']}" for item in after)

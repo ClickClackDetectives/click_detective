@@ -28,11 +28,14 @@ async def test_three_agents_execute_with_backend_approval(client, game):
     command = Interrogate(
         request_id=uuid4(),
         expected_revision=0,
-        suspect_id="kang",
-        question="자기소개를 해주세요.",
+        suspect_id="yoon",
+        question="그날 밤의 동선을 알려주세요.",
+        topic_id="movement",
     )
     plan = service.planner.prepare(state, command)
     request = service.dialogue_request(state, command, plan)
+    approved_ids = [fact.id for fact in request.allowed_facts]
+    assert len(approved_ids) > service.settings.rag_top_k
     model = ApprovedModel()
     graph = InterrogationGraph(service.settings, model)
     assert {"preprocess_agent", "inference_agent", "validation_agent"} <= set(
@@ -40,8 +43,9 @@ async def test_three_agents_execute_with_backend_approval(client, game):
     )
     response = await graph.generate(request)
     assert response.finish_reason == "stop"
-    assert response.used_fact_ids == [fact.id for fact in request.allowed_facts]
+    assert response.used_fact_ids == approved_ids
     assert len(model.calls) == 2
+    assert [fact["id"] for fact in model.calls[0]["approved_facts"]] == approved_ids
     assert service.read(game["game_id"], game["game_token"])["questions"] == 0
 
 

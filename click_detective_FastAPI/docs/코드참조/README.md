@@ -16,7 +16,7 @@
 | `app/dialogue/preprocess_agent/free_questions.py` | [문서](app/dialogue/preprocess_agent/free_questions.md) |
 | `app/dialogue/preprocess_agent/planning.py` | [문서](app/dialogue/preprocess_agent/planning.md) |
 | `app/dialogue/preprocess_agent/prompt.py` | [문서](app/dialogue/preprocess_agent/prompt.md) |
-| `app/dialogue/preprocess_agent/rag/retriever.py` | [문서](app/dialogue/preprocess_agent/rag/retriever.md) |
+| `app/dialogue/preprocess_agent/question_search.py` | [공개 진술 벡터 검색](../app/dialogue/preprocess_agent/question_search.py) |
 
 ## 생성 에이전트
 
@@ -122,7 +122,7 @@
 | `tests/dialogue/test_free_question_recovery.py` | [문서](tests/dialogue/test_free_question_recovery.md) |
 | `tests/dialogue/test_paraphrase_generation.py` | [문서](tests/dialogue/test_paraphrase_generation.md) |
 | `tests/dialogue/test_reply_availability.py` | [문서](tests/dialogue/test_reply_availability.md) |
-| `tests/dialogue/test_retrieval.py` | [문서](tests/dialogue/test_retrieval.md) |
+| `tests/dialogue/test_question_search.py` | [자유 질문 검색 검사](../tests/dialogue/test_question_search.py) |
 | `tests/dialogue/test_runtime.py` | [문서](tests/dialogue/test_runtime.md) |
 | `tests/dialogue/test_verification_reports.py` | [문서](tests/dialogue/test_verification_reports.md) |
 | `tests/investigation/__init__.py` | [문서](tests/investigation/__init__.md) |

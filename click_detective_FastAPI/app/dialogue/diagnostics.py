@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from time import perf_counter
 from uuid import uuid4
 
-PIPELINE_VERSION = "semantic-paraphrase-v7"
+PIPELINE_VERSION = "semantic-paraphrase-v9"
 
 CURRENT_TRACE: ContextVar[dict | None] = ContextVar("generation_trace", default=None)
 logger = logging.getLogger(__name__)
@@ -55,6 +55,10 @@ def start_trace(request, settings) -> tuple[dict, object]:
                 "adapter_version",
                 "rag_enabled",
                 "rag_top_k",
+                "rag_min_score",
+                "rag_bm25_enabled",
+                "rag_dense_weight",
+                "rag_rrf_k",
                 "max_input_tokens",
                 "max_new_tokens",
                 "history_limit",

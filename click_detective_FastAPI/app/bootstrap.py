@@ -32,32 +32,46 @@ async def lifespan(app):
     presenter = Presenter(catalog, engine)
     graph = None
     question_search = None
+    index = None
     embedding_dir = config.rag_embedding_dir
     if config.generation_mode == "local":
         embedding_dir = embedding_dir or PROJECT_ROOT / "models/retrieval"
-    if config.rag_enabled and embedding_dir is not None:
-        from .dialogue.preprocess_agent.embeddings import E5Encoder
-        from .dialogue.preprocess_agent.question_search import QuestionSearch
+    try:
+        if config.rag_enabled and embedding_dir is not None:
+            from .dialogue.preprocess_agent.chroma_index import ChromaIndex
+            from .dialogue.preprocess_agent.embeddings import E5Encoder
+            from .dialogue.preprocess_agent.question_search import QuestionSearch
 
-        encoder = await asyncio.to_thread(E5Encoder, embedding_dir)
-        question_search = QuestionSearch(catalog, config, encoder)
-    if config.generation_mode == "local":
-        from .dialogue.interrogation_graph import InterrogationGraph
-        from .dialogue.local_model import LocalQwenModel
+            encoder = await asyncio.to_thread(E5Encoder, embedding_dir)
+            index = await asyncio.to_thread(ChromaIndex, encoder)
+            reranker = None
+            if config.rag_bm25_enabled:
+                from .dialogue.preprocess_agent.kiwi_reranker import KiwiBM25Reranker
 
-        model = LocalQwenModel(config)
-        await asyncio.to_thread(model.load)
-        graph = InterrogationGraph(config, model)
-    service = GameService(
-        config,
-        catalog,
-        Repository(config.database_path),
-        engine,
-        Planner(catalog),
-        presenter,
-        graph,
-        question_search=question_search,
-    )
-    app.state.settings = config
-    app.state.service = service
-    yield
+                reranker = await asyncio.to_thread(
+                    KiwiBM25Reranker, config.rag_dense_weight, config.rag_rrf_k
+                )
+            question_search = QuestionSearch(catalog, config, index, reranker)
+        if config.generation_mode == "local":
+            from .dialogue.interrogation_graph import InterrogationGraph
+            from .dialogue.local_model import LocalQwenModel
+
+            model = LocalQwenModel(config)
+            await asyncio.to_thread(model.load)
+            graph = InterrogationGraph(config, model)
+        service = GameService(
+            config,
+            catalog,
+            Repository(config.database_path),
+            engine,
+            Planner(catalog),
+            presenter,
+            graph,
+            question_search=question_search,
+        )
+        app.state.settings = config
+        app.state.service = service
+        yield
+    finally:
+        if index is not None:
+            await asyncio.to_thread(index.close)

@@ -32,10 +32,13 @@ class Settings(BaseSettings):
         generation_attempts (int): 최초 시도를 포함한 대사 생성 횟수 상한.
         verification_attempts (int): 같은 후보에 대해 배치별 보고서를 요청할 횟수 상한.
         verification_batch_size (int): 한 번의 검증 호출에서 확인할 승인 문장 수.
-        rag_enabled (bool): 자유 질문의 벡터 검색과 승인 사실 검색 사용 여부.
-        rag_top_k (int): 자유 질문의 최대 검색 결과 수와 선택적 사실 수의 상한.
+        rag_enabled (bool): 자유 질문의 E5 벡터 검색 사용 여부.
+        rag_top_k (int): 자유 질문에서 고를 개별 진술 수의 상한.
         rag_min_score (float): 자유 질문에 적용하는 E5 코사인 유사도 하한.
         rag_embedding_dir (Path | None): E5 파일 경로. local 기본값은 models/retrieval.
+        rag_bm25_enabled (bool): 유사도 기준을 통과한 후보의 Kiwi BM25 재정렬 사용 여부.
+        rag_dense_weight (float): 가중 RRF에서 E5 순위에 줄 비중.
+        rag_rrf_k (int): 가중 RRF에서 순위 분모에 더하는 상수.
         history_limit (int): 프롬프트에 담을 최근 대화 항목 수.
         diagnostics_enabled (bool): 대화 생성 진단을 파일에 기록할지 여부.
         diagnostics_path (Path): 대화 생성 진단 JSONL 파일 경로.
@@ -73,6 +76,9 @@ class Settings(BaseSettings):
     rag_top_k: int = Field(default=3, ge=0, le=10)
     rag_min_score: float = Field(default=0.8322, ge=0, le=1, allow_inf_nan=False)
     rag_embedding_dir: Path | None = None
+    rag_bm25_enabled: bool = True
+    rag_dense_weight: float = Field(default=0.65, ge=0, le=1, allow_inf_nan=False)
+    rag_rrf_k: int = Field(default=40, ge=1)
     history_limit: int = Field(default=6, ge=0, le=20)
     diagnostics_enabled: bool = True
     diagnostics_path: Path = PROJECT_ROOT / ".data/dialogue-traces.jsonl"

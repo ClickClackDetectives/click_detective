@@ -5,8 +5,10 @@ import unicodedata
 
 from ...config import Settings
 from ..schemas import CharacterReplyRequest
-from ..validation_agent.verification_units import build_verification_units
-from .rag.retriever import RetrievalContext
+from ..validation_agent.verification_units import (
+    VerificationUnit,
+    build_verification_units,
+)
 
 SYSTEM_PROMPT = """당신은 수사 게임에서 지정된 인물입니다. 질문에 자연스러운 직접 발화로 답하세요.
 approved_facts는 외워서 복사할 대본이 아니라 답변에 사용할 사실 자료입니다.
@@ -40,48 +42,22 @@ def normalize_question(text: str) -> str:
 def build_messages(
     request: CharacterReplyRequest,
     settings: Settings,
-    retrieval: RetrievalContext | None = None,
+    *,
+    units: list[VerificationUnit] | None = None,
 ) -> list[dict[str, str]]:
-    """선택 인물의 제한된 검색 문맥을 JSON 데이터로 전달한다. 검증 문맥은 원래 승인 계획을 유지한다.
+    """서버가 승인한 사실을 인물·질문과 함께 JSON 데이터로 전달한다.
 
     요청·게임 식별자나 시나리오 전체는 프롬프트에 넣지 않는다. 이력은 최근 일부만
     남기고, 모델 토큰 예산 초과 시 runtime에서 요청을 거절하며 사실은 자르지 않는다.
 
     Args:
         request (CharacterReplyRequest): 승인 사실, 필수 사실 ID와 인물·대화 문맥을 담은 요청.
-        settings (Settings): 모델 실행과 검색에 사용할 설정.
-        retrieval (RetrievalContext | None): 이번 요청에서 검색한 승인 사실 묶음. None이면 승인 사실 전체를 사용한다.
+        settings (Settings): 생성 프롬프트에 사용할 설정.
+        units: 요청의 승인 사실을 전처리에서 분리한 검증 문장. 생략 시 여기서 분리한다.
 
     Returns:
-        list[dict[str, str]]: 인물·질문·검색 사실을 담은 생성용 프롬프트.
+        list[dict[str, str]]: 인물·질문·승인 사실을 담은 생성용 프롬프트.
     """
-    selected_facts = request.allowed_facts
-    if retrieval is not None:
-        selected_facts = retrieval.selected_facts
-        # 다른 수사나 다른 인물의 검색 결과가 섞이지 않았는지 확인한다.
-        same_game = retrieval.game_id == request.game_id
-        same_case = retrieval.case_id == request.case_id
-        same_version = retrieval.scenario_version == request.scenario_version
-        same_person = retrieval.suspect_id == request.suspect_id
-        if not (same_game and same_case and same_version and same_person):
-            raise ValueError("Retrieval context scope mismatch")
-
-        approved = {}
-        for fact in request.allowed_facts:
-            approved[fact.id] = fact
-        selected_ids = []
-        for fact in selected_facts:
-            if fact.id in selected_ids:
-                raise ValueError("Retrieval contains unapproved facts")
-            if fact.id not in approved:
-                raise ValueError("Retrieval contains unapproved facts")
-            if fact != approved[fact.id]:
-                raise ValueError("Retrieval contains unapproved facts")
-            selected_ids.append(fact.id)
-        for fact_id in request.required_fact_ids:
-            if fact_id not in selected_ids:
-                raise ValueError("Retrieval omitted required facts")
-
     recent_history = []
     if settings.history_limit:
         recent_history = request.history[-settings.history_limit :]
@@ -92,10 +68,12 @@ def build_messages(
             {"kind": material.kind, "id": material.id, "code": material.code}
         )
     approved_facts = []
-    for fact in selected_facts:
+    for fact in request.allowed_facts:
         approved_facts.append(fact.model_dump())
+    if units is None:
+        units = build_verification_units(request)
     required_sentences = []
-    for unit in build_verification_units(request):
+    for unit in units:
         if unit.fact_id in request.required_fact_ids:
             required_sentences.append(unit.text)
     history = []
@@ -118,12 +96,6 @@ def build_messages(
         system_prompt = SYSTEM_PROMPT.replace(
             'JSON 객체 하나만 출력하세요: {"reply":"캐릭터 대사"}',
             "캐릭터의 대사 원문만 출력하세요. JSON·코드 블록·답변 해설은 출력하지 마세요.",
-        )
-    if request.interpreted_question:
-        context["interpreted_question"] = request.interpreted_question
-        system_prompt += (
-            "interpreted_question은 질문 범위에 대한 힌트입니다. "
-            "질문 원문을 기준으로 답하고 사건 사실은 approved_facts에서만 가져오세요."
         )
     return [
         {"role": "system", "content": system_prompt},

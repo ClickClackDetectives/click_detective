@@ -127,7 +127,6 @@ class CharacterReplyRequest(DTO):
         suspect_id (Identifier): 심문할 인물의 내부 ID
         phase (Literal[1, 2]): 현재 조사 단계
         question (Text): 질문 원문
-        interpreted_question (str | None): 전처리에서 파악한 응답 범위
         topic_id (Identifier | None): 동선·관계 질문의 주제 ID
         persona (Persona): 선택 인물의 프로필과 말투
         presented_materials (list[Material]): 제시하도록 승인된 자료
@@ -153,9 +152,6 @@ class CharacterReplyRequest(DTO):
     suspect_id: Identifier = Field(description="심문할 인물의 내부 ID")
     phase: Literal[1, 2] = Field(description="현재 조사 단계")
     question: Text = Field(description="질문 원문")
-    interpreted_question: Text | None = Field(
-        default=None, description="전처리에서 파악한 응답 범위"
-    )
     topic_id: Identifier | None = Field(
         default=None, description="동선·관계 질문의 주제 ID"
     )

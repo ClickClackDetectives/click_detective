@@ -49,7 +49,7 @@ class InterrogationState(TypedDict, total=False):
 | 값 | 의미 |
 |---|---|
 | `request` | 질문·인물·승인 사실·필수 사실 ID |
-| `messages`, `retrieval` | 생성 프롬프트와 검색 결과 |
+| `messages` | 승인 사실과 질문을 담은 생성 프롬프트 |
 | `raw_output` | 생성한 후보 대사 원문 |
 | `attempt` | 대사 생성 누적 횟수 |
 | `error_status` | 모델 실행 오류 |
