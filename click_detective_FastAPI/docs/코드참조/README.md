@@ -81,13 +81,11 @@
 | `app/investigation/views/material_display.py` | [문서](app/investigation/views/material_display.md) |
 | `app/investigation/api/material_routes.py` | [문서](app/investigation/api/material_routes.md) |
 | `app/investigation/views/presentation.py` | [문서](app/investigation/views/presentation.md) |
-| `app/investigation/persistence/repository.py` | [문서](app/investigation/persistence/repository.md) |
 | `app/investigation/views/result_display.py` | [문서](app/investigation/views/result_display.md) |
 | `app/investigation/api/routes.py` | [문서](app/investigation/api/routes.md) |
 | `app/investigation/api/schemas.py` | [문서](app/investigation/api/schemas.md) |
 | `app/investigation/views/screen_views.py` | [문서](app/investigation/views/screen_views.md) |
 | `app/investigation/service.py` | [문서](app/investigation/service.md) |
-| `app/investigation/persistence/storage.py` | [문서](app/investigation/persistence/storage.md) |
 | `app/investigation/rules/testimony.py` | [문서](app/investigation/rules/testimony.md) |
 | `app/investigation/views/timeline.py` | [문서](app/investigation/views/timeline.md) |
 | `app/investigation/api/view_routes.py` | [문서](app/investigation/api/view_routes.md) |

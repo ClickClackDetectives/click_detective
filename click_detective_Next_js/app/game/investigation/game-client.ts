@@ -1,9 +1,11 @@
+import { accountScope, selectCreatedGame } from '../../../shared/auth/scope.ts';
 import { api, ApiError } from '../../../shared/api/client.ts';
 import type { GameState } from './types';
 import type { PublicCatalog } from '../catalog/types';
 import { mapGameCommand } from './commands.ts';
 export { requestDocument } from './documents.ts';
 let latest: GameState | null = null;
+let scopeKey: string | null = null;
 let queue: Promise<unknown> = Promise.resolve();
 let pending: {
   action: string;
@@ -26,20 +28,34 @@ function accept(state: GameState | null) {
 }
 /** 불확실한 통신 실패는 동일 UUID로 재확인하고 새 행동은 그 뒤에 전송합니다.
  * @param request 확인하거나 전달할 요청.
+ * @param scope 요청이 시작된 계정과 수사의 범위.
  * @returns 동일 요청의 결과로 확인한 수사 상태.
  */
-async function send(request: NonNullable<typeof pending>) {
+async function send(request: NonNullable<typeof pending>, scope: string) {
+  if (scope !== JSON.stringify(accountScope())) return null;
   try {
-    const data = await api<{ state: GameState }>(request.path, request.method, request.body);
+    const data = await api<{ game_id?: string; state: GameState }>(
+      request.path,
+      request.method,
+      request.body,
+    );
+    if (scope !== JSON.stringify(accountScope())) return null;
+    if (request.action === 'start' && data.game_id) {
+      selectCreatedGame(data.game_id);
+      scopeKey = JSON.stringify(accountScope());
+    }
     pending = null;
     return accept(data.state);
   } catch (error) {
+    if (scope !== JSON.stringify(accountScope())) throw error;
     const uncertain =
       !(error instanceof ApiError) ||
       [
         'BACKEND_UNREACHABLE',
         'BACKEND_TIMEOUT',
         'INVALID_RESPONSE',
+        'INVESTIGATION_STORE_UNAVAILABLE',
+        'AUTH_UNAVAILABLE',
         'operation_in_progress',
       ].includes(error.code);
     // 생성·검증 오류 응답은 백엔드가 작업 실패를 확정한 결과다.
@@ -47,7 +63,8 @@ async function send(request: NonNullable<typeof pending>) {
     pending = uncertain ? request : null;
     if (error instanceof ApiError && error.status === 409 && !uncertain) {
       try {
-        accept((await api<{ state: GameState | null }>('state')).state);
+        const result = await api<{ state: GameState | null }>('state');
+        if (scope === JSON.stringify(accountScope())) accept(result.state);
       } catch {}
     }
     throw error;
@@ -59,46 +76,70 @@ async function send(request: NonNullable<typeof pending>) {
  * @returns 서버에서 확인한 최신 수사 상태 또는 null을 기다릴 Promise.
  */
 export function requestGame(action: string, body?: unknown): Promise<GameState | null> {
+  const scope = JSON.stringify(accountScope());
   const task = queue
     .catch(() => {})
     .then(async () => {
-      if (action === 'state')
-        return accept((await api<{ state: GameState | null }>('state')).state);
+      const current = accountScope();
+      if (scope !== JSON.stringify(current)) return null;
+      if (scopeKey !== scope) {
+        latest = null;
+        pending = null;
+        scopeKey = scope;
+      }
+      if (action === 'state') {
+        if (current.investigation === 'new') return accept(null);
+        const result = await api<{ state: GameState | null }>('state');
+        if (scope !== JSON.stringify(accountScope())) return null;
+        if (!current.investigation && result.state) {
+          selectCreatedGame(result.state.id);
+          scopeKey = JSON.stringify(accountScope());
+        }
+        return accept(result.state);
+      }
       const input = (body ?? {}) as Record<string, unknown>;
       const fingerprint = JSON.stringify([action, input]);
       if (pending) {
         const same = pending.fingerprint === fingerprint;
-        const recovered = await send(pending);
+        const recovered = await send(pending, scope);
         if (same) return recovered;
+        if (scope !== JSON.stringify(accountScope())) return null;
       }
       if (action === 'start') {
         if (!input.restart && latest) return latest;
         const catalog = await api<PublicCatalog>('catalog');
-        return send({
-          action,
-          fingerprint,
-          path: 'start',
-          method: 'POST',
-          body: {
-            request_id: crypto.randomUUID(),
-            case_id: catalog.caseId,
-            scenario_version: catalog.scenarioVersion,
+        if (scope !== JSON.stringify(accountScope())) return null;
+        return send(
+          {
+            action,
+            fingerprint,
+            path: 'start',
+            method: 'POST',
+            body: {
+              request_id: crypto.randomUUID(),
+              case_id: catalog.caseId,
+              scenario_version: catalog.scenarioVersion,
+            },
           },
-        });
+          scope,
+        );
       }
       if (!latest) throw new Error('먼저 수사를 시작하세요.');
       const mapped = mapGameCommand(action, input);
-      return send({
-        action,
-        fingerprint,
-        path: mapped.path,
-        method: mapped.method ?? 'POST',
-        body: {
-          ...mapped.fields,
-          request_id: crypto.randomUUID(),
-          expected_revision: latest.revision,
+      return send(
+        {
+          action,
+          fingerprint,
+          path: mapped.path,
+          method: mapped.method ?? 'POST',
+          body: {
+            ...mapped.fields,
+            request_id: crypto.randomUUID(),
+            expected_revision: latest.revision,
+          },
         },
-      });
+        scope,
+      );
     });
   queue = task;
   return task;
@@ -108,5 +149,5 @@ export function requestGame(action: string, body?: unknown): Promise<GameState |
  * @returns 마지막으로 확인한 수사 상태 또는 null.
  */
 export function currentGame() {
-  return latest;
+  return scopeKey === JSON.stringify(accountScope()) ? latest : null;
 }

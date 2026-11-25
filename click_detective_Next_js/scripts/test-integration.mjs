@@ -8,6 +8,8 @@ import { TestServers } from './integration/servers.mjs';
 import { prepareInvestigation } from './integration/api-checks.mjs';
 import { completeInvestigation } from './integration/game-checks.mjs';
 import { finishInvestigation } from './integration/finish-checks.mjs';
+import { prepareAccountDatabases } from './integration/account-db.mjs';
+import { checkAccounts } from './integration/account-checks.mjs';
 
 /** 사용할 백엔드 Python을 환경변수 또는 기존 가상환경에서 찾는다.
  * @param backend FastAPI 프로젝트 폴더.
@@ -43,16 +45,19 @@ async function main() {
   const servers = new TestServers(path.join(project, '.reports/integration-server.log'));
   const client = new IntegrationClient(base, key, backend);
   let failure = null;
+  let accountDatabases = null;
   try {
+    const python = await backendPython(backend);
+    accountDatabases = await prepareAccountDatabases(python, backend);
     servers.start(
-      await backendPython(backend),
+      python,
       ['-m', 'uvicorn', 'app.main:app', '--host', '127.0.0.1', '--port', backPort],
       backend,
       {
         CLICK_API_KEY: key,
         CLICK_GENERATION_MODE: 'fixture',
-        CLICK_DATABASE_PATH: path.join(temp, 'games.sqlite3'),
         CLICK_DIAGNOSTICS_ENABLED: 'false',
+        ...accountDatabases.env,
       },
     );
     await servers.ready('http://127.0.0.1:' + backPort + '/healthz');
@@ -83,6 +88,10 @@ async function main() {
       });
     }
     await finishInvestigation(client, session);
+    if (accountDatabases) {
+      await checkAccounts(base, 'http://127.0.0.1:' + backPort, key);
+      console.log('PASS: PostgreSQL·MongoDB 계정 인증, 익명 수사 연결과 이어하기');
+    }
     console.log(
       'PASS: Next.js → FastAPI HTTP ' + client.records.length + '건, 진행률·고발 점수 100',
     );
@@ -94,6 +103,7 @@ async function main() {
     const report = {
       mode: 'fixture',
       actualLlmTested: false,
+      accountDatabasesTested: Boolean(accountDatabases) && !failure,
       passed: !failure,
       createdAt: new Date().toISOString(),
       requests: client.records.length,
@@ -105,7 +115,11 @@ async function main() {
       JSON.stringify(report, null, 2),
     );
     await servers.close();
-    await rm(temp, { recursive: true, force: true });
+    try {
+      await accountDatabases?.close();
+    } finally {
+      await rm(temp, { recursive: true, force: true });
+    }
   }
 }
 

@@ -3,7 +3,7 @@
 import asyncio
 from contextlib import asynccontextmanager
 
-from app.investigation.persistence.repository import Repository
+from app.investigation.persistence.mongo_repository import MongoRepository
 from app.investigation.rules.engine import Engine
 from app.investigation.views.presentation import Presenter
 
@@ -33,10 +33,25 @@ async def lifespan(app):
     graph = None
     question_search = None
     index = None
+    repository = None
+    auth = None
     embedding_dir = config.rag_embedding_dir
     if config.generation_mode == "local":
         embedding_dir = embedding_dir or PROJECT_ROOT / "models/retrieval"
     try:
+        if config.mongo_uri is None:
+            raise RuntimeError("수사를 저장할 CLICK_MONGO_URI를 설정하세요.")
+        repository = await asyncio.to_thread(
+            MongoRepository, config.mongo_uri.get_secret_value(), config.mongo_database
+        )
+        if config.postgres_dsn is not None:
+            from .auth.service import AuthService
+
+            auth = await asyncio.to_thread(
+                AuthService,
+                config.postgres_dsn.get_secret_value(),
+                config.auth_jwt_secret.get_secret_value(),
+            )
         if config.rag_enabled and embedding_dir is not None:
             from .dialogue.preprocess_agent.chroma_index import ChromaIndex
             from .dialogue.preprocess_agent.embeddings import E5Encoder
@@ -62,7 +77,7 @@ async def lifespan(app):
         service = GameService(
             config,
             catalog,
-            Repository(config.database_path),
+            repository,
             engine,
             Planner(catalog),
             presenter,
@@ -71,7 +86,12 @@ async def lifespan(app):
         )
         app.state.settings = config
         app.state.service = service
+        app.state.auth = auth
         yield
     finally:
+        if auth is not None:
+            await asyncio.to_thread(auth.close)
+        if repository is not None:
+            await asyncio.to_thread(repository.close)
         if index is not None:
             await asyncio.to_thread(index.close)

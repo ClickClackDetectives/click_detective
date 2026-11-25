@@ -8,7 +8,7 @@ import { randomUUID } from 'node:crypto';
 export async function prepareInvestigation(client) {
   const html = await (await fetch(client.base)).text();
   assert.ok(html.includes('딸깍탐정단'));
-  assert.equal((await client.request('state')).state, null);
+  assert.equal((await client.request('state', { status: 401 })).code, 'ACCESS_TOKEN_MISSING');
   const catalog = await client.request('catalog');
   await client.request('/manor.jpg');
   await client.request('/assets/notebook-paper.png');
@@ -31,12 +31,18 @@ export async function prepareInvestigation(client) {
     status: 403,
   });
   await client.request('games/other', { status: 404 });
-  await client.request('start', { method: 'POST', body: [], status: 400 });
   const startBody = {
     request_id: randomUUID(),
     case_id: catalog.caseId,
     scenario_version: catalog.scenarioVersion,
   };
+  const guest = await client.request('start', { method: 'POST', body: startBody, status: 401 });
+  assert.equal(guest.code, 'ACCESS_TOKEN_MISSING');
+  const credentials = { email: 'game-' + randomUUID() + '@example.com', password: 'Detective1!' };
+  await client.request('/api/auth/signup', { method: 'POST', body: credentials, status: 201 });
+  await client.request('/api/auth/login', { method: 'POST', body: credentials });
+  assert.equal((await client.request('state')).state, null);
+  await client.request('start', { method: 'POST', body: [], status: 400 });
   client.state = (await client.request('start', { method: 'POST', body: startBody })).state;
   const firstId = client.state.id;
   assert.equal(

@@ -10,7 +10,7 @@ router = APIRouter(dependencies=[Depends(authenticate)])
 
 
 @router.get("/v1/games/{game_id}/materials", tags=["자료"])
-async def materials(
+def materials(
     game_id: str,
     request: Request,
     kind: str | None = None,
@@ -50,7 +50,7 @@ async def materials(
 
 
 @router.get("/v1/games/{game_id}/materials/{material_key}", tags=["자료"])
-async def material_detail(game_id: str, material_key: str, request: Request):
+def material_detail(game_id: str, material_key: str, request: Request):
     """획득한 원본·진술·추론만 본문을 제공한다. 접두사로 ID 충돌을 구분한다.
 
     Args:
@@ -88,7 +88,7 @@ async def material_detail(game_id: str, material_key: str, request: Request):
 
 
 @router.get("/v1/games/{game_id}/evidence-assets/{evidence_id}", tags=["자산"])
-async def evidence_asset(game_id: str, evidence_id: str, request: Request):
+def evidence_asset(game_id: str, evidence_id: str, request: Request):
     """원본 자료의 이미지도 열람 조건을 확인한다. 사용자 파일 경로는 받지 않는다.
 
     Args:
@@ -109,7 +109,7 @@ async def evidence_asset(game_id: str, evidence_id: str, request: Request):
 
 
 @router.get("/v1/games/{game_id}/findings", tags=["쟁점"])
-async def findings(game_id: str, request: Request):
+def findings(game_id: str, request: Request):
     """이미 발견된 쟁점만 반환한다. 미발견 조건·정답 목록은 공개하지 않는다.
 
     Args:

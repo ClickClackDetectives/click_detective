@@ -14,7 +14,7 @@
 
 ## 로컬 검증
 
-FastAPI 디렉터리에서 개발 의존성이 설치된 Python으로 실행한다.
+FastAPI 디렉터리에서 개발 의존성이 설치된 Python으로 실행한다. 수사 fixture에는 `CLICK_TEST_MONGO_URI`를 설정하고, 계정 검사에는 `CLICK_TEST_POSTGRES_DSN`도 설정한다.
 
 ```sh
 python -m ruff check app scripts tests
@@ -37,4 +37,4 @@ npm run build
 npm run test:integration
 ```
 
-통합 검사는 fixture 모드와 임시 SQLite DB를 사용한다. 실제 모델 응답 품질은 [실서버 LLM 검사 안내](click_detective_FastAPI/docs/테스트/실서버_LLM_검사.md)를 따른다.
+통합 검사는 fixture 모드와 임시 MongoDB DB와 PostgreSQL 스키마를 사용한다. 실제 모델 응답 품질은 [실서버 LLM 검사 안내](click_detective_FastAPI/docs/테스트/실서버_LLM_검사.md)를 따른다.

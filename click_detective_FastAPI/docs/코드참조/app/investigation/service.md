@@ -169,3 +169,5 @@ async def change(self, game_id, token, command, action):
 **반환값**
 
 dict: 확정한 행동 결과와 최신 공개 상태 또는 저장된 동일 요청 응답.
+
+수사 읽기와 변경은 저장소에 익명 토큰 또는 검증된 계정 문맥을 전달한다. 모델 입력 조립은 [dialogue_request.py](../../../../app/investigation/dialogue_request.py)를 호출한다.

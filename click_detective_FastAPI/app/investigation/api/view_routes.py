@@ -9,7 +9,7 @@ router = APIRouter(dependencies=[Depends(authenticate)])
 
 
 @router.get("/v1/games/{game_id}/views/{screen}", tags=["화면"])
-async def screen_view(
+def screen_view(
     game_id: str,
     screen: str,
     request: Request,

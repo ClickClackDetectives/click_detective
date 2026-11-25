@@ -38,7 +38,7 @@ class PreprocessAgent:
             state (InterrogationState): 이번 질문의 입력, 후보 대사와 시도 횟수.
 
         Returns:
-            dict: 생성 프롬프트와 초기 생성 횟수.
+            dict: 생성 프롬프트, 검증 단위와 초기 생성 횟수.
         """
         request = state["request"]
         started = perf_counter()
@@ -55,4 +55,4 @@ class PreprocessAgent:
             required_count=len(request.required_fact_ids),
             unit_count=len(units),
         )
-        return {"messages": messages, "attempt": 0}
+        return {"messages": messages, "verification_units": units, "attempt": 0}

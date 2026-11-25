@@ -4,6 +4,9 @@ import hmac
 
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from starlette.concurrency import run_in_threadpool
+
+from .investigation.persistence.access import AccountAccess
 
 bearer = HTTPBearer(auto_error=False)
 
@@ -24,7 +27,9 @@ async def authenticate(
         credentials.credentials, request.app.state.settings.api_key
     ):
         raise HTTPException(
-            401, "서비스 인증이 필요합니다.", headers={"WWW-Authenticate": "Bearer"}
+            401,
+            {"code": "SERVICE_AUTH_REQUIRED", "message": "서비스 인증이 필요합니다."},
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
 
@@ -40,6 +45,22 @@ def service(request: Request):
     return request.app.state.service
 
 
+def investigation_access(request: Request):
+    """익명 토큰 또는 검증된 계정 문맥을 선택한다.
+
+    Args:
+        request: Next.js가 전달한 수사 접근 헤더를 담은 요청.
+
+    Returns:
+        str | AccountAccess: 저장소가 확인할 익명 토큰 또는 계정.
+    """
+    if "X-Access-Token" in request.headers:
+        from .auth.routes import current_user
+
+        return AccountAccess(current_user(request)["id"])
+    return request.headers.get("X-Game-Token", "")
+
+
 def game(request: Request, game_id: str):
     """게임 토큰과 버전으로 접근 권한을 확인한다.
 
@@ -51,7 +72,7 @@ def game(request: Request, game_id: str):
         dict: 접근 토큰과 사건 버전을 확인한 내부 수사 상태.
     """
     game_service = service(request)
-    return game_service.read(game_id, request.headers.get("X-Game-Token", ""))
+    return game_service.read(game_id, investigation_access(request))
 
 
 async def mutate(request, game_id, command, action):
@@ -66,6 +87,5 @@ async def mutate(request, game_id, command, action):
     Returns:
         dict: 확정된 행동 결과, 요청 ID와 공개 수사 상태.
     """
-    return await service(request).change(
-        game_id, request.headers.get("X-Game-Token", ""), command, action
-    )
+    access = await run_in_threadpool(investigation_access, request)
+    return await service(request).change(game_id, access, command, action)

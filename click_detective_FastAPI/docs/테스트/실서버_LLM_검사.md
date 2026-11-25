@@ -208,6 +208,8 @@ python -m pytest -q tests/dialogue/test_runner.py tests/dialogue/test_trace_and_
 | `v2.1` | 문장별 필터와 규칙 검사를 적용한 뒤, 규칙으로 확정하기 어려운 경우 서버에 로드된 오픈 LLM을 검증 목적으로 호출한다. |
 | `v2.2` | 같은 필터와 규칙 검사로 검증하며, 검증 단계에 생성형 모델 호출이 없다. |
 
+v2.1과 v2.2는 전처리가 생성 프롬프트에 사용한 승인 문장 단위를 그래프 상태에서 받는다. 자유 질문에서 검색으로 선정된 사실은 이 단위로 후보 대사를 검증한 뒤 전달하며, 질문과 사실의 어휘 중복을 별도 조건으로 요구하지 않는다. 필수 사실이 지정되면 그중 하나 이상이 검증되어야 한다.
+
 v2.1과 v2.2의 문장 비교에는 SentenceTransformer가 기본으로 적용된다. 승인 사실과 후보 문장을 함께 임베딩한 뒤 정규화된 벡터의 코사인 유사도를 구한다. 기존 문자 2그램 방식은 `CLICK_VALIDATION_SIMILARITY_BACKEND=char_ngram`으로 선택할 수 있다.
 
 SentenceTransformer를 쓰려면 서버 가상환경에 `python -m pip install -e '.[local,embeddings]'`로 의존성을 설치한다. 기본 모델 ID는 `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`이다. 서버는 이미 다운로드된 모델만 로드한다. 캐시를 미리 채우거나 `CLICK_VALIDATION_EMBEDDING_MODEL=./models/문장임베딩모델`처럼 로컬 경로를 지정한다. `CLICK_VALIDATION_EMBEDDING_DEVICE`의 기본값은 `cpu`이다.

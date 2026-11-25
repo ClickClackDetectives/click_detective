@@ -11,6 +11,7 @@ from .schemas import (
     Identifier,
     ReplyText,
 )
+from .validation_agent_v1.verification_units import VerificationUnit
 
 
 class GeneratedReply(DTO):
@@ -59,6 +60,7 @@ class InterrogationState(TypedDict, total=False):
     Args:
         request (CharacterReplyRequest): 승인 사실과 필수 사실 ID를 포함한 대화 요청.
         messages (list[dict[str, str]]): 모델에 전달할 역할별 프롬프트 목록.
+        verification_units: 전처리에서 프롬프트와 검증에 공통으로 사용할 승인 문장.
         raw_output (str): 모델이 생성한 원문 대사.
         attempt (int): 대사를 생성한 누적 횟수.
         error_status (int | None): 모델 실행 실패의 HTTP 상태 코드.
@@ -72,6 +74,7 @@ class InterrogationState(TypedDict, total=False):
 
     request: CharacterReplyRequest
     messages: list[dict[str, str]]
+    verification_units: list[VerificationUnit]
     raw_output: str
     attempt: int
     error_status: int | None

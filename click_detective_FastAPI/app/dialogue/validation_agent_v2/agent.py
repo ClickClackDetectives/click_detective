@@ -4,11 +4,9 @@ import asyncio
 from time import perf_counter
 
 from ..diagnostics import trace_event
-from ..preprocess_agent.rag.retriever import relevance_score
 from ..schemas import CharacterReplyResponse
 from ..validation_agent_v1.output import ReplyOutput
 from ..validation_agent_v1.semantic_verification import candidate_sentences
-from ..validation_agent_v1.verification_units import build_verification_units
 from .neutral import select_neutral_reply
 from .rules import SentenceTransformerSimilarity, public_sources, rule_match
 from .v2_1.policy import HybridPolicy
@@ -83,7 +81,7 @@ class ValidationAgentV2:
         """후보 대사를 검사하고 전부·일부·중립 중 하나로 종료한다.
 
         Args:
-            state: 요청, 후보 원문과 모델 오류를 담은 그래프 상태.
+            state: 요청, 전처리 검증 단위, 후보 원문과 모델 오류를 담은 그래프 상태.
 
         Returns:
             dict: 응답과 재생성 금지 상태.
@@ -99,7 +97,7 @@ class ValidationAgentV2:
                 except (ValueError, TypeError):
                     candidate = None
                 response = (
-                    await self.verify(request, candidate)
+                    await self.verify(request, candidate, state["verification_units"])
                     if candidate is not None
                     else neutral_response(request)
                 )
@@ -111,12 +109,13 @@ class ValidationAgentV2:
                 elapsed_ms=round((perf_counter() - started) * 1000, 2),
             )
 
-    async def verify(self, request, candidate):
+    async def verify(self, request, candidate, units):
         """공개 범위 검사 또는 세 단계 문장 검증을 수행한다.
 
         Args:
             request: 승인 사실과 현재 공개 문맥.
             candidate: 생성 모델이 반환한 대사.
+            units: 생성 프롬프트를 구성할 때 사용한 승인 문장 단위.
 
         Returns:
             CharacterReplyResponse: 이번 판정의 최종 응답.
@@ -129,7 +128,6 @@ class ValidationAgentV2:
                 return candidate
             return neutral_response(request)
 
-        units = build_verification_units(request)
         sentences = candidate_sentences(candidate.reply)
         if len(sentences) > 256:
             return neutral_response(request)
@@ -147,13 +145,7 @@ class ValidationAgentV2:
             )
         ]
         required = set(request.required_fact_ids)
-        if required and not required.intersection(used):
-            return neutral_response(request)
-        if not required and not any(
-            relevance_score(request.question, fact) > 0
-            for fact in request.allowed_facts
-            if fact.id in used
-        ):
+        if not used or (required and required.isdisjoint(used)):
             return neutral_response(request)
         kept = [part.text for part in remaining if part.id in matches]
         if not kept:

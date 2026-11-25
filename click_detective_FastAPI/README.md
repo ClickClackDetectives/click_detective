@@ -9,7 +9,7 @@ Click Detective(딸깍탐정단)는 증거를 조사하고 용의자를 심문�
 - 사건·인물·공개 이미지 및 영상 조회
 - 증거 열람, 용의자 심문, 증언·쟁점 수집과 자료 조합 추론
 - 조사 단계 전환, 진행률 계산, 고발 결과 판정
-- SQLite 기반 수사 상태 및 메모 저장
+- MongoDB 기반 수사 상태 및 메모 저장
 - LangGraph 기반 대사 전처리·생성·검증과 승인된 사실 검색(RAG)
 - 로컬 Qwen2.5-7B-Instruct의 NF4 4비트 로딩 및 기존 LoRA 어댑터 적용
 
@@ -24,7 +24,7 @@ Click Detective(딸깍탐정단)는 증거를 조사하고 용의자를 심문�
 | 언어 | Python 3.11 이상 |
 | API 서버 | FastAPI, Uvicorn |
 | 설정·검증 | Pydantic, pydantic-settings |
-| 저장소 | SQLite |
+| 저장소 | MongoDB replica set 및 계정용 PostgreSQL |
 | 대화 워크플로 | LangGraph |
 | 로컬 LLM | Qwen2.5-7B-Instruct, PyTorch, Transformers |
 | 양자화·어댑터 | bitsandbytes(NF4), PEFT(LoRA), Accelerate |
@@ -69,7 +69,7 @@ CLICK_GENERATION_MODE=fixture
 | --- | --- |
 | `CLICK_API_KEY` | 서버 간 API 인증 키 |
 | `CLICK_GENERATION_MODE` | `fixture`: GPU 없는 확인 / `local`: 실제 모델 사용 |
-| `CLICK_DATABASE_PATH` | DB 경로, 기본값 `./.data/games.sqlite3` |
+| `CLICK_MONGO_URI` | 필수 MongoDB replica set 연결 문자열 |
 | `CLICK_DATA_DIR` | 사건 데이터 경로, 기본값 `./data` |
 | `CLICK_LOCAL_MODEL_PATH` | 로컬 모델 경로 |
 | `CLICK_LORA_ADAPTER_PATH` | 기존 LoRA 어댑터 경로 |

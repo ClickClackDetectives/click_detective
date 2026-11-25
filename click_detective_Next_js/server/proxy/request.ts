@@ -32,6 +32,13 @@ export async function readBody(request: NextRequest) {
  * @returns 없음. 허용된 검색 조건을 URL에 추가한다.
  */
 export function addSearchParams(url: URL, request: NextRequest, segments: string[]) {
+  if (segments[0] === 'investigations') {
+    for (const name of ['limit', 'cursor']) {
+      const value = request.nextUrl.searchParams.get(name);
+      if (value) url.searchParams.set(name, value);
+    }
+    return;
+  }
   const materialList = segments[0] === 'materials' && segments.length === 1;
   if (!materialList && segments[0] !== 'views') return;
   for (const name of ['kind', 'archive_kind', 'search', 'place', 'person', 'category']) {

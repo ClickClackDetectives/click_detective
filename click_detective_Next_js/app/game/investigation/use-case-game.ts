@@ -9,6 +9,8 @@ import type { InvestigationDocument } from '@/app/game/materials/document-types'
 import { requestGame, requestDocument, currentGame } from '@/app/game/investigation/game-client';
 import type { View } from '@/components/application/navigation';
 import { bgm } from '@/app/game/audio/bgm';
+import { useSession } from '@/components/auth/session';
+import { hasSessionEnded } from '@/shared/auth/client';
 
 /** 화면 상태와 서버 요청을 연결한다. 화면 마크업은 각 components 기능 폴더에 있다.
  * 파라미터 없음.
@@ -16,6 +18,7 @@ import { bgm } from '@/app/game/audio/bgm';
  */
 export function useCaseGame() {
   // 화면에만 필요한 상태: 메뉴·입력·팝업. 서버 저장 기록(state)과 분리한다.
+  const { user } = useSession();
   const [view, setView] = useState<View>('home');
   const [state, setState] = useState<GameState | null>(null);
   const [selectedDoc, setSelectedDoc] = useState<InvestigationDocument>();
@@ -40,8 +43,8 @@ export function useCaseGame() {
     evidenceIds: [] as string[],
   });
   const scrollEnd = useRef<HTMLDivElement>(null);
-  const active = state !== null && view !== 'home' && view !== 'cases';
-  useRestoreGame(setState, setNotes, setError, setReady);
+  const active = user !== null && state !== null && view !== 'home' && view !== 'cases';
+  useRestoreGame(user?.id, setState, setNotes, setError, setReady, setView);
   useMessageScroll(scrollEnd, state?.messages.length);
   useDialogEffects(modal, doc, busy, setModal, setDoc, setSelectedDoc);
   useNotesAutosave({ state, notes, busy, setState, setNoteStatus });
@@ -62,7 +65,8 @@ export function useCaseGame() {
       return updatedState;
     } catch (e) {
       setState(currentGame());
-      setError(e instanceof Error ? e.message : '요청에 실패했습니다.');
+      if (hasSessionEnded(e)) setModal('login');
+      else setError(e instanceof Error ? e.message : '요청에 실패했습니다.');
       return null;
     } finally {
       actionLock.current = false;
@@ -80,11 +84,20 @@ export function useCaseGame() {
     setDoc(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  /** 수사를 열기 전에 로그인 상태를 확인한다.
+   * @returns 로그인한 경우 true이며, 그 외에는 로그인 안내를 연다.
+   */
+  function requireLogin() {
+    if (user) return true;
+    setModal('login');
+    return false;
+  }
   /** 기존 수사를 이어가거나 새로운 수사를 만든다.
    * @param restart 현재 기록을 초기화하고 새 수사를 만들지 여부.
    * @returns 수사 생성·복원과 화면 이동이 끝나면 완료되는 Promise.
    */
   async function startInvestigation(restart = false) {
+    if (!requireLogin()) return;
     bgm.startFromGame(); // 클릭 처리 안에서 바로 호출해야 브라우저가 재생을 허용한다
     const updatedState = await updateGame('start', { restart });
     if (updatedState) {
@@ -181,6 +194,7 @@ export function useCaseGame() {
     updateGame,
     navigateTo,
     startInvestigation,
+    requireLogin,
     openEvidence,
     submitQuestion,
   };

@@ -1,7 +1,6 @@
 """dialogue/test_runtime.py의 회귀 동작을 확인한다."""
 
 import asyncio
-import json
 from uuid import uuid4
 
 import pytest

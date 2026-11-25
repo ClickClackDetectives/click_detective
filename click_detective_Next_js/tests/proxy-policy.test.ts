@@ -4,6 +4,7 @@ import { resolveTarget, isSameOrigin } from '../server/proxy/policy.ts';
 import { assetUrl } from '../shared/api/client.ts';
 /** 임의 URL·다른 수사 접근·다른 사이트의 변경 요청을 막는 경계를 검사합니다. */
 test('허용되지 않은 경로와 경로 탈출 차단', () => {
+  const game = '74720db7-3ec9-4db8-804f-2eea975b3391';
   for (const parts of [
     ['games', 'victim'],
     ['assets', '..', 'private.json'],
@@ -12,15 +13,15 @@ test('허용되지 않은 경로와 경로 탈출 차단', () => {
     ['assets', 'a\\b'],
     ['unknown'],
   ])
-    assert.equal(resolveTarget(parts, 'GET', 'mine'), null);
-  assert.equal(resolveTarget(['notes'], 'POST', 'mine'), null);
+    assert.equal(resolveTarget(parts, 'GET', game), null);
+  assert.equal(resolveTarget(['notes'], 'POST', game), null);
   assert.equal(
-    resolveTarget(['interrogations'], 'POST', 'mine')?.path,
-    '/v1/games/mine/interrogations',
+    resolveTarget(['interrogations'], 'POST', game)?.path,
+    '/v1/games/' + game + '/interrogations',
   );
   assert.equal(
-    resolveTarget(['materials', 'evidence:1-01'], 'GET', 'mine')?.path,
-    '/v1/games/mine/materials/evidence%3A1-01',
+    resolveTarget(['materials', 'evidence:1-01'], 'GET', game)?.path,
+    '/v1/games/' + game + '/materials/evidence%3A1-01',
   );
 });
 test('변경 요청의 동일 출처 검사', () => {
