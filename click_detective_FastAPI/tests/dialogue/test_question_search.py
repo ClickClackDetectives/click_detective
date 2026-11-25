@@ -1,5 +1,6 @@
 """심문 API에서 첫 진술 선택과 공개 범위를 검사한다."""
 
+import json
 from uuid import uuid4
 
 import pytest
@@ -51,24 +52,25 @@ class FakeIndex:
 
 
 @pytest.fixture
-def vector_route(client, monkeypatch):
+def vector_route(client, monkeypatch, tmp_path):
     """실제 심문 경로에 검색기와 모델 호출 기록기를 연결한다.
 
     Args:
         client: FastAPI 테스트 클라이언트.
         monkeypatch: 서버 의존성을 교체하는 도구.
+        tmp_path: 이번 검색의 진단 기록을 저장할 디렉터리.
     Returns:
         tuple: 심문 서비스, 모의 인덱스, 대사 생성·검증 모델.
     """
     service = client.app.state.service
     model = ApprovedModel()
     index = FakeIndex()
+    search = QuestionSearch(service.catalog, service.settings, index)
     monkeypatch.setattr(service.settings, "generation_mode", "local")
-    monkeypatch.setattr(service, "graph", InterrogationGraph(service.settings, model))
+    monkeypatch.setattr(service.settings, "diagnostics_path", tmp_path / "trace.jsonl")
+    monkeypatch.setattr(service, "search_free", True)
     monkeypatch.setattr(
-        service,
-        "question_search",
-        QuestionSearch(service.catalog, service.settings, index),
+        service, "graph", InterrogationGraph(service.settings, model, search)
     )
     return service, index, model
 
@@ -138,6 +140,14 @@ def test_vector_search_selects_the_fact_before_generation(
     assert generation["question"] == question
     assert generation["approved_facts"][0]["text"] == snoring["text"]
     assert verification["required_fact_ids"] == ["yoon-snoring"]
+    trace = json.loads(service.settings.diagnostics_path.read_text(encoding="utf-8"))
+    assert [item["stage"] for item in trace["events"][:4]] == [
+        "retrieval",
+        "preprocess",
+        "agent_timing",
+        "generation",
+    ]
+    assert trace["events"][2]["agent"] == "preprocess_agent"
     state = service.read(game["game_id"], game["game_token"])
     assert state["statements"]["yoon-snoring"]["excerpt"] == snoring["text"]
     assert state["revealed"] == []
@@ -151,10 +161,10 @@ def test_vector_search_selects_the_fact_before_generation(
         ("내일 날씨가 어때요?", False, False),
     ],
 )
-def test_no_match_skips_both_llm_calls(
+def test_no_match_goes_directly_to_validation(
     api, game, vector_route, question, reject, minute_conflict
 ):
-    """관련 없음, 시각 불일치, 낮은 점수는 고정 응답으로 처리한다.
+    """관련 없음, 시각 불일치, 낮은 점수는 검증 노드에서 고정 응답으로 확정한다.
 
     Args:
         api: 심문 API 호출 함수.
@@ -164,7 +174,7 @@ def test_no_match_skips_both_llm_calls(
         reject: 사건 외 비교 문장을 1위에 올린다.
         minute_conflict: 질문과 시각이 다른 진술을 1위에 올린다.
     Returns:
-        None: 원문 사용, LLM 호출, 진술 기록이 없는지 검사한다.
+        None: 검증 직행과 LLM 호출 없이 확정된 수사 상태를 검사한다.
     """
     service, index, model = vector_route
     if reject or minute_conflict:
@@ -173,10 +183,16 @@ def test_no_match_skips_both_llm_calls(
     if reject:
         index.scores[OFF_TOPIC] = 0.92
     result = ask(api, game, question)
+    assert result["finish_reason"] == "fixed"
     assert result["reply"] == NO_FACTS
     assert result["used_fact_ids"] == model.calls == []
     assert index.questions == [question]
-    assert not service.read(game["game_id"], game["game_token"])["statements"]
+    trace = json.loads(service.settings.diagnostics_path.read_text(encoding="utf-8"))
+    assert [
+        event["agent"] for event in trace["events"] if event["stage"] == "agent_timing"
+    ] == ["preprocess_agent", "validation_agent"]
+    state = service.read(game["game_id"], game["game_token"])
+    assert state["questions"] == 1 and not state["statements"] and not state["revealed"]
 
 
 @pytest.mark.parametrize("explicit", [False, True])

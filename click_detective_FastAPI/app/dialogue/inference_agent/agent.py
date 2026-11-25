@@ -9,6 +9,7 @@ from fastapi import HTTPException
 from ..diagnostics import trace_event
 from ..local_model import ModelContextError
 from ..reply_validation import assemble_reply
+from ..schemas import CharacterReplyResponse
 from ..state import InterrogationState
 
 
@@ -46,6 +47,18 @@ class InferenceAgent:
             dict: 후보 대사와 시도 횟수 또는 실행 오류 상태.
         """
         request = state["request"]
+        if self.model is None:
+            return {
+                "response": CharacterReplyResponse(
+                    request_id=request.request_id,
+                    suspect_id=request.suspect_id,
+                    state_revision=request.state_revision,
+                    reply=assemble_reply(request),
+                    used_fact_ids=[fact.id for fact in request.allowed_facts],
+                    model_version="click-fixture-v1",
+                    finish_reason="fixed",
+                )
+            }
         if not request.allowed_facts and self.settings.validation_agent_version == "v1":
             trace_event("empty_approval", policy="deterministic_neutral", model_calls=0)
             reply = assemble_reply(request)

@@ -2,9 +2,9 @@
 
 [전체 목차](../README.md) · [전처리](전처리/README.md) · [생성](생성/README.md) · [검증](검증/README.md)
 
-이 프로젝트의 멀티 에이전트는 질문 처리를 세 역할로 나눈 구조다. 전처리는 일반 Python 코드로 수행한다. 생성과 의미 검증은 같은 로컬 모델을 서로 다른 목적과 프롬프트로 호출한다.
+이 프로젝트의 멀티 에이전트는 질문 처리를 세 역할로 나눈 구조다. 첫 노드에서 E5로 질문의 진술을 검색하고 프롬프트를 만든다. 생성과 LLM 의미 검증은 같은 로컬 모델을 서로 다른 목적과 프롬프트로 호출한다.
 
-| 단계 | 담당 클래스 | 역할 | 모델 호출 |
+| 단계 | 담당 클래스 | 역할 | 대화 LLM 호출 |
 |---|---|---|---|
 | 1. 전처리 | `PreprocessAgent` | 승인 사실 검색·생성 자료 준비 | 없음 |
 | 2. 생성 | `InferenceAgent` | 자연스러운 후보 대사 작성 | `purpose="dialogue"` |
@@ -23,8 +23,9 @@ class InterrogationGraph:
 
 ```mermaid
 flowchart TD
-    A[Planner: 승인 계획] --> B[PreprocessAgent: 자료 준비]
+    A[Planner: 공개 조건 확인] --> B[PreprocessAgent: RAG 검색·프롬프트 구성]
     B --> C[InferenceAgent: 후보 대사]
+    B -->|v1 · 검색 결과 없음| D
     C --> D[ValidationAgent: 형식·규칙·의미 검사]
     D -->|통과| E[최종 응답]
     D -->|재생성 가능·횟수 남음| C
@@ -49,6 +50,7 @@ class InterrogationState(TypedDict, total=False):
 | 값 | 의미 |
 |---|---|
 | `request` | 질문·인물·승인 사실·필수 사실 ID |
+| `retrieval_no_match` | 검색을 완료했으나 승인할 진술이 없는 경우 |
 | `messages` | 승인 사실과 질문을 담은 생성 프롬프트 |
 | `raw_output` | 생성한 후보 대사 원문 |
 | `attempt` | 대사 생성 누적 횟수 |

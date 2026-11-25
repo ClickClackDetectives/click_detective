@@ -6,7 +6,6 @@ import unicodedata
 from collections import Counter
 from pathlib import Path
 from threading import Lock
-from sentence_transformers import SentenceTransformer
 
 from ...config import PROJECT_ROOT
 from ..validation_agent_v1.critical_facts import critical_evidence_error
@@ -101,7 +100,13 @@ class SentenceTransformerSimilarity:
         Returns:
             None: 모델을 한 번 로드한다.
         """
-        
+        try:
+            from sentence_transformers import SentenceTransformer
+        except ImportError as error:
+            raise RuntimeError(
+                "SentenceTransformer 검증을 사용하려면 .[embeddings] 의존성을 설치하세요."
+            ) from error
+
         path = Path(model_name).expanduser()
         if model_name.startswith("."):
             path = PROJECT_ROOT / path

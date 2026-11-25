@@ -3,11 +3,13 @@
 import asyncio
 import logging
 from dataclasses import dataclass, replace
+from time import perf_counter
 
 from fastapi import HTTPException
 
+from ..diagnostics import trace_event
 from .free_questions import movement
-from .planning import facts_from_entries
+from .planning import ReplyPlan, facts_from_entries
 from .testimony_time import exact_minute, fits_time
 
 logger = logging.getLogger(__name__)
@@ -129,22 +131,22 @@ class QuestionSearch:
         scored = [(scores[candidate.text], candidate) for candidate in candidates]
         return sorted(scored, key=lambda item: item[0], reverse=True)
 
-    async def refine(self, state, command, plan):
+    async def refine(self, plan, revealed) -> tuple[ReplyPlan, bool]:
         """자유 질문의 원문과 검색 결과를 생성·기록 양쪽에 연결한다.
 
         Args:
-            state: 현재 수사 상태.
-            command: 플레이어의 심문 요청.
             plan: 검증된 명시 주제, 증거와 새 쟁점을 담은 승인 계획.
+            revealed: 심문을 시작할 때 이미 공개된 쟁점 ID.
         Returns:
-            ReplyPlan: 유사도 기준을 통과한 진술을 담은 계획.
+            tuple: 최종 승인 계획과 정상 검색에서 진술을 찾지 못했는지 여부.
         """
-        if command.topic_id or plan.new_findings or not self.settings.rag_top_k:
-            return plan
+        if plan.topic or plan.new_findings or not self.settings.rag_top_k:
+            return plan, False
+        started = perf_counter()
         try:
             async with asyncio.timeout(self.settings.timeout_seconds):
                 selected = await asyncio.to_thread(
-                    self.select, command.question, plan.suspect_id, state["revealed"]
+                    self.select, plan.question, plan.suspect_id, revealed
                 )
         except (RuntimeError, TimeoutError, ValueError) as error:
             if not self.settings.fallback_on_error:
@@ -153,17 +155,23 @@ class QuestionSearch:
             logger.warning(
                 "Testimony vector search recovered: %s", type(error).__name__
             )
-            return plan
+            return plan, False
 
+        trace_event(
+            "retrieval",
+            elapsed_ms=round((perf_counter() - started) * 1000, 2),
+            selected_count=len(selected[0]) if selected else 0,
+        )
         if selected is None:
-            return plan
+            return plan, True
         entries, topic = selected
-        return replace(
+        refined = replace(
             plan,
             topic=topic,
             entries=entries,
             facts=facts_from_entries(plan.suspect_id, entries),
         )
+        return refined, False
 
     def select(self, question, suspect, flags):
         """공개 범위와 시각, 유사도 조건을 거쳐 최종 진술을 선택한다.

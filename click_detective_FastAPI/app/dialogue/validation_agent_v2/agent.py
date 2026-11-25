@@ -4,8 +4,8 @@ import asyncio
 from time import perf_counter
 
 from ..diagnostics import trace_event
-from ..preprocess_agent.rag.retriever import relevance_score
 from ..schemas import CharacterReplyResponse
+from ..text_relevance import text_relevance
 from ..validation_agent_v1.output import ReplyOutput
 from ..validation_agent_v1.semantic_verification import candidate_sentences
 from ..validation_agent_v1.verification_units import build_verification_units
@@ -159,7 +159,7 @@ class ValidationAgentV2:
         if required and not required.intersection(used):
             return neutral_response(request)
         if not required and not any(
-            relevance_score(request.question, fact) > 0
+            text_relevance(request.question, fact.id, fact.text) > 0
             for fact in request.allowed_facts
             if fact.id in used
         ):
