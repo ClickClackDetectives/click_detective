@@ -136,15 +136,25 @@ class ValidationAgentV2:
         remaining = [part for part in sentences if eligible[part.id]]
         matches = await self.policy.supported_units(request, remaining, units, eligible)
         accepted_units = {index for indices in matches.values() for index in indices}
-        used = [
-            fact.id
-            for fact in request.allowed_facts
-            if all(
-                index in accepted_units
-                for index, unit in enumerate(units)
-                if unit.fact_id == fact.id
-            )
-        ]
+        fact_units = {}
+        for index, unit in enumerate(units):
+            fact_units.setdefault(unit.fact_id, []).append(index)
+        used = []
+        for fact in request.allowed_facts:
+            indexes = fact_units.get(fact.id, [])
+            core = request._finding_core_sentences.get(fact.id, ())
+            if core:
+                verified = any(
+                    index in accepted_units
+                    for position, index in enumerate(indexes)
+                    if position in core
+                )
+            else:
+                verified = bool(indexes) and all(
+                    index in accepted_units for index in indexes
+                )
+            if verified:
+                used.append(fact.id)
         required = set(request.required_fact_ids)
         if required and not required.intersection(used):
             return neutral_response(request)
@@ -181,13 +191,23 @@ class ValidationAgentV2:
             delivered_fact_ids=used,
             withheld_required_fact_ids=missing,
         )
-        return candidate.model_copy(
+        response = candidate.model_copy(
             update={
                 "reply": reply,
                 "used_fact_ids": used,
                 "finish_reason": "partial" if missing else "stop",
             }
         )
+        for fact_id in used:
+            if fact_id not in request._finding_core_sentences:
+                continue
+            indexes = set(fact_units[fact_id])
+            response._verified_finding_excerpts[fact_id] = " ".join(
+                part.text
+                for part in remaining
+                if indexes.intersection(matches.get(part.id, ()))
+            )
+        return response
 
     async def check_similarity(self, sentences, units):
         """대사 문장별로 유사도 기준을 만족하는 승인 단위를 고른다.

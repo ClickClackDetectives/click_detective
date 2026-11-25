@@ -4,7 +4,7 @@ from copy import deepcopy
 
 
 def record_plan(catalog, state, plan, response):
-    """검증된 응답이 나온 뒤에만 질문·대화·쟁점·진술을 일괄 반영한다.
+    """질문 차감 후 검증된 응답으로 대화·쟁점·진술을 일괄 반영한다.
 
     Args:
         catalog: 사건 원문, 인물과 게임 규칙을 제공하는 객체.
@@ -15,7 +15,6 @@ def record_plan(catalog, state, plan, response):
     Returns:
         dict: 기록한 대사, 종료 사유, 모델 버전과 사용 사실 ID.
     """
-    state["questions"] += 1
     state["messages"].extend(
         [
             {
@@ -65,13 +64,14 @@ def record_plan(catalog, state, plan, response):
             else "그날 밤 당신의 행동"
         )
         script = catalog.scripts["characters"][plan.suspect_id]
+        excerpt = response._verified_finding_excerpts.get(key, entry["text"])
         state["statements"][key] = {
             "id": key,
             "code": f"ST-{len(state['statements']) + 1:03}",
             "speaker": plan.suspect_id,
             "topic": "admission" if plan.new_findings else topic or "movement",
             "title": entry["title"],
-            "excerpt": entry["text"],
+            "excerpt": excerpt,
             "nature": entry["nature"],
             "sourceRefs": deepcopy(plan.sources),
             "messageIndex": len(state["messages"]) - 1,

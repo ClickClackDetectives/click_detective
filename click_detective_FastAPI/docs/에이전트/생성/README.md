@@ -36,7 +36,7 @@ async def inference_agent(self, state: InterrogationState) -> dict:
 | `dialogue_top_p` | 0.9 | 다음 토큰 선택 후보의 누적 확률 범위 |
 | `dialogue_repetition_penalty` | 1.05 | 같은 표현 반복 억제 |
 
-샘플링은 문장 표현의 선택 방식이다. 새로운 사건 사실을 추가해도 된다는 권한이 아니다. 반드시 승인 의미를 보존해야 한다.
+샘플링은 문장 표현의 선택 방식이다. 필수 항목 하나를 대사 한 문장으로 쓰고, 항목 사이의 문장 경계를 유지한다. 새로운 사건 사실을 추가해도 된다는 권한이 아니다. 반드시 승인 의미를 보존해야 한다.
 
 ## 평문 대사와 API JSON
 

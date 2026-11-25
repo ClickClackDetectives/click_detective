@@ -8,7 +8,14 @@ DTO(Data Transfer Object)는 서버 사이에서 주고받는 데이터의 형�
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PrivateAttr,
+    StringConstraints,
+    model_validator,
+)
 
 # Annotated는 기본 타입(str)에 공백 제거·길이 제한 같은 검증 조건을 붙인다.
 Text = Annotated[
@@ -174,6 +181,9 @@ class CharacterReplyRequest(DTO):
     history: list[History] = Field(
         default_factory=list, max_length=20, description="해당 인물의 제한된 최근 대화"
     )
+    _finding_core_sentences: dict[str, tuple[int, ...]] = PrivateAttr(
+        default_factory=dict
+    )
 
     @model_validator(mode="after")
     def validate_fact_references(self) -> "CharacterReplyRequest":
@@ -213,6 +223,9 @@ class CharacterReplyResponse(DTO):
     Returns:
         CharacterReplyResponse: 위 역할을 수행하도록 생성된 객체.
     """
+
+    # 쟁점별 검증 발췌이며 HTTP 응답에 포함되지 않는다.
+    _verified_finding_excerpts: dict[str, str] = PrivateAttr(default_factory=dict)
 
     request_id: UUID = Field(description="요청과 같은 UUID")
     suspect_id: Identifier = Field(description="요청과 같은 인물 ID")

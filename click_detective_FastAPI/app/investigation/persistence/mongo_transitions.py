@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from .storage import digest
 
 
-def reserve(storage, game_id, token, command, action, lease_seconds):
+def reserve(storage, game_id, token, command, action, lease_seconds, prepare=None):
     """수사 행동을 예약하거나 이미 확정한 결과를 읽는다.
 
     Args:
@@ -19,6 +19,7 @@ def reserve(storage, game_id, token, command, action, lease_seconds):
         command: 요청 UUID, 기준 revision, 행동 입력.
         action: 실행할 수사 행동의 이름.
         lease_seconds: 예약 임대 기간(초).
+        prepare: 유효한 심문을 준비하는 함수. 제공되면 예약과 함께 질문을 차감한다.
 
     Returns:
         dict: 실행용 예약 또는 동일 요청의 완료 응답.
@@ -54,13 +55,24 @@ def reserve(storage, game_id, token, command, action, lease_seconds):
                 raise HTTPException(409, "operation_in_progress")
         if game.revision != command.expected_revision:
             raise HTTPException(409, "state_revision_conflict")
+        state = game.to_mongo()["state"]
+        prepared = prepare(state, command) if prepare else None
+        revision = game.revision
+        updates = {"inc__reservation_sequence": 1}
+        if prepare:
+            revision += 1
+            state["questions"] += 1
+            state["revision"] = revision
+            updates.update(
+                set__state=state, set__revision=revision, set__updated_at=now
+            )
         # 소유권 이전이나 계정 삭제와 예약 작업을 같은 수사 문서에서 직렬화한다.
         storage.games.query(
             session,
             id=game_id,
             revision=game.revision,
             ownership_version=ownership_version,
-        ).update_one(inc__reservation_sequence=1)
+        ).update_one(**updates)
         nonce = str(uuid4())
         storage.operations.query(session, id=key).update_one(
             upsert=True,
@@ -75,9 +87,10 @@ def reserve(storage, game_id, token, command, action, lease_seconds):
             set__ownership_version=ownership_version,
         )
         return {
-            "state": game.to_mongo()["state"],
+            "state": state,
+            "prepared": prepared,
             "nonce": nonce,
-            "revision": game.revision,
+            "revision": revision,
             "ownership_version": ownership_version,
         }
 

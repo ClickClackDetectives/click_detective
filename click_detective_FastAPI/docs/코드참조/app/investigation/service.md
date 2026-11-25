@@ -157,7 +157,7 @@ async def change(self, game_id, token, command, action):
     ...
 ```
 
-짧은 예약→규칙·생성→짧은 확정. 중간 실패는 질문·쟁점·revision을 소비하지 않는다.
+유효한 심문을 예약할 때 질문을 차감하고 최종 대화는 별도로 확정한다.
 
 **파라미터**
 

@@ -110,7 +110,7 @@ def test_valid_question_always_gets_approved_reply(
     assert payload["result"]["reply"] == service.c.people["kang"]["statement"]
     assert payload["result"]["used_fact_ids"] == ["kang-profile"]
     assert payload["state"]["questions"] == 1
-    assert payload["state"]["revision"] == 1
+    assert payload["state"]["revision"] == 2
     assert len(payload["state"]["messages"]) == 2
     assert payload["state"]["findingDetails"] == []
     assert api("POST", path, body, game["game_token"]).json() == payload

@@ -45,7 +45,7 @@ async def preprocess_agent(self, state: InterrogationState) -> dict:
 
 1. 자유 질문에 [question_search.py](../../../app/dialogue/preprocess_agent/question_search.py)를 호출한다. 현재 인물이 공개할 수 있는 후보에서 E5와 ChromaDB로 검색하고 Kiwi BM25로 재정렬한다.
 2. 선택한 진술을 승인 사실과 필수 사실 ID에 반영하고, 같은 진술을 게임 기록용 계획에 넣는다. 명시 주제와 새 인정 진술은 검색을 건너뛴다.
-3. 승인 사실을 문장 단위로 나눈다. 검증 문장이 256개를 넘으면 HTTP 422로 거절한다.
+3. 승인 사실을 문장 단위로 나눈다. 검증 문장이 256개를 넘으면 HTTP 422로 거절한다. 생성 프롬프트에 사용한 문장 목록을 그래프 상태의 `verification_units`에 넣어 v2 검증 단계에 전달한다.
 4. `build_messages`로 프롬프트를 만든다. 기본 v1의 검색 결과가 비면 검증 단계가 곧바로 고정 중립 답변을 확정한다. 진술이 선택되면 생성 단계로 전달하며, 재생성에서도 같은 검색 결과를 사용한다.
 
 전처리에서 E5 임베딩 모델을 실행한다. 대사 작성용 Qwen은 생성 단계에서 호출한다.

@@ -42,11 +42,7 @@ class PreprocessAgent:
             state (InterrogationState): 이번 질문의 입력, 후보 대사와 시도 횟수.
 
         Returns:
-<<<<<<< HEAD
-            dict: 생성 프롬프트, 검증 단위와 초기 생성 횟수.
-=======
-            dict: 최종 승인 요청, 프롬프트, 초기 생성 횟수와 검색 결과가 비었는지 여부.
->>>>>>> ddff02c90e57806854190446bb525f286154c4dc
+            dict: 최종 승인 요청, 프롬프트, 검증 문장 목록, 초기 생성 횟수와 검색 결과가 비었는지 여부.
         """
         request = state["request"]
         started = perf_counter()
@@ -84,6 +80,7 @@ class PreprocessAgent:
         return {
             "request": request,
             "messages": messages,
+            "verification_units": units,
             "attempt": 0,
             "retrieval_no_match": retrieval_no_match,
         }

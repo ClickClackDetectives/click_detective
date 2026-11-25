@@ -115,7 +115,7 @@ class MongoRepository(MongoStorage):
 
         return self.transaction(apply)
 
-    def reserve(self, game_id, token, command, action, lease_seconds):
+    def reserve(self, game_id, token, command, action, lease_seconds, prepare=None):
         """수사 행동을 실행할 예약권을 얻거나 완료 응답을 읽는다.
 
         Args:
@@ -124,13 +124,18 @@ class MongoRepository(MongoStorage):
             command: 요청 UUID와 변경 조건 및 입력값.
             action: 실행할 수사 행동의 이름.
             lease_seconds: 예약을 유지할 초 단위 시간.
+            prepare: 심문 입력을 검증하는 함수. 제공되면 질문을 함께 차감한다.
 
         Returns:
             dict: 예약 문맥 또는 저장된 동일 요청의 결과.
         """
-        return mongo_transitions.reserve(
-            self, game_id, token, command, action, lease_seconds
+        reservation = mongo_transitions.reserve(
+            self, game_id, token, command, action, lease_seconds, prepare
         )
+        error = reservation.get("cached", {}).get("error")
+        if error is not None:
+            raise HTTPException(**error)
+        return reservation
 
     def commit(self, game_id, command, reservation, state, result, present):
         """수사 변경과 행동 결과를 같은 트랜잭션에서 확정한다.
@@ -150,20 +155,35 @@ class MongoRepository(MongoStorage):
             self, game_id, command, reservation, state, result, present
         )
 
-    def abort(self, command, reservation):
-        """실패한 예약을 재시도 가능하게 바꾼다.
+    def abort(self, command, reservation, failure=None):
+        """실패한 예약을 해제하거나 이미 차감한 심문의 오류를 저장한다.
 
         Args:
             command: 실패한 수사 행동의 입력과 요청 UUID.
             reservation: 실패한 실행의 예약 nonce.
+            failure: 예약을 종료하게 한 예외 또는 None.
 
         Returns:
             None: 해당 nonce의 pending 상태만 갱신한다.
         """
+        updates = {"set__status": "failed"}
+        if reservation.get("prepared") is not None and isinstance(
+            failure, HTTPException
+        ):
+            error = {
+                "status_code": failure.status_code,
+                "detail": failure.detail,
+                "headers": failure.headers,
+            }
+            updates = {
+                "set__status": "complete",
+                "set__response": {"error": error},
+                "set__completed_at": datetime.now(UTC),
+            }
         with preserve_driver_error():
             self.operations.query(
                 id=str(command.request_id), nonce=reservation["nonce"], status="pending"
-            ).update_one(set__status="failed")
+            ).update_one(**updates)
 
     def claim(self, game_id, token, user_id):
         """익명 수사를 인증한 계정 소유로 전환한다.
