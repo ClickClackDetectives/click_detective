@@ -7,6 +7,7 @@ from pydantic import ValidationError
 from ..diagnostics import trace_event
 from ..local_model import ModelContextError
 from ..reply_validation import FIXED_MODEL_VERSION, assemble_reply
+from ..schemas import CharacterReplyResponse
 from ..state import InterrogationState, OutputRejected
 from .meaning_guards import has_question_actor_reversal
 from .output import ReplyOutput
@@ -50,6 +51,20 @@ class ValidationAgent:
             dict: 최종 응답 또는 재생성 여부와 거절 코드.
         """
         request = state["request"]
+        if state.get("retrieval_no_match") and not request.allowed_facts:
+            trace_event("empty_approval", policy="deterministic_neutral", model_calls=0)
+            return {
+                "response": CharacterReplyResponse(
+                    request_id=request.request_id,
+                    suspect_id=request.suspect_id,
+                    state_revision=request.state_revision,
+                    reply=assemble_reply(request),
+                    used_fact_ids=[],
+                    model_version=FIXED_MODEL_VERSION,
+                    finish_reason="fixed",
+                ),
+                "retry": False,
+            }
         status = state.get("error_status")
         if status:
             code = "model_timeout" if status == 504 else "model_inference_failed"

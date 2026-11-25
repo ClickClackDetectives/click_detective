@@ -10,7 +10,8 @@ from ..dialogue.reply_validation import (
     assemble_reply,
     validate_generation,
 )
-from ..dialogue.schemas import CharacterReplyResponse
+from ..dialogue.schemas import CharacterReplyRequest, CharacterReplyResponse
+from ..dialogue.state import SearchTurn
 from ..dialogue.validation_agent_v2.agent import neutral_response
 from .dialogue_request import dialogue_request
 
@@ -27,8 +28,8 @@ class GameService:
         engine: 게임 진행과 행동의 조건을 판정하는 객체.
         planner: 현재 공개할 사실을 선택하는 객체.
         presenter: 내부 상태를 화면용 정보로 변환하는 객체.
-        graph: 대사를 생성·검증하는 그래프. fixture 모드에서는 생략할 수 있다.
-        question_search: 공개 가능한 진술에서 자유 질문에 답할 사실을 찾는 검색기.
+        graph: 검색·생성·검증을 수행하는 그래프.
+        search_free: 그래프에서 자유 질문의 진술을 검색할 수 있는지 여부.
 
     Returns:
         GameService: 위 역할을 수행하도록 생성된 객체.
@@ -42,8 +43,9 @@ class GameService:
         engine,
         planner,
         presenter,
-        graph=None,
-        question_search=None,
+        graph,
+        *,
+        search_free=False,
     ):
         """공용 객체를 연결한다. 모델은 서버 시작 시 한 번만 준비한다.
 
@@ -54,8 +56,8 @@ class GameService:
             engine: 게임 진행과 행동의 조건을 판정하는 객체.
             planner: 현재 공개할 사실을 선택하는 객체.
             presenter: 내부 상태를 화면용 정보로 변환하는 객체.
-            graph: 대사를 생성·검증하는 그래프. fixture 모드에서는 생략할 수 있다.
-            question_search: 공개 가능한 진술에서 자유 질문에 답할 사실을 찾는 검색기.
+            graph: 검색·생성·검증을 수행하는 그래프.
+            search_free: 그래프에서 자유 질문의 진술을 검색할 수 있는지 여부.
 
         Returns:
             None: 필요한 설정과 초기값을 저장한다.
@@ -69,7 +71,7 @@ class GameService:
         self.planner = planner
         self.presenter = presenter
         self.graph = graph
-        self.question_search = question_search
+        self.search_free = search_free
 
     def read(self, game_id, token):
         """소유권과 사건 버전을 검사해 저장 상태를 복원한다.
@@ -115,31 +117,53 @@ class GameService:
         Returns:
             CharacterReplyRequest: 승인 사실, 필수 ID, 인물과 최근 대화를 담은 요청.
         """
-        return dialogue_request(
-            self.catalog, self.settings.history_limit, state, command, plan
+        history = []
+        if self.settings.history_limit:
+            for message in state["messages"]:
+                if message["suspectId"] == plan.suspect_id:
+                    history.append({"role": message["role"], "text": message["text"]})
+            history = history[-self.settings.history_limit :]
+        person = self.catalog.people[plan.suspect_id]
+        speech_style = person.get("speech_style")
+        if not isinstance(speech_style, str) or not speech_style.strip():
+            speech_style = "존댓말. 승인 원문의 말투와 관찰 한계를 유지하세요."
+        return CharacterReplyRequest(
+            request_id=command.request_id,
+            game_id=state["id"],
+            case_id=self.catalog.case_id,
+            scenario_version=self.catalog.version,
+            state_revision=state["revision"],
+            turn_index=state["questions"] + 1,
+            suspect_id=plan.suspect_id,
+            phase=state["phase"],
+            question=plan.question,
+            topic_id=plan.topic,
+            persona={
+                "name": person["name"],
+                "role": person["role"],
+                "speech_style": speech_style,
+            },
+            allowed_facts=plan.facts,
+            required_fact_ids=[fact["id"] for fact in plan.facts],
+            history=history,
         )
 
-    async def reply(self, request):
+    async def reply(self, request, search_turn=None):
         """쟁점 유무와 무관하게 대사를 준비하고 모델 실패는 승인 원문으로 복구한다.
 
         Args:
-            request: HTTP 요청 또는 승인 사실을 담은 대화 요청. 선언된 타입과 호출 위치에 따른다.
+            request: 승인 사실을 담은 대화 요청.
+            search_turn: 첫 노드에서 확정할 자유 질문의 승인 계획 또는 None.
 
         Returns:
             CharacterReplyResponse: 생성·검증을 통과했거나 승인 원문으로 복구한 응답.
         """
-        if self.settings.generation_mode == "fixture":
-            return CharacterReplyResponse(
-                request_id=request.request_id,
-                suspect_id=request.suspect_id,
-                state_revision=request.state_revision,
-                reply=assemble_reply(request),
-                used_fact_ids=[fact.id for fact in request.allowed_facts],
-                model_version="click-fixture-v1",
-                finish_reason="fixed",
-            )
         try:
-            response = await self.graph.generate(request)
+            if search_turn is None:
+                response = await self.graph.generate(request)
+            else:
+                response = await self.graph.generate(request, search_turn=search_turn)
+                request = search_turn.request
             incomplete = (
                 self.settings.validation_agent_version != "v1"
                 and response.finish_reason in {"partial", "neutral"}
@@ -152,6 +176,10 @@ class GameService:
             )
             return response
         except Exception as error:
+            if search_turn is not None:
+                if not search_turn.search_complete:
+                    raise
+                request = search_turn.request
             if not self.settings.fallback_on_error:
                 raise
             if self.settings.validation_agent_version != "v1":
@@ -210,13 +238,15 @@ class GameService:
             elif action == "accuse":
                 result = self.engine.accuse(state, command)
             elif action == "interrogate":
-                search_free = (
-                    self.settings.rag_enabled and self.question_search is not None
-                )
+                search_free = self.settings.rag_enabled and self.search_free
                 plan = self.planner.prepare(state, command, search_free=search_free)
-                if search_free:
-                    plan = await self.question_search.refine(state, command, plan)
-                response = await self.reply(self.dialogue_request(state, command, plan))
+                request = self.dialogue_request(state, command, plan)
+                turn = None
+                if search_free and not plan.topic and not plan.new_findings:
+                    turn = SearchTurn(plan, request, tuple(state["revealed"]))
+                response = await self.reply(request, turn)
+                if turn is not None:
+                    plan = turn.plan
                 result = self.engine.record_plan(state, plan, response)
             else:
                 raise HTTPException(404, "행동을 찾을 수 없습니다.")

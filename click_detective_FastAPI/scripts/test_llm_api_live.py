@@ -116,7 +116,9 @@ def run_agents_for_version(tester, inputs, version):
 
 
 def main(argv=None):
-    """실행 결과를 권한 600 JSON으로 저장하고 성공 0·실패 1·설정 오류 2를 반환한다.
+    """실행 결과를 JSON으로 저장하고 성공 0·실패 1·설정 오류 2를 반환한다.
+
+    POSIX에서는 결과 파일 권한을 600으로 제한한다.
 
     Args:
         argv: 명령행 인수 목록. None이면 실제 명령행에서 읽는다.
@@ -193,7 +195,8 @@ def main(argv=None):
     args.report.parent.mkdir(parents=True, exist_ok=True)
     descriptor = os.open(args.report, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
-        os.fchmod(stream.fileno(), 0o600)
+        if hasattr(os, "fchmod"):
+            os.fchmod(stream.fileno(), 0o600)
         stream.write(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     for case in report["cases"]:
         print(

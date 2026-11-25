@@ -1,5 +1,6 @@
 """게임에서 전송한 유효 질문은 모델 실패·쟁점 여부와 무관하게 답변을 확정한다."""
 
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
@@ -7,6 +8,37 @@ from fastapi import HTTPException
 
 from app.config import Settings
 from app.dialogue.interrogation_graph import InterrogationGraph
+from app.dialogue.preprocess_agent.question_search import OVERVIEW
+
+from .test_question_search import ask
+from .test_question_search import vector_route as vector_route
+
+
+def test_generation_failure_preserves_graph_retrieval(
+    api, game, monkeypatch, vector_route
+):
+    """생성 실패 복구와 게임 기록이 첫 노드에서 고른 동일한 사실을 사용한다.
+
+    Args:
+        api: 심문 API 호출 함수.
+        game: 새 수사 상태.
+        monkeypatch: 생성 모델의 장애를 주입하는 도구.
+        vector_route: 검색기와 생성 모델을 사용하도록 설정한 서비스.
+
+    Returns:
+        None: 검색 결과가 복구 대사와 기록에 모두 사용되는지 확인한다.
+    """
+    service, index, model = vector_route
+    index.scores[OVERVIEW] = 0.93
+    monkeypatch.setattr(service.settings, "fallback_on_error", True)
+    monkeypatch.setattr(model, "generate", AsyncMock(side_effect=RuntimeError))
+    question = "그날 밤 어떤 순서로 움직였나요?"
+    result = ask(api, game, question)
+    recorded = service.read(game["game_id"], game["game_token"])["statements"]
+    assert result["finish_reason"] == "fallback"
+    assert set(result["used_fact_ids"]) == set(recorded)
+    assert "yoon-snoring" in recorded
+    assert index.questions == [question]
 
 
 @pytest.mark.parametrize(

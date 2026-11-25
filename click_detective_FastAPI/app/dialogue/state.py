@@ -1,9 +1,11 @@
 """대화 생성 과정에서 주고받는 상태와 오류 형식을 정의한다."""
 
+from dataclasses import dataclass
 from typing import TypedDict
 
 from pydantic import Field
 
+from .preprocess_agent.planning import ReplyPlan
 from .schemas import (
     DTO,
     CharacterReplyRequest,
@@ -54,11 +56,33 @@ class OutputRejected(ValueError):
         self.detail = detail
 
 
+@dataclass
+class SearchTurn:
+    """게임 심문 한 건에서 검색으로 확정한 계획과 요청을 공유한다.
+
+    Args:
+        plan: 검색 전 게임 규칙으로 확인한 계획. 검색 후에는 기록할 최종 계획.
+        request: 생성과 검증에 전달할 승인 사실과 대화 문맥.
+        revealed: 심문을 시작할 때 이미 공개된 쟁점 ID.
+        search_complete: 검색 단계가 끝나 생성 실패 복구가 가능한지 여부.
+
+    Returns:
+        SearchTurn: 생성 실패 시에도 확정된 승인 범위를 보존하는 요청별 문맥.
+    """
+
+    plan: ReplyPlan
+    request: CharacterReplyRequest
+    revealed: tuple[str, ...]
+    search_complete: bool = False
+
+
 class InterrogationState(TypedDict, total=False):
     """요청별 지역 상태. 원본 생성·검증 내용은 DB나 GameState에 저장하지 않는다.
 
     Args:
         request (CharacterReplyRequest): 승인 사실과 필수 사실 ID를 포함한 대화 요청.
+        search_turn (SearchTurn): 게임 규칙이 승인한 검색 문맥. 게임 심문에만 사용한다.
+        retrieval_no_match (bool): 진술 검색이 정상 종료됐으나 승인할 진술이 없었다.
         messages (list[dict[str, str]]): 모델에 전달할 역할별 프롬프트 목록.
         verification_units: 전처리에서 프롬프트와 검증에 공통으로 사용할 승인 문장.
         raw_output (str): 모델이 생성한 원문 대사.
@@ -73,6 +97,8 @@ class InterrogationState(TypedDict, total=False):
     """
 
     request: CharacterReplyRequest
+    search_turn: SearchTurn
+    retrieval_no_match: bool
     messages: list[dict[str, str]]
     verification_units: list[VerificationUnit]
     raw_output: str

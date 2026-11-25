@@ -9,6 +9,7 @@ from app.investigation.views.presentation import Presenter
 
 from .cases.catalog import Catalog
 from .config import PROJECT_ROOT, Settings
+from .dialogue.interrogation_graph import InterrogationGraph
 from .dialogue.preprocess_agent.planning import Planner
 from .investigation.service import GameService
 
@@ -30,7 +31,7 @@ async def lifespan(app):
     catalog = Catalog(config.data_dir)
     engine = Engine(catalog)
     presenter = Presenter(catalog, engine)
-    graph = None
+    model = None
     question_search = None
     index = None
     repository = None
@@ -68,12 +69,10 @@ async def lifespan(app):
                 )
             question_search = QuestionSearch(catalog, config, index, reranker)
         if config.generation_mode == "local":
-            from .dialogue.interrogation_graph import InterrogationGraph
             from .dialogue.local_model import LocalQwenModel
 
             model = LocalQwenModel(config)
             await asyncio.to_thread(model.load)
-            graph = InterrogationGraph(config, model)
         service = GameService(
             config,
             catalog,
@@ -81,8 +80,8 @@ async def lifespan(app):
             engine,
             Planner(catalog),
             presenter,
-            graph,
-            question_search=question_search,
+            InterrogationGraph(config, model, question_search),
+            search_free=question_search is not None,
         )
         app.state.settings = config
         app.state.service = service

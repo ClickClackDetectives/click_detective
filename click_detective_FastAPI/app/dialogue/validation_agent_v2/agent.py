@@ -5,6 +5,7 @@ from time import perf_counter
 
 from ..diagnostics import trace_event
 from ..schemas import CharacterReplyResponse
+from ..text_relevance import text_relevance
 from ..validation_agent_v1.output import ReplyOutput
 from ..validation_agent_v1.semantic_verification import candidate_sentences
 from .neutral import select_neutral_reply
@@ -145,7 +146,13 @@ class ValidationAgentV2:
             )
         ]
         required = set(request.required_fact_ids)
-        if not used or (required and required.isdisjoint(used)):
+        if required and not required.intersection(used):
+            return neutral_response(request)
+        if not required and not any(
+            text_relevance(request.question, fact.id, fact.text) > 0
+            for fact in request.allowed_facts
+            if fact.id in used
+        ):
             return neutral_response(request)
         kept = [part.text for part in remaining if part.id in matches]
         if not kept:
