@@ -6,8 +6,8 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from app.dialogue.preprocess_agent.free_questions import movement
+from app.dialogue.text_relevance import text_relevance
 
-from .lexical_baseline import text_relevance
 from .retrieval_metrics import calibrate, measure, summarize
 
 ROOT = Path(__file__).resolve().parents[1]

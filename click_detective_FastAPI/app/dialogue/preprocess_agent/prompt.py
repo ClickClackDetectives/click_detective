@@ -5,7 +5,7 @@ import unicodedata
 
 from ...config import Settings
 from ..schemas import CharacterReplyRequest
-from ..validation_agent.verification_units import (
+from ..validation_agent_v1.verification_units import (
     VerificationUnit,
     build_verification_units,
 )
