@@ -68,7 +68,7 @@ def parser():
     result.add_argument(
         "--validation-version",
         choices=("v2.1", "v2.2"),
-        help="에이전트 120건 실행 전에 확인할 실제 서버의 검증 버전",
+        help="에이전트 배치 실행 전에 확인할 실제 서버의 검증 버전",
     )
     result.add_argument(
         "--trace-path", type=Path, help="같은 실행 서버의 diagnostics JSONL 파일"
@@ -76,7 +76,7 @@ def parser():
     result.add_argument(
         "--require-trace",
         action="store_true",
-        help="local 3단계 진단 증거도 성공 필수 조건으로 검사",
+        help="local 실행과 기대 중립 분류의 진단을 성공 필수 조건으로 검사",
     )
     return result
 

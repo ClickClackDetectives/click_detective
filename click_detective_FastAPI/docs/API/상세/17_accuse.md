@@ -86,8 +86,9 @@
 
 현재 API 진입점은 [app/investigation/api/routes.py의 `accuse`](../../../app/investigation/api/routes.py#L115)다.
 
-처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/persistence/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.
 
 ## 항상 열려 있는 제출
 
 미종결 수사는 1차 조사부터 고발할 수 있습니다. 추론 증거 선택은 선택 사항이며 목록에 ‘필수’ 표시를 붙이지 않습니다. 핵심 추론·원본 근거 연결은 입증 점수 기준으로 유지하므로 증거 없는 고발은 입증 항목에서 점수를 받지 못합니다. 범인·동기·수단 선택은 필요하며 제출 확정 후에는 기존 종결 정책을 따릅니다.
+
+처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [수사 저장](../../서버/수사_저장.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.

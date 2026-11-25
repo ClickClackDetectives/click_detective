@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Depends, Request
 
-from app.dependencies import authenticate, game, mutate, service
+from app.dependencies import authenticate, game, investigation_access, mutate, service
 from app.investigation.api.schemas import (
     Accuse,
     Advance,
@@ -17,7 +17,7 @@ router = APIRouter(dependencies=[Depends(authenticate)])
 
 
 @router.post("/v1/games", tags=["수사"])
-async def create_game(command: NewGame, request: Request):
+def create_game(command: NewGame, request: Request):
     """새 수사를 만들고 게임 토큰을 발급한다. Next.js는 토큰을 HttpOnly 쿠키에 보관한다.
 
     Args:
@@ -27,11 +27,14 @@ async def create_game(command: NewGame, request: Request):
     Returns:
         dict: 새 수사 ID, 비밀 게임 토큰과 공개 초기 상태.
     """
-    return service(request).create(command)
+    owner = None
+    if "X-Access-Token" in request.headers:
+        owner = investigation_access(request)
+    return service(request).create(command, owner)
 
 
 @router.get("/v1/games/{game_id}", tags=["수사"])
-async def get_game(game_id: str, request: Request):
+def get_game(game_id: str, request: Request):
     """화면용 수사 상태·진행률·자료·타임라인·가능 행동을 집계한다.
 
     Args:

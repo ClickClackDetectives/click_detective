@@ -3,6 +3,7 @@
 import logging
 
 from fastapi import HTTPException
+from starlette.concurrency import run_in_threadpool
 
 from ..dialogue.reply_validation import (
     FIXED_MODEL_VERSION,
@@ -12,6 +13,7 @@ from ..dialogue.reply_validation import (
 from ..dialogue.schemas import CharacterReplyRequest, CharacterReplyResponse
 from ..dialogue.state import SearchTurn
 from ..dialogue.validation_agent_v2.agent import neutral_response
+from .dialogue_request import dialogue_request
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +65,6 @@ class GameService:
         self.settings = settings
         self.catalog = catalog
         self.repository = repository
-        # 이전 연동 코드가 사용하는 속성 이름도 유지한다.
         self.c = catalog
         self.repo = repository
         self.engine = engine
@@ -87,11 +88,12 @@ class GameService:
             raise HTTPException(409, "scenario_version_conflict")
         return state
 
-    def create(self, command):
-        """실행 가능한 사건·버전을 확인하고 생성 중복을 처리한다.
+    def create(self, command, owner=None):
+        """사건 버전을 확인하고 익명 또는 계정 수사를 한 번만 생성한다.
 
         Args:
             command: 사용자 행동과 요청 ID, 예상 상태 버전을 담은 입력.
+            owner: 계정 접근 주체. 익명 수사에서는 None.
 
         Returns:
             dict: 수사 ID, 접근 토큰과 공개 초기 상태 또는 저장된 동일 요청 결과.
@@ -99,8 +101,9 @@ class GameService:
         self.catalog.require_case(command.case_id)
         if command.scenario_version != self.catalog.version:
             raise HTTPException(409, "scenario_version_conflict")
+        options = {} if owner is None else {"owner": owner}
         return self.repository.create(
-            command, self.engine.initial, self.presenter.state
+            command, self.engine.initial, self.presenter.state, **options
         )
 
     def dialogue_request(self, state, command, plan):
@@ -210,8 +213,13 @@ class GameService:
         Returns:
             dict: 확정한 행동 결과와 최신 공개 상태 또는 저장된 동일 요청 응답.
         """
-        reservation = self.repository.reserve(
-            game_id, token, command, action, self.settings.timeout_seconds * 2 + 30
+        reservation = await run_in_threadpool(
+            self.repository.reserve,
+            game_id,
+            token,
+            command,
+            action,
+            self.settings.timeout_seconds * 2 + 30,
         )
         if "cached" in reservation:
             return reservation["cached"]
@@ -242,8 +250,22 @@ class GameService:
                 result = self.engine.record_plan(state, plan, response)
             else:
                 raise HTTPException(404, "행동을 찾을 수 없습니다.")
-            return self.repository.commit(
-                game_id, command, reservation, state, result, self.presenter.state
+            return await run_in_threadpool(
+                self.repository.commit,
+                game_id,
+                command,
+                reservation,
+                state,
+                result,
+                self.presenter.state,
             )
-        finally:
-            self.repository.abort(command, reservation)
+        except BaseException:
+            try:
+                await run_in_threadpool(self.repository.abort, command, reservation)
+            except Exception as error:
+                logger.warning(
+                    "Reservation cleanup failed: request_id=%s error_type=%s",
+                    command.request_id,
+                    type(error).__name__,
+                )
+            raise

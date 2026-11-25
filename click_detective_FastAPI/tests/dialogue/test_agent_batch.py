@@ -10,12 +10,12 @@ import pytest
 from app.config import PROJECT_ROOT
 from app.dialogue.schemas import CharacterReplyRequest
 from scripts import test_llm_api_live as cli
-from scripts.live_dialogue.agent_inputs import load_agent_inputs
+from scripts.live_dialogue.agent_inputs import NEUTRAL_QUESTIONS, load_agent_inputs
 from scripts.test_llm_api_live import LiveLlmTester
 
 
-def test_agent_batch_records_120_inputs_through_a_failed_case():
-    """기본 입력 120건을 순차 요청하고 중간 오류 다음 사례도 기록한다.
+def test_agent_batch_records_inputs_through_a_failed_case():
+    """기본 입력 132건을 순차 요청하고 중간 오류 다음 사례도 기록한다.
 
     Args:
         없음.
@@ -24,11 +24,19 @@ def test_agent_batch_records_120_inputs_through_a_failed_case():
         None: 입력 다양성과 요청별 성공·실패 기록을 검사한다.
     """
     inputs = load_agent_inputs(None)
-    requests = [CharacterReplyRequest.model_validate(body) for body in inputs]
-    assert len(requests) == 120
-    assert len({request.request_id for request in requests}) == 120
-    assert len({(request.suspect_id, request.question) for request in requests}) == 120
-    assert {len(request.required_fact_ids) for request in requests} == {1, 2, 3}
+    wire_inputs = [
+        {
+            key: value
+            for key, value in body.items()
+            if key != "expected_neutral_category"
+        }
+        for body in inputs
+    ]
+    requests = [CharacterReplyRequest.model_validate(body) for body in wire_inputs]
+    assert len(requests) == 132
+    assert len({request.request_id for request in requests}) == 132
+    assert len({(request.suspect_id, request.question) for request in requests}) == 132
+    assert {len(request.required_fact_ids) for request in requests} == {0, 1, 2, 3}
     assert any(request.history for request in requests)
     assert any(request.presented_materials for request in requests)
     seen = []
@@ -48,13 +56,17 @@ def test_agent_batch_records_120_inputs_through_a_failed_case():
         seen.append(body)
         if len(seen) == 60:
             return httpx.Response(502, json={"detail": "simulated failure"})
+        assert "expected_neutral_category" not in body
         return httpx.Response(
             200,
             json={
                 "request_id": body["request_id"],
                 "suspect_id": body["suspect_id"],
                 "state_revision": body["state_revision"],
-                "finish_reason": "stop",
+                "finish_reason": "stop" if body["allowed_facts"] else "neutral",
+                "model_version": "test-model"
+                if body["allowed_facts"]
+                else "fixed-neutral-v2",
                 "reply": "모의 응답",
                 "used_fact_ids": body["required_fact_ids"],
             },
@@ -67,11 +79,11 @@ def test_agent_batch_records_120_inputs_through_a_failed_case():
             inputs
         )
 
-    assert seen == inputs
+    assert seen == wire_inputs
     assert not report["passed"]
-    assert sum(case["passed"] for case in report["cases"]) == 119
+    assert sum(case["passed"] for case in report["cases"]) == 131
     assert report["cases"][59]["exchanges"][0]["output"]["status"] == 502
-    assert report["cases"][-1]["name"] == "agents-120"
+    assert report["cases"][-1]["name"] == "agents-132"
     assert report["cases"][-1]["passed"]
 
 
@@ -119,11 +131,12 @@ def test_versioned_batch_writes_inputs_outputs_and_timings(
         observed: 서버가 보고할 실행 버전.
 
     Returns:
-        None: 버전 일치 시 120건, 불일치 시 사전 확인만 기록한다.
+        None: 버전 일치 시 132건, 불일치 시 사전 확인만 기록한다.
     """
     traces = tmp_path / "trace.jsonl"
     path = tmp_path / f"{expected}.json"
     agents = ["preprocess_agent", "inference_agent", "validation_agent"]
+    categories = {question: category for category, question in NEUTRAL_QUESTIONS}
     sent = []
 
     def send(request):
@@ -154,15 +167,26 @@ def test_versioned_batch_writes_inputs_outputs_and_timings(
                 for agent in agents
             ],
         }
+        category = categories.get(body["question"])
+        if category == "out_of_scope":
+            trace["events"] = []
+        if category:
+            trace["events"].append(
+                {"stage": "validation_outcome", "neutral_category": category}
+            )
         with traces.open("a") as stream:
             stream.write(json.dumps(trace) + "\n")
+        assert "expected_neutral_category" not in body
         return httpx.Response(
             200,
             json={
                 "request_id": body["request_id"],
                 "suspect_id": body["suspect_id"],
                 "state_revision": body["state_revision"],
-                "finish_reason": "stop",
+                "finish_reason": "stop" if body["allowed_facts"] else "neutral",
+                "model_version": "test-model"
+                if body["allowed_facts"]
+                else "fixed-neutral-v2",
                 "reply": "모의 응답",
                 "used_fact_ids": body["required_fact_ids"],
             },
@@ -192,11 +216,17 @@ def test_versioned_batch_writes_inputs_outputs_and_timings(
         assert not sent and not report["cases"]
         return
     assert result == 0
-    assert len(sent) == len(report["cases"]) == 120
+    assert len(sent) == len(report["cases"]) == 132
     for body, case in zip(sent, report["cases"], strict=True):
         (exchange,) = case["exchanges"]
         assert exchange["input"]["body"] == body
         assert exchange["output"]["body"]["reply"] == "모의 응답"
         assert exchange["elapsed_ms"] >= 0
         assert case["validation_agent_version"] == observed
-        assert set(case["agent_timings"]) == set(agents)
+        category = categories.get(body["question"])
+        timings = set() if category == "out_of_scope" else set(agents)
+        assert set(case["agent_timings"]) == timings
+        if category:
+            assert case["expected_neutral_category"] == category
+            assert case["checks"]["expected_neutral_category"]
+            assert case["checks"]["neutral_no_used_facts"]

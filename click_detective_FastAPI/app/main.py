@@ -3,7 +3,10 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pymongo.errors import PyMongoError
 
+from app.auth.routes import router as auth_router
+from app.investigation.api.account_routes import router as account_router
 from app.investigation.api.material_routes import router as material_router
 from app.investigation.api.routes import router as investigation_router
 from app.investigation.api.view_routes import router as view_router
@@ -52,6 +55,27 @@ def create_app(settings: Settings | None = None):
             },
         )
 
+    @app.exception_handler(PyMongoError)
+    async def investigation_store_unavailable(request, error):
+        """수사 저장 오류를 재시도 가능한 공개 응답으로 변환한다.
+
+        Args:
+            request: 저장소 오류가 발생한 요청.
+            error: 접속 정보가 포함될 수 있는 저장소 예외.
+
+        Returns:
+            JSONResponse: 기존 요청 UUID를 유지해 재시도할 수 있는 503 응답.
+        """
+        return JSONResponse(
+            status_code=503,
+            content={
+                "detail": {
+                    "code": "INVESTIGATION_STORE_UNAVAILABLE",
+                    "message": "수사 저장소에 연결할 수 없습니다. 같은 요청으로 다시 확인하세요.",
+                }
+            },
+        )
+
     @app.middleware("http")
     async def no_store(request, call_next):
         """수사별 데이터가 브라우저나 프록시의 공용 캐시에 남지 않게 한다.
@@ -80,6 +104,8 @@ def create_app(settings: Settings | None = None):
         return {"status": "ok"}
 
     for router in (
+        auth_router,
+        account_router,
         case_router,
         investigation_router,
         material_router,

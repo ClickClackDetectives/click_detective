@@ -19,6 +19,7 @@ from .state import OutputRejected as OutputRejected
 from .validation_agent_v1.agent import ValidationAgent
 from .validation_agent_v1.evidence_checks import check_report_evidence
 from .validation_agent_v2.agent import ValidationAgentV2, neutral_response
+from .validation_agent_v2.neutral import classify_neutral_question
 
 
 class InterrogationGraph:
@@ -119,7 +120,7 @@ class InterrogationGraph:
             runtime: 검색 뒤 시작할 생성·검증 제한 시간을 제공하는 그래프 실행 문맥.
 
         Returns:
-            dict: 생성 프롬프트와 초기 생성 횟수.
+            dict: 생성 프롬프트, 검증 단위와 초기 생성 횟수.
         """
         with trace_agent_time("preprocess_agent"):
             result = await self.preprocessor.preprocess_agent(state)

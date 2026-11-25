@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { bindAccount } from '../shared/auth/scope.ts';
 
 /** 서로 다른 테스트가 브라우저 탭의 요청 큐를 공유하지 않도록 모듈을 새로 읽습니다.
  * @param name 파일·사례·화면의 이름.
@@ -12,6 +13,8 @@ async function freshClient(name: string) {
 }
 
 test('검증 실패 502 이후에는 과거 질문 대신 새 질문을 전송한다', async (t) => {
+  bindAccount('74720db7-3ec9-4db8-804f-2eea975b3391');
+  t.after(() => bindAccount(null));
   const requests: Record<string, unknown>[] = [];
   t.mock.method(globalThis, 'fetch', async (_url: string, options: RequestInit) => {
     if (!options.body) return Response.json({ state: { id: 'game', revision: 1 } });
@@ -46,6 +49,8 @@ test('검증 실패 502 이후에는 과거 질문 대신 새 질문을 전송�
 });
 
 test('실제 통신 시간 초과는 같은 UUID를 확인한 다음 새 질문을 전송한다', async (t) => {
+  bindAccount('74720db7-3ec9-4db8-804f-2eea975b3391');
+  t.after(() => bindAccount(null));
   const requests: Record<string, unknown>[] = [];
   t.mock.method(globalThis, 'fetch', async (_url: string, options: RequestInit) => {
     if (!options.body) return Response.json({ state: { id: 'game', revision: 1 } });

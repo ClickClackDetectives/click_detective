@@ -2,7 +2,9 @@
 
 증거를 읽고, 용의자의 진술을 비교하고, 흩어진 단서를 연결해 사건의 진실을 밝혀내는 웹 기반 탐정 게임입니다. 플레이어는 사건 자료를 직접 조사하고 용의자에게 질문하며, 수집한 근거를 바탕으로 추론을 완성하고 최종 고발을 제출합니다.
 
-이 저장소는 **Next.js 기반 게임 화면**과 **FastAPI 기반 수사 엔진·로컬 AI 대사 생성 서버**를 함께 포함합니다. 브라우저에서 수행한 조사는 백엔드의 게임 규칙에 따라 처리되고, 수사 상태와 메모는 SQLite에 저장됩니다.
+이 저장소는 **Next.js 기반 게임 화면**과 **FastAPI 기반 수사 엔진·로컬 AI 대사 생성 서버**를 함께 포함합니다. 브라우저에서 수행한 조사는 백엔드의 게임 규칙에 따라 처리되고, 수사 상태와 메모는 MongoDB에 저장됩니다.
+
+코드를 수정할 때는 [기여 가이드](CONTRIBUTING.md)에서 작업 규칙과 검증 절차를 확인하세요.
 
 ## 목차
 
@@ -46,7 +48,7 @@ flowchart LR
     Player[플레이어 브라우저] --> Web[Next.js 화면 및 서버 중계]
     Web --> API[FastAPI 수사 API]
     API --> Rules[사건 데이터 및 게임 규칙]
-    API --> DB[(SQLite 수사 저장)]
+    API --> DB[(MongoDB 수사 저장)]
     API --> Graph[LangGraph 대사 워크플로]
     Graph --> Model[로컬 Qwen 모델 및 LoRA]
 ```
@@ -59,7 +61,7 @@ flowchart LR
 
 ### FastAPI: 수사 엔진과 데이터 관리
 
-`click_detective_FastAPI`는 사건·인물·자료 조회, 증거 열람, 심문, 추론, 조사 단계 전환, 메모 저장, 고발 판정을 처리합니다. 사건의 정적 데이터와 비공개 규칙을 읽고 SQLite에 수사 상태를 보관합니다.
+`click_detective_FastAPI`는 사건·인물·자료 조회, 증거 열람, 심문, 추론, 조사 단계 전환, 메모 저장, 고발 판정을 처리합니다. 사건의 정적 데이터와 비공개 규칙을 읽고 MongoDB에 수사 상태를 보관합니다.
 
 변경 요청에는 요청 식별자와 상태 버전을 사용해 중복 요청과 오래된 상태에서의 변경을 처리합니다. 자료와 이미지도 현재 수사에서 열람할 수 있는지 확인한 뒤 제공합니다.
 
@@ -87,7 +89,7 @@ flowchart LR
 | 서버 중계 | Next.js App Router, Route Handlers, Fetch API |
 | 백엔드 | Python 3.11 이상, FastAPI, Uvicorn |
 | 데이터 검증·설정 | Pydantic, pydantic-settings |
-| 저장 | SQLite |
+| 저장 | MongoDB replica set 및 계정용 PostgreSQL |
 | 대화 워크플로 | LangGraph |
 | 모델 실행 | Qwen2.5-7B-Instruct, PyTorch, Transformers, Accelerate |
 | 양자화·어댑터 | bitsandbytes(NF4), PEFT(LoRA) |
@@ -233,7 +235,7 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 | --- | --- | --- |
 | 백엔드 `.env` | `CLICK_API_KEY` | Next.js 서버 인증용 키, 16자 이상 |
 | 백엔드 `.env` | `CLICK_GENERATION_MODE` | `fixture` 또는 `local` |
-| 백엔드 `.env` | `CLICK_DATABASE_PATH` | 기본값 `./.data/games.sqlite3` |
+| 백엔드 `.env` | `CLICK_MONGO_URI` | 필수 MongoDB replica set 연결 문자열 |
 | 백엔드 `.env` | `CLICK_DATA_DIR` | 기본값 `./data` |
 | 백엔드 `.env` | `CLICK_LOCAL_MODEL_PATH` | 로컬 모델 폴더 |
 | 백엔드 `.env` | `CLICK_LORA_ADAPTER_PATH` | LoRA 어댑터 폴더 |

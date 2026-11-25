@@ -78,8 +78,9 @@
 
 현재 API 진입점은 [app/investigation/api/routes.py의 `interrogate`](../../../app/investigation/api/routes.py#L55)다.
 
-처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/persistence/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.
 
 ## 응답 출처와 쟁점
 
 stop은 검증된 모델 대사, fixed는 중립/fixture, fallback은 승인 원문 복구입니다. 세 응답 모두 정상 확정되면 질문을 1회 소비합니다. 쟁점이 없는 질문도 답변은 제공하지만 새 쟁점은 생성하지 않습니다. 복구는 승인된 계획만 확정하며 미승인 비밀을 공개하지 않습니다. [전체 응답 정책](../../에이전트/응답과_복구_정책.md)
+
+처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [수사 저장](../../서버/수사_저장.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.

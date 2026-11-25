@@ -13,7 +13,7 @@ updateGame('examine', { evidenceId: '1-01' })
   → POST /v1/games/{game_id}/examinations
 ```
 
-브라우저 호출의 기본 접두사는 `/api/detective/`입니다. 아래 표의 짧은 경로 앞에 이 접두사를 붙여 읽으세요. `{game_id}`는 Next.js가 쿠키에서 읽으므로 화면이 임의의 게임 ID를 본문으로 지정하지 않습니다.
+브라우저 호출의 기본 접두사는 `/api/detective/`입니다. 아래 표의 짧은 경로 앞에 이 접두사를 붙여 읽으세요. 수사 요청은 `investigation` 쿼리의 UUID를 사용하며 FastAPI가 계정 소유권을 검사합니다. UUID 없이 상태를 조회하면 현재 계정의 최근 수사를 반환합니다.
 
 ## 2. 전체 경로 대응
 
@@ -38,7 +38,7 @@ updateGame('examine', { evidenceId: '1-01' })
 | PUT    | `notes`                | `/v1/games/{game_id}/notes`                | 메모 전체 저장                             |
 | POST   | `accusations`          | `/v1/games/{game_id}/accusations`          | 고발 검증·판정·종결                        |
 
-현재 FastAPI의 업무 경로는 패턴 기준 18개입니다. `views/evidence`, `views/testimonies`, `views/inference`는 하나의 `/views/{screen}` 패턴을 사용합니다.
+`views/evidence`, `views/testimonies`, `views/inference`는 하나의 `/views/{screen}` 패턴을 사용합니다.
 
 화면은 모든 조회 API를 매번 호출하지 않습니다. 예를 들어 쟁점 화면은 전체 state의 `findingDetails`도 사용하고, 홈 사건 카드에는 `catalog.application.cases`를 사용합니다. 카탈로그의 준비 중 카드와 `/cases`의 실제 시작 가능 사건 목록은 목적이 다릅니다.
 
@@ -96,7 +96,7 @@ updateGame('examine', { evidenceId: '1-01' })
 
 ## 5. 생성과 이어하기
 
-새 생성 본문은 `{request_id, case_id, scenario_version}`입니다. FastAPI는 `{game_id, game_token, state}`를 반환하지만 BFF는 토큰을 쿠키로 옮기고 브라우저 JSON에는 `{state}`만 보냅니다.
+새 생성 본문은 `{request_id, case_id, scenario_version}`입니다. `start`는 로그인한 계정의 수사를 생성하고 BFF에서 `{game_id, state}`를 반환합니다.
 
 원본 ‘수사 이어하기’는 최신 기록이 메모리에 있으면 이를 반환해 화면을 이동합니다. 이어하기 클릭마다 무조건 새로운 `/games`를 만드는 것은 아닙니다. ‘다시 수사하기’에서 `restart: true`를 사용하면 새 생성 요청을 보냅니다. `restart`는 프런트엔드 어댑터의 옵션이고 FastAPI 생성 DTO에 그대로 전달하지 않습니다.
 
@@ -141,3 +141,17 @@ BFF 오류 형식은 `{error, code}`입니다. 서버 생성 오류의 `X-Genera
 백엔드의 `CLICK_FALLBACK_ON_ERROR=true`가 기본값입니다. 생성·검증이 실패하면 승인 원문 대사로 복구하며, 성공 응답에 `finish_reason=fallback`이 표시됩니다. 이 답변은 정상 저장된 질문 1회로 기록합니다. `fixed`는 중립 또는 fixture 응답을 나타냅니다. 복구를 끈 `CLICK_FALLBACK_ON_ERROR=false` 환경에서 생성 오류가 반환되면 BFF는 `X-Generation-Error` 코드를 전달합니다. 자세한 정책은 [FastAPI 응답과 복구 정책](../../../click_detective_FastAPI/docs/에이전트/응답과_복구_정책.md)에 있습니다.
 
 [전체 문서](../README.md)
+
+## 계정 API
+
+| 브라우저 경로 | FastAPI 경로 | 공개 응답 |
+| --- | --- | --- |
+| POST `/api/auth/signup` | `/auth/signup` | 201과 공개 계정 |
+| POST `/api/auth/login` | `/auth/login` | 공개 계정 및 인증 쿠키 |
+| GET `/api/auth/me` | `/auth/me` | 공개 계정 |
+| POST `/api/auth/refresh` | `/auth/refresh` | 공개 계정 및 교체된 인증 쿠키 |
+| POST `/api/auth/logout` | `/auth/logout` | 성공 응답 및 인증 쿠키 만료 |
+| GET `/api/detective/investigations` | `/v1/investigations` | 수사 목록과 `next_cursor` |
+| POST `/api/detective/claim` | `/v1/investigations/claim` | 연결된 수사 요약 |
+
+계정 응답은 `{user: {id, email}}`이고, 수사 요약은 `{game_id, case_id, updated_at, revision}`입니다. 연결 요청은 `{game_id}`를 보내며, 같은 ID의 익명 쿠키가 있을 때 토큰을 함께 중계합니다.

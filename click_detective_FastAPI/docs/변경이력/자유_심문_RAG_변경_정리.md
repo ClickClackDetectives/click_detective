@@ -42,7 +42,7 @@ flowchart TD
 - **공개 범위**는 서버가 정합니다. 현재 인물의 동선, 관계, 자기소개, 이미 공개된 인정 진술에서 후보를 만듭니다. ChromaDB에는 그 요청에서 허용된 벡터 ID만 넘깁니다. 근사 검색에서 일부 ID가 빠지면 해당 ID를 재조회하고, 그래도 누락되면 ChromaDB에서 해당 벡터만 읽어 코사인 거리를 직접 계산합니다. 인덱스는 백엔드 메모리에 있으며, 서버 재시작 후 필요한 벡터를 다시 적재합니다. [후보 구성](../../app/dialogue/preprocess_agent/question_search.py) · [ChromaDB 연결](../../app/dialogue/preprocess_agent/chroma_index.py)
 - **E5 검색**에서 질문에는 `query: `, 진술에는 `passage: ` 접두어를 붙입니다. 개별 동선과 인정 진술은 제목, 가능한 경우 시각, 본문을 합쳐 임베딩합니다. 예를 들어 질문에 정확한 시각이 있으면 해당 시각과 맞는 진술만 남깁니다. [E5 인코더](../../app/dialogue/preprocess_agent/embeddings.py) · [진술 시각 검사](../../app/dialogue/preprocess_agent/testimony_time.py)
 - **Kiwi BM25 재정렬**은 질문과 진술에서 형태소를 뽑습니다. “코를 골던”과 “코 고는”은 둘 다 `코`와 `골`로 연결할 수 있습니다. 가중 RRF는 개별 진술의 E5 순위와 BM25 순위를 **65%와 35%**로 결합합니다. E5 유사도 하한은 **0.8322**, 1위와의 점수 차이는 **0.02 이내**입니다. 이 기준을 통과한 후보를 재정렬한 뒤 최대 **3개**를 선택합니다. 전체 동선이 1위라면 조건에 맞는 동선 묶음을 사용합니다. [Kiwi 재정렬](../../app/dialogue/preprocess_agent/kiwi_reranker.py)
-- **생성과 검증**에는 선택된 승인 사실, 필수 사실 ID, 인물의 이름·역할·말투, 질문, 최근 대화를 전달합니다. Qwen은 승인 사실을 자연스러운 대사로 재서술하고, 검증 단계는 필수 사실의 누락이나 승인되지 않은 내용의 추가를 검사합니다. 현재 사건 데이터에는 인물별 `speech_style` 값이 없어 기본 말투가 적용됩니다. [생성 프롬프트](../../app/dialogue/preprocess_agent/prompt.py) · [심문 요청 조립](../../app/investigation/service.py) · [검증 에이전트](../../app/dialogue/validation_agent/agent.py)
+- **생성과 검증**에는 선택된 승인 사실, 필수 사실 ID, 인물의 이름·역할·말투, 질문, 최근 대화를 전달합니다. Qwen은 승인 사실을 자연스러운 대사로 재서술하고, 검증 단계는 필수 사실의 누락이나 승인되지 않은 내용의 추가를 검사합니다. 현재 사건 데이터에는 인물별 `speech_style` 값이 없어 기본 말투가 적용됩니다. [생성 프롬프트](../../app/dialogue/preprocess_agent/prompt.py) · [심문 요청 조립](../../app/investigation/service.py) · [검증 에이전트](../../app/dialogue/validation_agent_v1/agent.py)
 
 ## 코드와 설정에서 달라진 점
 

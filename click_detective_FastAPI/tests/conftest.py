@@ -6,9 +6,10 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-from app.config import PROJECT_ROOT, Settings
+from app.config import PROJECT_ROOT
 from app.main import create_app
 from tests.investigation.player import Player
+from tests.mongo_fixture import fixture_settings as fixture_settings
 
 TOKEN = "click-test-service-secret"
 
@@ -25,7 +26,17 @@ def redact(value):
     if isinstance(value, dict):
         return {
             key: "[REDACTED]"
-            if key.lower() in {"authorization", "x-game-token", "game_token"}
+            if key.lower()
+            in {
+                "authorization",
+                "x-game-token",
+                "game_token",
+                "x-access-token",
+                "x-refresh-token",
+                "access_token",
+                "refresh_token",
+                "password",
+            }
             else redact(item)
             for key, item in value.items()
         }
@@ -103,24 +114,16 @@ def record(request, results):
 
 
 @pytest.fixture(scope="session")
-def fixture_settings(tmp_path_factory):
-    """GPU 없이 실행할 FastAPI 테스트 설정을 구성한다.
+def service_key():
+    """검사 서버와 HTTP 호출에 같은 서비스 키를 제공한다.
 
     Args:
-        tmp_path_factory: 테스트용 임시 디렉터리를 만드는 pytest 도구.
+        없음.
 
     Returns:
-        Settings: fixture 모드와 임시 저장 경로를 담은 설정.
+        str: 테스트용 키.
     """
-    return Settings(
-        api_key=TOKEN,
-        generation_mode="fixture",
-        validation_similarity_backend="char_ngram",
-        fallback_on_error=False,
-        _env_file=None,
-        database_path=tmp_path_factory.mktemp("click-detective") / "test.sqlite3",
-        diagnostics_path=tmp_path_factory.mktemp("click-traces") / "trace.jsonl",
-    )
+    return TOKEN
 
 
 @pytest.fixture(scope="session")

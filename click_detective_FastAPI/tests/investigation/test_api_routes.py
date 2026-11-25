@@ -20,6 +20,14 @@ def test_all_business_routes_have_coverage(api):
     }
     expected = {
         ("GET", "/healthz"),
+        ("POST", "/auth/signup"),
+        ("POST", "/auth/login"),
+        ("GET", "/auth/me"),
+        ("POST", "/auth/refresh"),
+        ("POST", "/auth/logout"),
+        ("POST", "/auth/delete"),
+        ("GET", "/v1/investigations"),
+        ("POST", "/v1/investigations/claim"),
         ("GET", "/v1/catalog"),
         ("GET", "/v1/cases"),
         ("GET", "/v1/cases/{case_id}"),

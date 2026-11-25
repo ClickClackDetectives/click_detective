@@ -31,6 +31,7 @@ export default function CaseApp() {
     updateGame,
     navigateTo,
     startInvestigation,
+    requireLogin,
     form,
   } = controller;
   return (
@@ -41,6 +42,7 @@ export default function CaseApp() {
         inProgress={inProgress}
         navigateTo={navigateTo}
         setModal={setModal}
+        requireLogin={requireLogin}
       />
       {error && (
         <div className="error-toast" role="alert">

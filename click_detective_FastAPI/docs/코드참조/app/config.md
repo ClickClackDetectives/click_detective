@@ -22,7 +22,6 @@ class Settings(BaseSettings):
 **파라미터**
 
 - api_key (str): 서버 인증에 사용할 비밀 API 키.
-- database_path (Path): 수사 상태와 요청 기록을 저장할 SQLite 파일 경로.
 - data_dir (Path): 사건 JSON 데이터가 있는 디렉터리.
 - generation_mode (Literal['local', 'fixture']): local이면 실제 모델을 사용하고 fixture이면 고정 대사를 사용한다.
 - local_model_path (Path): 로컬에 준비된 Qwen 모델 디렉터리.

@@ -8,15 +8,8 @@ from ..schemas import CharacterReplyResponse
 from ..text_relevance import text_relevance
 from ..validation_agent_v1.output import ReplyOutput
 from ..validation_agent_v1.semantic_verification import candidate_sentences
-from ..validation_agent_v1.verification_units import build_verification_units
-from .rules import (
-    NO_APPROVAL_REPLY,
-    UNVERIFIED_REPLY,
-    SentenceTransformerSimilarity,
-    char_ngram_scores,
-    public_sources,
-    rule_match,
-)
+from .neutral import select_neutral_reply
+from .rules import SentenceTransformerSimilarity, public_sources, rule_match
 from .v2_1.policy import HybridPolicy
 from .v2_2.policy import RulePolicy
 
@@ -32,8 +25,10 @@ def neutral_response(request):
     Returns:
         CharacterReplyResponse: 승인 사실 전달을 기록하지 않는 중립 응답.
     """
+    category, reply = select_neutral_reply(request)
     trace_event(
         "validation_outcome",
+        neutral_category=category,
         code="filtered_reply_validation_failed"
         if request.allowed_facts
         else "no_approved_facts_out_of_scope",
@@ -44,7 +39,7 @@ def neutral_response(request):
         request_id=request.request_id,
         suspect_id=request.suspect_id,
         state_revision=request.state_revision,
-        reply=UNVERIFIED_REPLY if request.allowed_facts else NO_APPROVAL_REPLY,
+        reply=reply,
         used_fact_ids=[],
         model_version=NEUTRAL_MODEL,
         finish_reason="neutral",
@@ -74,13 +69,8 @@ class ValidationAgentV2:
         """
         self.settings = settings
         self.output = ReplyOutput(settings, model)
-        self.embedding = (
-            SentenceTransformerSimilarity(
-                settings.validation_embedding_model,
-                settings.validation_embedding_device,
-            )
-            if settings.validation_similarity_backend == "sentence_transformer"
-            else None
+        self.embedding = SentenceTransformerSimilarity(
+            settings.validation_embedding_model, settings.validation_embedding_device
         )
         self.policy = (
             HybridPolicy(settings, model)
@@ -92,7 +82,7 @@ class ValidationAgentV2:
         """후보 대사를 검사하고 전부·일부·중립 중 하나로 종료한다.
 
         Args:
-            state: 요청, 후보 원문과 모델 오류를 담은 그래프 상태.
+            state: 요청, 전처리 검증 단위, 후보 원문과 모델 오류를 담은 그래프 상태.
 
         Returns:
             dict: 응답과 재생성 금지 상태.
@@ -108,7 +98,7 @@ class ValidationAgentV2:
                 except (ValueError, TypeError):
                     candidate = None
                 response = (
-                    await self.verify(request, candidate)
+                    await self.verify(request, candidate, state["verification_units"])
                     if candidate is not None
                     else neutral_response(request)
                 )
@@ -120,12 +110,13 @@ class ValidationAgentV2:
                 elapsed_ms=round((perf_counter() - started) * 1000, 2),
             )
 
-    async def verify(self, request, candidate):
+    async def verify(self, request, candidate, units):
         """공개 범위 검사 또는 세 단계 문장 검증을 수행한다.
 
         Args:
             request: 승인 사실과 현재 공개 문맥.
             candidate: 생성 모델이 반환한 대사.
+            units: 생성 프롬프트를 구성할 때 사용한 승인 문장 단위.
 
         Returns:
             CharacterReplyResponse: 이번 판정의 최종 응답.
@@ -138,7 +129,6 @@ class ValidationAgentV2:
                 return candidate
             return neutral_response(request)
 
-        units = build_verification_units(request)
         sentences = candidate_sentences(candidate.reply)
         if len(sentences) > 256:
             return neutral_response(request)
@@ -211,12 +201,7 @@ class ValidationAgentV2:
         """
         candidates = [part.text for part in sentences]
         approved = [unit.text for unit in units]
-        if self.embedding:
-            scores = await asyncio.to_thread(
-                self.embedding.scores, candidates, approved
-            )
-        else:
-            scores = char_ngram_scores(candidates, approved)
+        scores = await asyncio.to_thread(self.embedding.scores, candidates, approved)
         eligible = {}
         for part, row in zip(sentences, scores, strict=True):
             eligible[part.id] = [

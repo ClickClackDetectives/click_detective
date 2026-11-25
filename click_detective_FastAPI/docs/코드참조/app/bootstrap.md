@@ -2,11 +2,11 @@
 
 [코드 참조 목차](../README.md) · [전체 문서 목차](../../README.md) · [실제 소스](../../../app/bootstrap.py)
 
-> 현재 소스 기준: 2026-11-16. 파일 길이: 51줄. 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
+> 선언문 아래의 설명은 실제 docstring을 기준으로 정리했다.
 
 ## 파일의 역할
 
-서버가 시작될 때 사건, 수사 서비스와 대화 모델을 준비한다.
+서버가 시작될 때 사건, 수사 서비스와 대화 모델을 준비한다. MongoDB ODM 저장소를 열고, 계정 기능을 사용하면 PostgreSQL ORM 엔진을 준비한다. 종료 시 두 저장소의 연결을 정리한다.
 
 ## 함께 읽을 코드
 
@@ -15,7 +15,6 @@
 - [app/dialogue/preprocess_agent/planning.py](dialogue/preprocess_agent/planning.md)
 - [app/investigation/rules/engine.py](investigation/rules/engine.md)
 - [app/investigation/views/presentation.py](investigation/views/presentation.md)
-- [app/investigation/persistence/repository.py](investigation/persistence/repository.md)
 - [app/investigation/service.py](investigation/service.md)
 
 ## `lifespan`

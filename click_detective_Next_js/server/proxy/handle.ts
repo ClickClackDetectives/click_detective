@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { resolveTarget, isSameOrigin } from './policy';
-import { addSearchParams, readBody, backendTimeout } from './request';
+import { ACCESS_COOKIE } from '../auth/cookies';
+import { isInvestigationId } from '../../shared/auth/contract';
+import { resolveTarget } from './policy';
+import { readInvestigation, readInvestigationPage } from './investigations';
+import { addSearchParams, readBody } from './request';
+import { allowsOrigin, fetchUpstream, upstreamFailure, upstreamTarget } from './upstream';
 import {
   fail,
   upstreamError,
   gameCreated,
   streamResponse,
+  clearGameCookies,
   GAME_ID_COOKIE,
   GAME_TOKEN_COOKIE,
 } from './responses';
@@ -20,68 +25,74 @@ export async function handle(
   context: { params: Promise<{ segments: string[] }> },
 ) {
   const { segments } = await context.params;
-  const siteUrl =
-    request.nextUrl.protocol + '//' + (request.headers.get('host') || request.nextUrl.host);
-  if (request.method !== 'GET' && !isSameOrigin(siteUrl, request.headers.get('origin'))) {
-    return fail('같은 사이트에서 요청하세요.', 403, 'ORIGIN_REJECTED');
-  }
+  if (!allowsOrigin(request)) return fail('같은 사이트에서 요청하세요.', 403, 'ORIGIN_REJECTED');
   const gameId = request.cookies.get(GAME_ID_COOKIE)?.value ?? '';
   const token = request.cookies.get(GAME_TOKEN_COOKIE)?.value ?? '';
-  const target = resolveTarget(segments, request.method, gameId);
+  const investigation = request.nextUrl.searchParams.get('investigation') ?? undefined;
+  const target = resolveTarget(segments, request.method, investigation);
   if (!target) return fail('지원하지 않는 API 경로입니다.', 404, 'UNKNOWN_ROUTE');
-  if (target.game && (!gameId || !token)) {
-    if (target.state) {
-      return NextResponse.json({ state: null }, { headers: { 'Cache-Control': 'no-store' } });
-    }
-    return fail('먼저 수사를 시작하세요.', 401, 'NO_GAME');
+  const access = target.account ? request.cookies.get(ACCESS_COOKIE)?.value : undefined;
+  if (target.account && !access) {
+    return fail('로그인을 하세요', 401, 'ACCESS_TOKEN_MISSING');
   }
-  const base = process.env.CLICK_DETECTIVE_API_URL;
-  const key = process.env.CLICK_DETECTIVE_API_KEY;
-  if (!base || !key) return fail('Next.js 서버 환경변수를 확인하세요.', 503, 'SERVER_CONFIG');
-  let url: URL;
-  try {
-    url = new URL(target.path, base);
-    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
-      throw new Error('백엔드 주소 형식 오류');
-    }
-  } catch {
-    return fail('백엔드 주소 설정을 확인하세요.', 503, 'SERVER_CONFIG');
-  }
-  addSearchParams(url, request, segments);
-  const body = await readBody(request);
+
+  const upstreamRequest = upstreamTarget(target.path);
+  if (upstreamRequest instanceof NextResponse) return upstreamRequest;
+  addSearchParams(upstreamRequest.url, request, segments);
+  let body = await readBody(request);
   if (body instanceof NextResponse) return body;
-  const headers = new Headers({
-    Authorization: 'Bearer ' + key,
-    'Content-Type': 'application/json',
-  });
-  if (target.game) headers.set('X-Game-Token', token);
+  let claimId: string | undefined;
+  if (target.claim) {
+    const input = JSON.parse(body!);
+    if (typeof input.game_id !== 'string' || !isInvestigationId(input.game_id)) {
+      return fail('연결할 수사를 확인하세요.', 400, 'INVALID_GAME');
+    }
+    claimId = input.game_id as string;
+    body = JSON.stringify({ game_id: claimId });
+  }
+  const { headers } = upstreamRequest;
+  if (target.account && access) headers.set('X-Access-Token', access);
+  if (claimId === gameId && token) {
+    headers.set('X-Game-Token', token);
+  }
+  const expectedUser = request.nextUrl.searchParams.get('account');
+  if (target.account && expectedUser && isInvestigationId(expectedUser)) {
+    headers.set('X-Expected-User-Id', expectedUser);
+  }
   const range = request.headers.get('range');
   if (range !== null) headers.set('Range', range);
   try {
-    const upstream = await fetch(url, {
-      method: request.method,
-      headers,
-      body,
-      cache: 'no-store',
-      signal: AbortSignal.timeout(backendTimeout()),
-      redirect: 'error',
-    });
-    if (!upstream.ok) return await upstreamError(upstream, target);
-    if (target.start) return await gameCreated(upstream, request);
+    if (target.latest) {
+      upstreamRequest.url.searchParams.set('limit', '1');
+      const list = await fetchUpstream(upstreamRequest, 'GET');
+      if (!list.ok) return await upstreamError(list);
+      const page = readInvestigationPage(await list.json().catch(() => null));
+      if (!page) return fail('수사 목록 응답 형식이 올바르지 않습니다.', 502, 'INVALID_RESPONSE');
+      const current = page.items[0];
+      if (!current) {
+        return NextResponse.json({ state: null }, { headers: { 'Cache-Control': 'no-store' } });
+      }
+      upstreamRequest.url.pathname = '/v1/games/' + current.game_id;
+      upstreamRequest.url.search = '';
+    }
+    const upstream = await fetchUpstream(upstreamRequest, request.method, body);
+    if (!upstream.ok) return await upstreamError(upstream);
+    if (target.start) return await gameCreated(upstream);
+    if (claimId) {
+      const data = readInvestigation(await upstream.json().catch(() => null));
+      if (data?.game_id !== claimId) {
+        return fail('수사 연결 응답 형식이 올바르지 않습니다.', 502, 'INVALID_RESPONSE');
+      }
+      const response = NextResponse.json(data, { headers: { 'Cache-Control': 'no-store' } });
+      return claimId === gameId ? clearGameCookies(response) : response;
+    }
+    if (segments[0] === 'investigations') {
+      const page = readInvestigationPage(await upstream.json().catch(() => null));
+      if (!page) return fail('수사 목록 응답 형식이 올바르지 않습니다.', 502, 'INVALID_RESPONSE');
+      return NextResponse.json(page, { headers: { 'Cache-Control': 'no-store' } });
+    }
     return streamResponse(upstream);
   } catch (error) {
-    const timedOut = error instanceof Error && ['TimeoutError', 'AbortError'].includes(error.name);
-    if (timedOut) {
-      return fail(
-        '백엔드 응답 대기시간이 지났습니다. 같은 요청으로 다시 확인하세요.',
-        504,
-        'BACKEND_TIMEOUT',
-      );
-    }
-    return fail(
-      'FastAPI에 연결할 수 없습니다. 서버 실행 상태를 확인하세요.',
-      502,
-      'BACKEND_UNREACHABLE',
-    );
+    return upstreamFailure(error);
   }
 }

@@ -38,18 +38,22 @@ export class IntegrationClient {
     route,
     { method = 'GET', body, status = 200, origin = this.base, headers = {} } = {},
   ) {
-    const response = await fetch(
-      this.base + (route.startsWith('/') ? route : '/api/detective/' + route),
-      {
-        method,
-        headers: {
-          ...(this.cookies ? { cookie: this.cookies } : {}),
-          ...(method === 'GET' ? {} : { origin, 'Content-Type': 'application/json' }),
-          ...headers,
-        },
-        ...(body ? { body: JSON.stringify(body) } : {}),
+    let endpoint = route.startsWith('/') ? route : '/api/detective/' + route;
+    const [name] = route.split(/[/?]/);
+    const unscoped = ['state', 'start', 'catalog', 'cases', 'assets', 'health'];
+    if (this.state && !route.startsWith('/') && !unscoped.includes(name)) {
+      const separator = endpoint.includes('?') ? '&' : '?';
+      endpoint += separator + 'investigation=' + this.state.id;
+    }
+    const response = await fetch(this.base + endpoint, {
+      method,
+      headers: {
+        ...(this.cookies ? { cookie: this.cookies } : {}),
+        ...(method === 'GET' ? {} : { origin, 'Content-Type': 'application/json' }),
+        ...headers,
       },
-    );
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
     const text = await response.text();
     let output;
     try {
@@ -63,7 +67,7 @@ export class IntegrationClient {
     this.records.push({
       route,
       method,
-      input: body ?? null,
+      input: body?.password ? { ...body, password: '[REDACTED]' } : (body ?? null),
       expectedStatus: status,
       status: response.status,
       output,
@@ -72,7 +76,18 @@ export class IntegrationClient {
     const setCookies = response.headers.getSetCookie();
     if (setCookies.length) {
       assert.ok(setCookies.every((c) => /httponly/i.test(c)));
-      this.cookies = setCookies.map((c) => c.split(';')[0]).join('; ');
+      const cookies = new Map();
+      for (const entry of [
+        ...this.cookies.split('; '),
+        ...setCookies.map((c) => c.split(';')[0]),
+      ]) {
+        const equals = entry.indexOf('=');
+        if (equals < 1) continue;
+        const name = entry.slice(0, equals);
+        if (entry.length > equals + 1) cookies.set(name, entry);
+        else cookies.delete(name);
+      }
+      this.cookies = [...cookies.values()].join('; ');
     }
     assert.ok(!text.includes(this.key), '서버 키 노출');
     assert.ok(!text.includes('game_token'), '수사 토큰 본문 노출');

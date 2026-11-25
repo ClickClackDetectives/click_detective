@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -14,7 +14,10 @@ class Settings(BaseSettings):
 
     Args:
         api_key (str): 서버 인증에 사용할 비밀 API 키.
-        database_path (Path): 수사 상태와 요청 기록을 저장할 SQLite 파일 경로.
+        postgres_dsn: 계정과 세션을 저장하는 PostgreSQL 연결 문자열.
+        auth_jwt_secret: 접근 토큰 서명에 사용하는 32바이트 이상의 비밀값.
+        mongo_uri: 수사 저장용 MongoDB replica set 연결 문자열.
+        mongo_database: 수사와 요청 기록을 저장할 MongoDB DB 이름.
         data_dir (Path): 사건 JSON 데이터가 있는 디렉터리.
         generation_mode (Literal['local', 'fixture']): local이면 실제 모델을 사용하고 fixture이면 고정 대사를 사용한다.
         local_model_path (Path): 로컬에 준비된 Qwen 모델 디렉터리.
@@ -57,7 +60,10 @@ class Settings(BaseSettings):
         env_prefix="CLICK_", env_file=PROJECT_ROOT / ".env", extra="ignore"
     )
     api_key: str = Field(min_length=16)
-    database_path: Path = PROJECT_ROOT / ".data/games.sqlite3"
+    postgres_dsn: SecretStr | None = None
+    auth_jwt_secret: SecretStr | None = None
+    mongo_uri: SecretStr | None = None
+    mongo_database: str = "click_detective"
     data_dir: Path = PROJECT_ROOT / "data"
     generation_mode: Literal["local", "fixture"] = "local"
     local_model_path: Path = PROJECT_ROOT / "models/Qwen2.5-7B-Instruct"
@@ -100,7 +106,6 @@ class Settings(BaseSettings):
     validation_embedding_device: str = "cpu"
 
     @field_validator(
-        "database_path",
         "data_dir",
         "local_model_path",
         "lora_adapter_path",
@@ -122,3 +127,36 @@ class Settings(BaseSettings):
             return None
         path = Path(value).expanduser()
         return path if path.is_absolute() else PROJECT_ROOT / path
+
+    @field_validator("postgres_dsn", "auth_jwt_secret", "mongo_uri", mode="before")
+    @classmethod
+    def empty_connection_setting(cls, value):
+        """빈 연결 환경변수로 개발 프로세스의 계정 설정을 끌 수 있게 한다.
+
+        Args:
+            value: 연결 문자열·서명 키 또는 값을 생략한 입력.
+
+        Returns:
+            str | SecretStr | None: 빈 문자열을 None으로 바꾼 설정값.
+        """
+        return None if value == "" else value
+
+    @model_validator(mode="after")
+    def require_account_storage(self):
+        """계정 기능의 데이터베이스와 서명 키 설정 조합을 검사한다.
+
+        Args:
+            없음.
+
+        Returns:
+            Settings: 검증된 실행 설정.
+        """
+        if self.postgres_dsn is not None or self.auth_jwt_secret is not None:
+            if self.postgres_dsn is None or self.mongo_uri is None:
+                raise ValueError(
+                    "계정 기능에는 PostgreSQL과 MongoDB가 모두 필요합니다."
+                )
+            secret = self.auth_jwt_secret
+            if secret is None or len(secret.get_secret_value().encode()) < 32:
+                raise ValueError("접근 토큰 서명 키는 32바이트 이상이어야 합니다.")
+        return self

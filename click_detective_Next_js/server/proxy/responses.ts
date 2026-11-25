@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import type { Target } from './policy';
+import { NextResponse } from 'next/server';
+import { isInvestigationId } from '../../shared/auth/contract';
 
 export const GAME_ID_COOKIE = 'cd_game_id';
 export const GAME_TOKEN_COOKIE = 'cd_game_token';
@@ -20,56 +20,41 @@ export function fail(message: string, status: number, code: string) {
   );
 }
 
-/** 만료된 수사는 쿠키를 지우고, 나머지 오류는 공개 가능한 내용만 전달한다.
+/** 백엔드 오류에서 공개 가능한 메시지와 코드를 전달한다.
  * @param upstream FastAPI에서 받은 HTTP 응답.
- * @param target 허용 목록에서 선택한 백엔드 경로.
- * @returns 수사 만료 또는 백엔드 오류를 공개 형식으로 바꾼 응답.
+ * @returns 브라우저에 표시할 오류 응답.
  */
-export async function upstreamError(upstream: Response, target: Target) {
-  if (target.state && upstream.status === 404) {
-    const response = NextResponse.json({ state: null, sessionExpired: true });
-    response.cookies.delete(GAME_ID_COOKIE);
-    response.cookies.delete(GAME_TOKEN_COOKIE);
-    response.headers.set('Cache-Control', 'no-store');
-    return response;
-  }
+export async function upstreamError(upstream: Response) {
   const error = await upstream.json().catch(() => ({}));
   let message = '입력 형식이나 행동 조건을 확인하세요.';
   if (typeof error.detail === 'string') message = error.detail;
   let code = upstream.headers.get('X-Generation-Error');
   if (!code) {
-    if (error.detail === 'operation_in_progress') code = 'operation_in_progress';
+    if (typeof error.detail?.code === 'string') code = error.detail.code;
+    else if (error.detail === 'operation_in_progress') code = 'operation_in_progress';
     else code = 'BACKEND_' + upstream.status;
   }
-  return fail(message, upstream.status, code);
+  return fail(message, upstream.status, code ?? 'BACKEND_' + upstream.status);
 }
 
-/** 생성 응답의 수사 ID와 토큰은 HttpOnly 쿠키로 보관한다.
+/** 생성한 계정 수사의 공개 상태를 반환한다.
  * @param upstream FastAPI에서 받은 HTTP 응답.
- * @param request 확인하거나 전달할 요청.
- * @returns 수사 ID와 토큰을 쿠키에 보관하고 공개 상태만 담은 응답.
+ * @returns 수사 ID와 상태 또는 응답 검증 오류.
  */
-export async function gameCreated(upstream: Response, request: NextRequest) {
-  const data = await upstream.json();
-  if (typeof data.game_id !== 'string' || typeof data.game_token !== 'string' || !data.state) {
+export async function gameCreated(upstream: Response) {
+  const data = await upstream.json().catch(() => null);
+  if (
+    typeof data?.game_id !== 'string' ||
+    !isInvestigationId(data.game_id) ||
+    data.game_token !== null ||
+    data.state?.id !== data.game_id
+  ) {
     return fail('백엔드 생성 응답 형식이 올바르지 않습니다.', 502, 'INVALID_RESPONSE');
   }
-  const response = NextResponse.json(
-    { state: data.state },
-    {
-      headers: { 'Cache-Control': 'no-store' },
-    },
+  return NextResponse.json(
+    { game_id: data.game_id, state: data.state },
+    { headers: { 'Cache-Control': 'no-store' } },
   );
-  const options = {
-    httpOnly: true,
-    sameSite: 'lax' as const,
-    secure: request.nextUrl.protocol === 'https:',
-    path: '/',
-    maxAge: 604800,
-  };
-  response.cookies.set(GAME_ID_COOKIE, data.game_id, options);
-  response.cookies.set(GAME_TOKEN_COOKIE, data.game_token, options);
-  return response;
 }
 
 /** 자산의 본문과 Range 관련 헤더를 그대로 중계한다.
@@ -93,4 +78,14 @@ export function streamResponse(upstream: Response) {
     if (value !== null) headers.set(name, value);
   }
   return new NextResponse(upstream.body, { status: upstream.status, headers });
+}
+
+/** 연결이 완료된 익명 수사 쿠키를 현재 브라우저에서 지운다.
+ * @param response 쿠키를 지우는 헤더를 추가할 응답.
+ * @returns 익명 수사 쿠키가 만료된 응답.
+ */
+export function clearGameCookies(response: NextResponse) {
+  response.cookies.set(GAME_ID_COOKIE, '', { path: '/', maxAge: 0, httpOnly: true });
+  response.cookies.set(GAME_TOKEN_COOKIE, '', { path: '/', maxAge: 0, httpOnly: true });
+  return response;
 }
