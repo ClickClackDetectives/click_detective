@@ -89,7 +89,7 @@ class Engine:
         return examine(self.catalog, state, command)
 
     def record_plan(self, state, plan, response):
-        """검증된 응답이 나온 뒤에만 질문·대화·쟁점·진술을 일괄 반영한다.
+        """질문 차감 후 검증된 응답으로 대화·쟁점·진술을 일괄 반영한다.
 
         Args:
             state: 질문·대화·획득 자료를 담은 현재 수사 상태.

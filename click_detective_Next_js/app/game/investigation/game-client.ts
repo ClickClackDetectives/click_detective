@@ -61,7 +61,7 @@ async function send(request: NonNullable<typeof pending>, scope: string) {
     // 생성·검증 오류 응답은 백엔드가 작업 실패를 확정한 결과다.
     // 이를 pending으로 남기면 다른 질문도 이전 실패 요청에 막힌다.
     pending = uncertain ? request : null;
-    if (error instanceof ApiError && error.status === 409 && !uncertain) {
+    if (!uncertain && (request.action === 'interrogate' || error.status === 409)) {
       try {
         const result = await api<{ state: GameState | null }>('state');
         if (scope === JSON.stringify(accountScope())) accept(result.state);

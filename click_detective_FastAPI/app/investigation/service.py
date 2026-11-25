@@ -1,6 +1,7 @@
 """HTTP와 게임 엔진·모델·원자적 저장을 조정한다. 게임 판정은 전부 Python이 담당한다."""
 
 import logging
+from functools import partial
 
 from fastapi import HTTPException
 from starlette.concurrency import run_in_threadpool
@@ -10,10 +11,10 @@ from ..dialogue.reply_validation import (
     assemble_reply,
     validate_generation,
 )
-from ..dialogue.schemas import CharacterReplyRequest, CharacterReplyResponse
+from ..dialogue.schemas import CharacterReplyResponse
 from ..dialogue.state import SearchTurn
 from ..dialogue.validation_agent_v2.agent import neutral_response
-from .dialogue_request import dialogue_request
+from .dialogue_request import dialogue_request, prepare_interrogation
 
 logger = logging.getLogger(__name__)
 
@@ -117,35 +118,8 @@ class GameService:
         Returns:
             CharacterReplyRequest: 승인 사실, 필수 ID, 인물과 최근 대화를 담은 요청.
         """
-        history = []
-        if self.settings.history_limit:
-            for message in state["messages"]:
-                if message["suspectId"] == plan.suspect_id:
-                    history.append({"role": message["role"], "text": message["text"]})
-            history = history[-self.settings.history_limit :]
-        person = self.catalog.people[plan.suspect_id]
-        speech_style = person.get("speech_style")
-        if not isinstance(speech_style, str) or not speech_style.strip():
-            speech_style = "존댓말. 승인 원문의 말투와 관찰 한계를 유지하세요."
-        return CharacterReplyRequest(
-            request_id=command.request_id,
-            game_id=state["id"],
-            case_id=self.catalog.case_id,
-            scenario_version=self.catalog.version,
-            state_revision=state["revision"],
-            turn_index=state["questions"] + 1,
-            suspect_id=plan.suspect_id,
-            phase=state["phase"],
-            question=plan.question,
-            topic_id=plan.topic,
-            persona={
-                "name": person["name"],
-                "role": person["role"],
-                "speech_style": speech_style,
-            },
-            allowed_facts=plan.facts,
-            required_fact_ids=[fact["id"] for fact in plan.facts],
-            history=history,
+        return dialogue_request(
+            self.catalog, self.settings.history_limit, state, command, plan
         )
 
     async def reply(self, request, search_turn=None):
@@ -202,7 +176,7 @@ class GameService:
             return response
 
     async def change(self, game_id, token, command, action):
-        """짧은 예약→규칙·생성→짧은 확정. 중간 실패는 질문·쟁점·revision을 소비하지 않는다.
+        """유효한 심문을 예약할 때 질문을 차감하고 최종 대화는 별도로 확정한다.
 
         Args:
             game_id: 조회하거나 변경할 수사의 식별자.
@@ -220,6 +194,7 @@ class GameService:
             command,
             action,
             self.settings.timeout_seconds * 2 + 30,
+            partial(prepare_interrogation, self) if action == "interrogate" else None,
         )
         if "cached" in reservation:
             return reservation["cached"]
@@ -238,9 +213,7 @@ class GameService:
             elif action == "accuse":
                 result = self.engine.accuse(state, command)
             elif action == "interrogate":
-                search_free = self.settings.rag_enabled and self.search_free
-                plan = self.planner.prepare(state, command, search_free=search_free)
-                request = self.dialogue_request(state, command, plan)
+                plan, request, search_free = reservation["prepared"]
                 turn = None
                 if search_free and not plan.topic and not plan.new_findings:
                     turn = SearchTurn(plan, request, tuple(state["revealed"]))
@@ -259,9 +232,11 @@ class GameService:
                 result,
                 self.presenter.state,
             )
-        except BaseException:
+        except BaseException as failure:
             try:
-                await run_in_threadpool(self.repository.abort, command, reservation)
+                await run_in_threadpool(
+                    self.repository.abort, command, reservation, failure
+                )
             except Exception as error:
                 logger.warning(
                     "Reservation cleanup failed: request_id=%s error_type=%s",

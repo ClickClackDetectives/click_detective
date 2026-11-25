@@ -200,7 +200,8 @@ def test_prompts_preserve_facts_but_allow_rewording(client):
         fact.model_dump() for fact in request.allowed_facts
     ]
     assert context["required_fact_ids"] == request.required_fact_ids
-    assert "문장 자체를 복사할 필요는 없지만" in messages[0]["content"]
+    assert "항목 하나마다 완결된 대사 한 문장" in messages[0]["content"]
+    assert "동의어·어순·종결어미" in messages[0]["content"]
     verification = build_verification_messages(request, settings, "대사 예시")
     assert "같은 의미이면 허용" in verification[0]["content"]
 

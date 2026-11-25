@@ -135,7 +135,7 @@ def preserves_anchors(source: str, candidate: str) -> bool:
 
 
 def rule_match(source: str, candidate: str) -> bool:
-    """같은 문장과 제한된 한국어 종결어미 차이를 결정적으로 확인한다.
+    """연결 어미 뒤 쉼표와 제한된 한국어 종결어미 차이를 허용한다.
 
     Args:
         source: 승인 원문 또는 공개 진술.
@@ -146,15 +146,16 @@ def rule_match(source: str, candidate: str) -> bool:
     """
 
     def stem(text):
-        """보수적으로 등록된 문장 끝의 말투 차이를 통일한다.
+        """연결 어미 뒤 쉼표와 제한된 말투 차이를 정리한다.
 
         Args:
             text: 정규화할 문장.
 
         Returns:
-            str: 종결어미를 정리한 문자열.
+            str: 쉼표와 말투 차이를 정리한 문자열.
         """
         normalized = normalize(text).replace("예약해 둔", "예약한")
+        normalized = re.sub(r"(고|지만),\s+", r"\1 ", normalized)
         normalized = re.sub(r"수령하러(?=\s)", "받으러", normalized)
         return re.sub(r"(했|왔|갔|봤|들었)(?:어요|습니다)$", r"\1", normalized)
 

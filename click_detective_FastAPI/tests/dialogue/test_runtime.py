@@ -54,8 +54,8 @@ async def test_three_agents_execute_with_backend_approval(client, game, tmp_path
     assert service.read(game["game_id"], game["game_token"])["questions"] == 0
 
 
-def test_generation_failure_does_not_consume_state(api, client, game, monkeypatch):
-    """모델 실패가 질문·진술·revision을 변경하지 않으며 같은 요청을 재시도할 수 있다.
+def test_generation_failure_charges_the_question_once(api, client, game, monkeypatch):
+    """받아들인 질문은 모델 실패 및 동일 요청 재전송에도 한 번만 차감한다.
 
     Args:
         api: 인증과 응답 기록을 처리하는 테스트용 API 호출 함수.
@@ -104,8 +104,8 @@ def test_generation_failure_does_not_consume_state(api, client, game, monkeypatc
             == 502
         )
     restored = api("GET", path, game_token=game["game_token"]).json()["state"]
-    assert restored["questions"] == 0
-    assert restored["revision"] == 0
+    assert restored["questions"] == 1
+    assert restored["revision"] == 1
     assert restored["messages"] == []
 
 
@@ -169,6 +169,7 @@ async def test_state_change_during_generation_rejects_stale_reply(
     )
     try:
         await asyncio.wait_for(started.wait(), timeout=2)
+        assert service.read(game["game_id"], game["game_token"])["questions"] == 1
         with pytest.raises(HTTPException) as duplicate:
             await service.change(
                 game["game_id"], game["game_token"], command, "interrogate"
@@ -177,7 +178,7 @@ async def test_state_change_during_generation_rejects_stale_reply(
         await service.change(
             game["game_id"],
             game["game_token"],
-            Notes(request_id=uuid4(), expected_revision=0, text="생성 중 저장"),
+            Notes(request_id=uuid4(), expected_revision=1, text="생성 중 저장"),
             "notes",
         )
     finally:
@@ -187,4 +188,39 @@ async def test_state_change_during_generation_rejects_stale_reply(
     assert stale.value.status_code == 409
     state = service.read(game["game_id"], game["game_token"])
     assert state["notes"] == "생성 중 저장"
-    assert state["revision"] == 1 and state["questions"] == 0
+    assert state["revision"] == 2 and state["questions"] == 1
+
+
+def test_resubmitting_identical_question_as_new_action_charges_again(api, game):
+    """같은 질문을 새로 제출하면 새 심문으로 차감하고 통신 재시도는 중복 차감하지 않는다.
+
+    Args:
+        api: 수사 API를 호출하는 테스트 도우미.
+        game: 새 수사의 ID, 접근 토큰과 상태.
+
+    Returns:
+        None: 동일 질문을 두 번 제출한 뒤 저장된 심문 횟수를 검사한다.
+    """
+    path = f"/v1/games/{game['game_id']}/interrogations"
+    body = {
+        "request_id": str(uuid4()),
+        "expected_revision": 0,
+        "suspect_id": "kang",
+        "question": "자기소개를 해주세요.",
+    }
+    first = api("POST", path, body, game["game_token"]).json()
+    assert first["state"]["questions"] == 1
+    replay = api("POST", path, body, game["game_token"]).json()
+    assert replay == first
+
+    second_body = {
+        **body,
+        "request_id": str(uuid4()),
+        "expected_revision": first["state"]["revision"],
+    }
+    second = api("POST", path, second_body, game["game_token"]).json()
+    assert second["state"]["questions"] == 2
+    assert [m["text"] for m in second["state"]["messages"] if m["role"] == "user"] == [
+        body["question"],
+        body["question"],
+    ]
