@@ -2,8 +2,13 @@
 
 import pytest
 
-from app.dialogue.preprocess_agent import question_search
-from app.dialogue.preprocess_agent.question_search import Candidate, QuestionSearch
+from app.dialogue.services.preprocess_agent.rag import (
+    dialogue_fact_retriever as question_search,
+)
+from app.dialogue.services.preprocess_agent.rag.dialogue_fact_retriever import (
+    Candidate,
+    QuestionSearch,
+)
 
 
 class FixedScores:
@@ -43,8 +48,10 @@ def test_kiwi_bm25_selects_only_from_e5_pool(monkeypatch):
     """
     pytest.importorskip("bm25s")
     pytest.importorskip("kiwipiepy")
-    from app.config import Settings
-    from app.dialogue.preprocess_agent.kiwi_reranker import KiwiBM25Reranker
+    from app.dialogue.services.preprocess_agent.rag.dialogue_kiwi_reranker import (
+        KiwiBM25Reranker,
+    )
+    from app.runtime.runtime_settings import Settings
 
     candidates = [
         Candidate("서재에서 대화를 나눴습니다.", ({"key": "meeting"},)),

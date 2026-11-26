@@ -3,10 +3,12 @@
 import argparse
 from contextlib import ExitStack
 
-from app.auth.deletion import process_one
-from app.auth.repository import AuthRepository
-from app.config import Settings
-from app.investigation.persistence.mongo_repository import MongoRepository
+from app.auth.repositories.auth_repository import AuthRepository
+from app.auth.services.auth_deletion_service import process_one
+from app.investigation.repositories.investigation_mongo_repository import (
+    MongoRepository,
+)
+from app.runtime.runtime_settings import Settings
 
 
 def main():

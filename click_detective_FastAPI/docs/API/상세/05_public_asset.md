@@ -1,16 +1,14 @@
 # 05. 소개·인물 이미지·영상
 
-[API 목차](README.md) · [공통 규칙](../공통규칙.md)
-
-## 역할과 호출 시점
-
 `GET /v1/assets/{asset_path:path}`
 
-소개·인물 이미지·영상에 사용하는 실제 구현 경로입니다. 공개 상태나 파일을 조회합니다. GET은 게임 상태를 변경하지 않습니다.
+사건 소개에 쓰이는 이미지·영상 등 공개 파일을 가져온다.
 
-## 인증
+[API 목차](README.md) · [인증·재시도 공통 규칙](../공통규칙.md)
 
-`Authorization: Bearer <CLICK_API_KEY 값>`이 필요합니다.
+## 접근 조건
+
+서버 간 Bearer 서비스 키를 보낸다.
 
 ## 입력
 
@@ -35,10 +33,5 @@ JSON이 아니라 이미지·영상 파일 응답입니다. content-type·파일
 
 - 404: 경로 이탈·증거 폴더·허용하지 않은 확장자·없는 파일.
 - 서비스 인증은 필요하므로 브라우저 표시에는 인증 프록시가 필요합니다.
-- 공통 인증 실패는 401입니다. 수사 경로에서는 권한이 없으면 404, 버전이 다르면 409가 날 수 있습니다.
 
-## 코드에서 따라가기
-
-현재 API 진입점은 [app/cases/routes.py의 `public_asset`](../../../app/cases/routes.py#L62)다.
-
-처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [수사 저장](../../서버/수사_저장.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.
+처리 진입점은 `public_asset()`이다. [컨트롤러 소스](../../../app/cases/controllers/cases_controller.py#L58)

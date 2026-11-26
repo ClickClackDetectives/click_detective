@@ -8,7 +8,7 @@ import pytest
 from fastapi import HTTPException
 from pydantic import BaseModel
 
-from app.investigation.persistence.access import (
+from app.investigation.repositories.investigation_access import (
     AccountAccess,
     allows_access,
     token_hash,
@@ -60,7 +60,9 @@ def mongo_repository():
     uri = os.environ.get("CLICK_TEST_MONGO_URI")
     if not uri:
         pytest.skip("CLICK_TEST_MONGO_URI가 필요합니다.")
-    from app.investigation.persistence.mongo_repository import MongoRepository
+    from app.investigation.repositories.investigation_mongo_repository import (
+        MongoRepository,
+    )
 
     repo = MongoRepository(uri, f"click_test_{uuid4().hex}")
     try:

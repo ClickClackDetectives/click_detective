@@ -2,7 +2,7 @@
 
 [서버 목차](README.md) · [프런트엔드 문서](../../../click_detective_Next_js/docs/README.md)
 
-화면 프로젝트는 이 저장소의 `click_detective_Next_js`다. Next.js의 서버 경로가 FastAPI를 호출하고 공개 응답을 화면에 전달한다.
+브라우저는 Next.js를 호출하고 Next.js 서버가 서비스 키와 인증 문맥을 FastAPI에 전달한다. 두 앱을 별도로 시작한 뒤 같은 서비스 키와 백엔드 주소를 사용한다.
 
 | 위치 | 책임 |
 |---|---|

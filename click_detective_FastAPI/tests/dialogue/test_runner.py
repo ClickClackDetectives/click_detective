@@ -5,9 +5,9 @@ import json
 import httpx
 from fastapi import HTTPException
 
-from app.config import PROJECT_ROOT
-from app.dialogue.interrogation_graph import InterrogationGraph
-from app.dialogue.schemas import CharacterReplyResponse
+from app.dialogue.dto.dialogue_reply_dto import CharacterReplyResponse
+from app.dialogue.services.reply.dialogue_interrogation_graph import InterrogationGraph
+from app.runtime.runtime_settings import PROJECT_ROOT
 from scripts.live_dialogue.agent_inputs import load_agent_inputs
 from scripts.test_llm_api_live import LiveLlmTester, attach_traces
 from tests.conftest import TOKEN
@@ -112,8 +112,14 @@ def test_live_agents_only_calls_graph_without_game(client, monkeypatch, tmp_path
     monkeypatch.setattr(service.settings, "diagnostics_enabled", True)
     monkeypatch.setattr(service.settings, "diagnostics_path", diagnostics)
     monkeypatch.setattr(
-        service, "graph", InterrogationGraph(service.settings, ApprovedModel())
+        service.reply_service,
+        "graph",
+        InterrogationGraph(service.settings, ApprovedModel()),
     )
+
+    config = client.get(path, headers={"Authorization": f"Bearer {TOKEN}"})
+    assert config.status_code == 200
+    assert config.json() == {"diagnostics_enabled": True}
 
     tester = runner(client)
     report = tester.redact(tester.run_agents(body))
@@ -166,7 +172,7 @@ def test_live_runner_selected_cases_and_commit_checks(client, monkeypatch):
     """
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
-    monkeypatch.setattr(service, "graph", StubGraph())
+    monkeypatch.setattr(service.reply_service, "graph", StubGraph())
     tester = runner(client)
     report = tester.run(["profile", "evidence"])
     assert report["passed"], report
@@ -222,7 +228,7 @@ def test_live_runner_generation_failure_keeps_error_and_input(client, monkeypatc
 
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
-    monkeypatch.setattr(service, "graph", BrokenGraph())
+    monkeypatch.setattr(service.reply_service, "graph", BrokenGraph())
     case = runner(client).run(["profile"])["cases"][0]
     assert not case["passed"]
     exchange = case["exchanges"][-1]

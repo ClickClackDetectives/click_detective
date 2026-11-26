@@ -46,7 +46,7 @@ def test_chroma_filters_already_indexed_testimony():
         None: 점수 변환, 요청별 검색 범위, 벡터 재사용을 검사한다.
     """
     pytest.importorskip("chromadb.config")
-    from app.dialogue.preprocess_agent.chroma_index import ChromaIndex
+    from app.dialogue.repositories.dialogue_chroma_index import ChromaIndex
 
     encoder = FixedEncoder()
     index = ChromaIndex(encoder)
@@ -71,7 +71,7 @@ def test_chroma_retries_only_missing_ids(monkeypatch, retry_returns_vector):
         None: 두 번째 조회의 범위와 최종 코사인 점수를 검증한다.
     """
     pytest.importorskip("chromadb.config")
-    from app.dialogue.preprocess_agent.chroma_index import ChromaIndex
+    from app.dialogue.repositories.dialogue_chroma_index import ChromaIndex
 
     index = ChromaIndex(FixedEncoder())
     query = index._collection.query

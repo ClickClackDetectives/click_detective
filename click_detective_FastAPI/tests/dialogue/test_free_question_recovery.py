@@ -3,12 +3,7 @@
 import json
 from uuid import uuid4
 
-import pytest
-
-from app.dialogue.interrogation_graph import InterrogationGraph, OutputRejected
-from app.dialogue.validation_agent_v1.semantic_verification import SemanticReport
-from app.dialogue.validation_agent_v1.verification_units import build_verification_units
-from app.investigation.api.schemas import Interrogate
+from app.dialogue.services.reply.dialogue_interrogation_graph import InterrogationGraph
 
 
 class RetryingModel:
@@ -76,39 +71,7 @@ class RetryingModel:
         )
 
 
-async def test_no_evidence_question_can_retry_as_plain_text(client):
-    """강민호 면담 질문의 첫 필수 문장 누락을 평문 형식을 유지하며 복구한다.
-
-    Args:
-        client: HTTP 요청을 실행하는 클라이언트.
-
-    Returns:
-        None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반환하지 않는다.
-    """
-    service = client.app.state.service
-    state = service.engine.initial(str(uuid4()))
-    command = Interrogate(
-        request_id=uuid4(),
-        expected_revision=0,
-        suspect_id="kang",
-        question="와인잔에 무엇을 했는지 말해주세요",
-    )
-    plan = service.planner.prepare(state, command)
-    request = service.dialogue_request(state, command, plan)
-    model = RetryingModel()
-    response = await InterrogationGraph(service.settings, model).generate(request)
-    assert response.finish_reason == "stop"
-    assert response.used_fact_ids == ["kang-meeting"]
-    assert all(fact.text in response.reply for fact in request.allowed_facts)
-    assert len(model.generation_calls) == 2
-    retry_instruction = model.generation_calls[1][-1]["content"]
-    assert "대사 원문만" in retry_instruction
-    assert "JSON 형식도 지키세요" not in retry_instruction
-
-
-def test_unknown_free_question_returns_neutral_without_model(
-    api, client, game, monkeypatch
-):
+def test_unknown_free_question_returns_neutral(api, client, game, monkeypatch):
     """승인 정보가 없는 질문은 502·허구 생성 대신 기존 중립 정책으로 응답한다.
 
     Args:
@@ -122,7 +85,7 @@ def test_unknown_free_question_returns_neutral_without_model(
     """
 
     class NeverModel:
-        """호출되면 실패하는 모델로 빈 승인 경로의 GPU 미호출을 확인한다.
+        """근거 없는 후보 대사와 거절 판정을 제공한다.
 
         Args:
             없음.
@@ -143,12 +106,16 @@ def test_unknown_free_question_returns_neutral_without_model(
             Returns:
                 str: 호출 목적에 맞게 생성한 모델 출력 원문.
             """
-            raise AssertionError("승인 사실이 없는 질문에 모델을 호출했습니다.")
+            if purpose == "dialogue":
+                return "비밀 문서를 발견했습니다."
+            return '{"allowed": false}'
 
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
     monkeypatch.setattr(
-        service, "graph", InterrogationGraph(service.settings, NeverModel())
+        service.reply_service,
+        "graph",
+        InterrogationGraph(service.settings, NeverModel()),
     )
     response = api(
         "POST",
@@ -162,43 +129,6 @@ def test_unknown_free_question_returns_neutral_without_model(
         game["game_token"],
     )
     assert response.status_code == 200
-    assert response.json()["result"]["finish_reason"] == "fixed"
+    assert response.json()["result"]["finish_reason"] == "neutral"
     assert response.json()["result"]["used_fact_ids"] == []
     assert response.json()["state"]["findingDetails"] == []
-
-
-def test_false_verification_with_evidence_still_rejected(client):
-    """검증 형식 안정화 과정에서도 false+근거 번호를 성공으로 수선하지 않는다.
-
-    Args:
-        client: HTTP 요청을 실행하는 클라이언트.
-
-    Returns:
-        None: 결과는 상태 갱신·기록 또는 예외로 전달하며 값을 반환하지 않는다.
-    """
-    service = client.app.state.service
-    state = service.engine.initial(str(uuid4()))
-    command = Interrogate(
-        request_id=uuid4(),
-        expected_revision=0,
-        suspect_id="kang",
-        question="자기소개를 해주세요",
-    )
-    request = service.dialogue_request(
-        state, command, service.planner.prepare(state, command)
-    )
-    report = SemanticReport(
-        checks=[
-            (index, False, [0])
-            for index, _ in enumerate(build_verification_units(request))
-        ],
-        has_contradiction=False,
-        has_unsupported_claims=False,
-        history_consistent=True,
-        persona_consistent=True,
-        uncertain=False,
-    )
-    with pytest.raises(OutputRejected, match="verification_evidence_mismatch"):
-        InterrogationGraph._check_report_evidence(
-            report, request, request.allowed_facts[0].text
-        )

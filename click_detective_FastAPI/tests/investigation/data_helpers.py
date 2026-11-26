@@ -2,7 +2,7 @@
 
 import json
 
-from app.config import PROJECT_ROOT
+from app.runtime.runtime_settings import PROJECT_ROOT
 
 DATA = PROJECT_ROOT / "data/case"
 

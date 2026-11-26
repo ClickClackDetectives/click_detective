@@ -5,7 +5,7 @@ import json
 import httpx
 import pytest
 
-from app.config import PROJECT_ROOT
+from app.runtime.runtime_settings import PROJECT_ROOT
 from scripts.test_llm_api_live import LiveLlmTester, attach_traces
 from tests.conftest import TOKEN
 
@@ -29,7 +29,7 @@ def test_live_runner_requires_matching_local_trace_and_nf4(
     """
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
-    monkeypatch.setattr(service, "graph", StubGraph())
+    monkeypatch.setattr(service.reply_service, "graph", StubGraph())
     report = runner(client).run(["profile"])
     path = tmp_path / "trace.jsonl"
     trace = {

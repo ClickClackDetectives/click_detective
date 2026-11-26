@@ -6,9 +6,9 @@ from uuid import uuid4
 import pytest
 from fastapi import HTTPException
 
-from app.config import Settings
-from app.dialogue.interrogation_graph import InterrogationGraph
-from app.dialogue.preprocess_agent.question_search import OVERVIEW
+from app.dialogue.services.preprocess_agent.rag.dialogue_fact_retriever import OVERVIEW
+from app.dialogue.services.reply.dialogue_interrogation_graph import InterrogationGraph
+from app.runtime.runtime_settings import Settings
 
 from .test_question_search import ask
 from .test_question_search import vector_route as vector_route
@@ -17,7 +17,7 @@ from .test_question_search import vector_route as vector_route
 def test_generation_failure_preserves_graph_retrieval(
     api, game, monkeypatch, vector_route
 ):
-    """생성 실패 복구와 게임 기록이 첫 노드에서 고른 동일한 사실을 사용한다.
+    """검색을 완료했어도 생성 실패가 승인 사실의 전달로 기록되지 않는지 확인한다.
 
     Args:
         api: 심문 API 호출 함수.
@@ -26,7 +26,7 @@ def test_generation_failure_preserves_graph_retrieval(
         vector_route: 검색기와 생성 모델을 사용하도록 설정한 서비스.
 
     Returns:
-        None: 검색 결과가 복구 대사와 기록에 모두 사용되는지 확인한다.
+        None: 검색을 실행한 뒤 중립 응답만 확정하는지 확인한다.
     """
     service, index, model = vector_route
     index.scores[OVERVIEW] = 0.93
@@ -35,9 +35,9 @@ def test_generation_failure_preserves_graph_retrieval(
     question = "그날 밤 어떤 순서로 움직였나요?"
     result = ask(api, game, question)
     recorded = service.read(game["game_id"], game["game_token"])["statements"]
-    assert result["finish_reason"] == "fallback"
-    assert set(result["used_fact_ids"]) == set(recorded)
-    assert "yoon-snoring" in recorded
+    assert result["finish_reason"] == "neutral"
+    assert result["used_fact_ids"] == []
+    assert not recorded
     assert index.questions == [question]
 
 
@@ -51,10 +51,10 @@ def test_generation_failure_preserves_graph_retrieval(
         ValueError("invalid generated output"),
     ],
 )
-def test_valid_question_always_gets_approved_reply(
+def test_generation_failure_commits_neutral_reply_once(
     api, client, game, monkeypatch, failure
 ):
-    """모델 실패는 200 fallback으로 복구하며 같은 UUID를 중복 소비하지 않는다.
+    """모델 실패는 중립 응답으로 복구하며 같은 UUID를 중복 소비하지 않는다.
 
     Args:
         api: 인증과 응답 기록을 처리하는 테스트용 API 호출 함수.
@@ -95,7 +95,7 @@ def test_valid_question_always_gets_approved_reply(
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
     monkeypatch.setattr(service.settings, "fallback_on_error", True)
-    monkeypatch.setattr(service, "graph", graph)
+    monkeypatch.setattr(service.reply_service, "graph", graph)
     path = "/v1/games/" + game["game_id"] + "/interrogations"
     body = {
         "request_id": str(uuid4()),
@@ -106,9 +106,8 @@ def test_valid_question_always_gets_approved_reply(
     response = api("POST", path, body, game["game_token"])
     assert response.status_code == 200
     payload = response.json()
-    assert payload["result"]["finish_reason"] == "fallback"
-    assert payload["result"]["reply"] == service.c.people["kang"]["statement"]
-    assert payload["result"]["used_fact_ids"] == ["kang-profile"]
+    assert payload["result"]["finish_reason"] == "neutral"
+    assert payload["result"]["used_fact_ids"] == []
     assert payload["state"]["questions"] == 1
     assert payload["state"]["revision"] == 2
     assert len(payload["state"]["messages"]) == 2
@@ -117,10 +116,10 @@ def test_valid_question_always_gets_approved_reply(
     assert graph.calls == 1
 
 
-def test_failed_generated_admission_still_commits_only_approved_finding(
+def test_failed_generated_admission_does_not_unlock_finding(
     api, client, play, monkeypatch
 ):
-    """복구 대사는 실제 획득·제시 조건을 통과한 쟁점만 기록한다.
+    """중립 응답은 제시 조건을 통과한 쟁점도 공개하지 않는다.
 
     Args:
         api: 인증과 응답 기록을 처리하는 테스트용 API 호출 함수.
@@ -156,7 +155,7 @@ def test_failed_generated_admission_still_commits_only_approved_finding(
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
     monkeypatch.setattr(service.settings, "fallback_on_error", True)
-    monkeypatch.setattr(service, "graph", FailingGraph())
+    monkeypatch.setattr(service.reply_service, "graph", FailingGraph())
     play.act("examinations", evidence_id="S-Y")
     response = play.act(
         "interrogations",
@@ -164,15 +163,15 @@ def test_failed_generated_admission_still_commits_only_approved_finding(
         question="장부의 경위를 설명하세요.",
         material_id="S-Y",
     )
-    assert response["result"]["finish_reason"] == "fallback"
-    assert response["state"]["revealed"] == ["yoon_money"]
-    assert "12억" in response["result"]["reply"]
+    assert response["result"]["finish_reason"] == "neutral"
+    assert response["state"]["revealed"] == []
+    assert response["result"]["used_fact_ids"] == []
     assert response["state"]["questions"] == 1
-    assert len(response["state"]["findingDetails"]) == 1
+    assert response["state"]["findingDetails"] == []
 
 
-async def test_real_graph_rejection_recovers_approved_fact(client, monkeypatch):
-    """3노드 그래프가 출력 형식을 거절해도 원문 복구가 이루어진다.
+async def test_real_graph_rejection_returns_neutral(client, monkeypatch):
+    """출력 형식을 거절한 그래프는 중립 응답을 반환한다.
 
     Args:
         client: HTTP 요청을 실행하는 클라이언트.
@@ -206,7 +205,7 @@ async def test_real_graph_rejection_recovers_approved_fact(client, monkeypatch):
             """
             return "{invalid output"
 
-    from app.investigation.api.schemas import Interrogate
+    from app.investigation.dto.investigation_command_dto import Interrogate
 
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "fallback_on_error", True)
@@ -223,8 +222,8 @@ async def test_real_graph_rejection_recovers_approved_fact(client, monkeypatch):
     response = await InterrogationGraph(service.settings, InvalidModel()).generate(
         request
     )
-    assert response.finish_reason == "fallback"
-    assert response.reply == service.c.people["kang"]["statement"]
+    assert response.finish_reason == "neutral"
+    assert response.used_fact_ids == []
 
 
 def test_default_player_policy_enables_reply_recovery():

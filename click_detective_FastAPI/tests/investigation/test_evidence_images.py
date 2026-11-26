@@ -2,7 +2,9 @@
 
 from types import SimpleNamespace
 
-from app.investigation.assets.evidence_images import evidence_image_path
+from app.investigation.repositories.investigation_evidence_image_repository import (
+    evidence_image_path,
+)
 
 
 def test_optional_image_path_and_public_boundary(tmp_path):
@@ -38,7 +40,8 @@ def test_missing_image_is_null_in_detail_and_404_in_asset(api, play, monkeypatch
         None: 상세 응답과 이미지 API의 상태 코드를 확인한다.
     """
     monkeypatch.setattr(
-        "app.investigation.api.material_routes.evidence_image_path", lambda *args: None
+        "app.investigation.controllers.investigation_material_controller.evidence_image_path",
+        lambda *args: None,
     )
     play.act("examinations", evidence_id="1-01")
     base = f"/v1/games/{play.game_id}"

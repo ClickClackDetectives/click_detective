@@ -5,10 +5,9 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import httpx
-import pytest
 
-from app.config import PROJECT_ROOT
-from app.dialogue.schemas import CharacterReplyRequest
+from app.dialogue.dto.dialogue_reply_dto import CharacterReplyRequest
+from app.runtime.runtime_settings import PROJECT_ROOT
 from scripts import test_llm_api_live as cli
 from scripts.live_dialogue.agent_inputs import NEUTRAL_QUESTIONS, load_agent_inputs
 from scripts.test_llm_api_live import LiveLlmTester
@@ -115,32 +114,24 @@ def test_agent_batch_accepts_json_arrays_and_multiple_files(tmp_path):
     )
 
 
-@pytest.mark.parametrize(
-    ("expected", "observed"),
-    [("v2.1", "v2.1"), ("v2.2", "v2.2"), ("v2.1", "v2.2")],
-)
-def test_versioned_batch_writes_inputs_outputs_and_timings(
-    tmp_path, monkeypatch, expected, observed
-):
-    """버전 확인과 JSON 저장을 포함해 실제 CLI 경로를 검증한다.
+def test_batch_writes_inputs_outputs_and_timings(tmp_path, monkeypatch):
+    """버전 선택 없이 실행한 배치의 요청과 진단 시간을 저장한다.
 
     Args:
         tmp_path: 진단과 보고서를 보관할 임시 경로.
         monkeypatch: 네트워크와 환경변수를 모의 값으로 바꾸는 pytest 도구.
-        expected: CLI가 소모적 실행 전에 확인할 버전.
-        observed: 서버가 보고할 실행 버전.
 
     Returns:
-        None: 버전 일치 시 132건, 불일치 시 사전 확인만 기록한다.
+        None: 132개 실행 결과와 일치하는 요청별 시간 기록을 확인한다.
     """
     traces = tmp_path / "trace.jsonl"
-    path = tmp_path / f"{expected}.json"
+    path = tmp_path / "report.json"
     agents = ["preprocess_agent", "inference_agent", "validation_agent"]
     categories = {question: category for category, question in NEUTRAL_QUESTIONS}
     sent = []
 
     def send(request):
-        """버전 사전 확인 및 요청과 일치하는 모의 응답을 반환한다.
+        """요청과 같은 식별자를 가진 모의 응답을 반환한다.
 
         Args:
             request: 검사기가 보낸 HTTP 요청.
@@ -149,19 +140,11 @@ def test_versioned_batch_writes_inputs_outputs_and_timings(
             httpx.Response: 서버 설정 또는 그래프 응답.
         """
         assert request.url.path == "/internal/agent-test"
-        if request.method == "GET":
-            return httpx.Response(
-                200,
-                json={
-                    "validation_agent_version": observed,
-                    "diagnostics_enabled": True,
-                },
-            )
+        assert request.method == "POST"
         body = json.loads(request.content)
         sent.append(body)
         trace = {
             "request_id": body["request_id"],
-            "settings": {"validation_agent_version": observed},
             "events": [
                 {"stage": "agent_timing", "agent": agent, "elapsed_ms": 1.25}
                 for agent in agents
@@ -200,8 +183,6 @@ def test_versioned_batch_writes_inputs_outputs_and_timings(
     result = cli.main(
         [
             "--agents-only",
-            "--validation-version",
-            expected,
             "--trace-path",
             str(traces),
             "--report",
@@ -209,12 +190,7 @@ def test_versioned_batch_writes_inputs_outputs_and_timings(
         ]
     )
     report = json.loads(path.read_text())
-    assert report["validation_agent_version"] == observed
-    assert report["expected_validation_agent_version"] == expected
-    if expected != observed:
-        assert result == 1
-        assert not sent and not report["cases"]
-        return
+    assert "validation_agent_version" not in report
     assert result == 0
     assert len(sent) == len(report["cases"]) == 132
     for body, case in zip(sent, report["cases"], strict=True):
@@ -222,7 +198,6 @@ def test_versioned_batch_writes_inputs_outputs_and_timings(
         assert exchange["input"]["body"] == body
         assert exchange["output"]["body"]["reply"] == "모의 응답"
         assert exchange["elapsed_ms"] >= 0
-        assert case["validation_agent_version"] == observed
         category = categories.get(body["question"])
         timings = set() if category == "out_of_scope" else set(agents)
         assert set(case["agent_timings"]) == timings

@@ -105,10 +105,11 @@ project/
 ├── click_detective_FastAPI/
 │   ├── app/
 │   │   ├── main.py                   # FastAPI 진입점과 API
-│   │   ├── config.py                 # 환경변수 및 경로 설정
-│   │   ├── domain/                   # 수사 규칙과 행동 계획
-│   │   ├── dialogue/                 # LLM·검색·검증 워크플로
-│   │   └── repository.py             # 수사 상태 저장
+│   │   ├── runtime/                 # 설정, 서비스 인증과 앱 수명
+│   │   ├── auth/                    # 계정 인증과 PostgreSQL 저장
+│   │   ├── cases/                   # 사건 원본과 공개 카탈로그
+│   │   ├── dialogue/                # LLM·검색·검증 워크플로
+│   │   └── investigation/           # 수사 규칙과 MongoDB 저장
 │   ├── data/                         # 사건 데이터와 자산
 │   ├── models/                       # 별도로 준비하는 로컬 모델
 │   ├── adapters/                     # 기존 LoRA 어댑터
