@@ -1,4 +1,6 @@
-"""Kiwi BM25가 자유 질문의 E5 후보를 재정렬하는 동작을 검사한다."""
+"""Kiwi BM25와 E5 검색의 병렬 실행 및 최종 진술 선택을 검사한다."""
+
+from threading import Barrier
 
 import pytest
 
@@ -32,19 +34,19 @@ class FixedScores:
         scores = {
             "서재에서 대화를 나눴습니다.": 0.850,
             "식당에서 위스키를 마셨고 집사가 잔을 채워줬습니다.": 0.847,
-            "위스키 잔을 채운 두 번째 사람은 모릅니다.": 0.830,
+            "위스키 잔을 채운 두 번째 손님의 이름, 직업, 신원을 모릅니다.": 0.830,
             question_search.OFF_TOPIC: 0.800,
         }
         return {text: scores[text] for text in texts}
 
 
-def test_kiwi_bm25_selects_only_from_e5_pool(monkeypatch):
-    """형태소 단서가 가까운 E5 후보의 순서를 바꾸는지 확인한다.
+async def test_kiwi_bm25_combines_independent_search_results(monkeypatch):
+    """BM25가 E5 하한 미만의 진술을 독립 검색으로 찾는지 확인한다.
 
     Args:
         monkeypatch: 테스트 전용 공개 진술 후보를 주입한다.
     Returns:
-        None: 재정렬 결과와 유사도 하한·top_k 적용을 비교한다.
+        None: 순위 결합, 병렬 실행 및 최종 top_k 적용을 확인한다.
     """
     pytest.importorskip("bm25s")
     pytest.importorskip("kiwipiepy")
@@ -59,7 +61,8 @@ def test_kiwi_bm25_selects_only_from_e5_pool(monkeypatch):
             "식당에서 위스키를 마셨고 집사가 잔을 채워줬습니다.", ({"key": "dining"},)
         ),
         Candidate(
-            "위스키 잔을 채운 두 번째 사람은 모릅니다.", ({"key": "below-floor"},)
+            "위스키 잔을 채운 두 번째 손님의 이름, 직업, 신원을 모릅니다.",
+            ({"key": "below-floor"},),
         ),
         Candidate(question_search.OFF_TOPIC, ()),
     ]
@@ -80,3 +83,37 @@ def test_kiwi_bm25_selects_only_from_e5_pool(monkeypatch):
     assert dense.select(query, "yoon", []) == ([{"key": "meeting"}], None)
     assert hybrid.select(query, "yoon", []) == ([{"key": "dining"}], None)
     assert hybrid.select("🧩", "yoon", []) == dense.select("🧩", "yoon", [])
+
+    barrier = Barrier(2, timeout=3)
+    dense_score = index.score
+    sparse_score = reranker.scores
+
+    def score_in_parallel(question, texts):
+        """BM25 검색이 시작된 후 E5 점수를 반환한다.
+
+        Args:
+            question: 원문 질문.
+            texts: 공개된 진술의 검색용 텍스트.
+        Returns:
+            dict: 고정 E5 점수.
+        """
+        barrier.wait()
+        return dense_score(question, texts)
+
+    def bm25_in_parallel(question, texts):
+        """E5 검색이 시작된 후 BM25 점수를 계산한다.
+
+        Args:
+            question: 원문 질문.
+            texts: 공개된 개별 진술의 검색용 텍스트.
+        Returns:
+            dict: Kiwi 형태소를 사용한 BM25 점수.
+        """
+        barrier.wait()
+        return sparse_score(question, texts)
+
+    monkeypatch.setattr(index, "score", score_in_parallel)
+    monkeypatch.setattr(reranker, "scores", bm25_in_parallel)
+    query = "두 번째 손님의 이름, 직업, 신원을 모릅니까?"
+    selected = await hybrid._select_parallel(query, "yoon", [])
+    assert selected == ([{"key": "below-floor"}], None)

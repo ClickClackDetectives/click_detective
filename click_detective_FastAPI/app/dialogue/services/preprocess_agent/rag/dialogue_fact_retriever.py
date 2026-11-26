@@ -8,9 +8,8 @@ from time import perf_counter
 from fastapi import HTTPException
 
 from app.dialogue.services.diagnostics.dialogue_diagnostics import trace_event
-from app.dialogue.services.preprocess_agent.rag.dialogue_testimony_time import (
-    exact_minute,
-    fits_time,
+from app.dialogue.services.preprocess_agent.rag.dialogue_fact_selection import (
+    select_ranked,
 )
 from app.investigation.dto.investigation_interrogation_plan_dto import ReplyPlan
 from app.investigation.services.interrogation.investigation_free_questions import (
@@ -29,7 +28,6 @@ OFF_TOPIC = (
     "오늘 점심에 뭘 먹었나요? 평소 즐겨 먹는 음식은 무엇인가요? "
     "사건과 상관없는 일상이나 취미에 대한 질문입니다."
 )
-MAX_SCORE_GAP = 0.02
 
 
 @dataclass(frozen=True)
@@ -103,7 +101,7 @@ class QuestionSearch:
         catalog: 현재 사건 카탈로그.
         settings: 검색 개수, 점수 하한과 장애 복구 설정.
         index: 현재 요청에 승인된 후보의 유사도를 반환하는 인덱스.
-        reranker: 유사도 기준을 통과한 후보를 재정렬하는 검색기.
+        reranker: 독립 BM25 검색과 순위 결합을 담당하는 검색기.
     Returns:
         QuestionSearch: 자유 질문의 승인 계획을 완성하는 객체.
     """
@@ -139,6 +137,49 @@ class QuestionSearch:
         scored = [(scores[candidate.text], candidate) for candidate in candidates]
         return sorted(scored, key=lambda item: item[0], reverse=True)
 
+    def _bm25_scores(self, question, candidates):
+        """공개된 개별 진술을 E5와 별도로 평가한다.
+
+        Args:
+            question: 플레이어가 입력한 원문.
+            candidates: 현재 용의자가 공개할 수 있는 검색 후보.
+        Returns:
+            dict: 개별 진술의 BM25 점수. 복구 시 빈 점수표.
+        """
+        if self.reranker is None:
+            return {}
+        documents = tuple(
+            dict.fromkeys(
+                hit.text for hit in candidates if hit.entries and not hit.topic
+            )
+        )
+        try:
+            return self.reranker.scores(question, documents)
+        except (RuntimeError, ValueError) as error:
+            if not self.settings.fallback_on_error:
+                raise
+            logger.warning("Kiwi BM25 search recovered: %s", type(error).__name__)
+            return {}
+
+    async def _select_parallel(self, question, suspect, flags):
+        """두 검색을 동시에 실행하고 최종 진술을 고른다.
+
+        Args:
+            question: 플레이어가 입력한 원문.
+            suspect: 심문 중인 인물 ID.
+            flags: 현재 수사에서 이미 공개된 쟁점 ID.
+        Returns:
+            tuple | None: 최종 진술과 주제 또는 매칭 없음.
+        """
+        if self.reranker is None:
+            return await asyncio.to_thread(self.select, question, suspect, flags)
+        candidates = public_candidates(self.catalog, suspect, flags)
+        ranked, scores = await asyncio.gather(
+            asyncio.to_thread(self.rank, question, candidates),
+            asyncio.to_thread(self._bm25_scores, question, candidates),
+        )
+        return select_ranked(question, ranked, scores, self.settings, self.reranker)
+
     async def refine(self, plan, revealed) -> tuple[ReplyPlan, bool]:
         """자유 질문의 원문과 검색 결과를 생성·기록 양쪽에 연결한다.
 
@@ -153,8 +194,8 @@ class QuestionSearch:
         started = perf_counter()
         try:
             async with asyncio.timeout(self.settings.timeout_seconds):
-                selected = await asyncio.to_thread(
-                    self.select, plan.question, plan.suspect_id, revealed
+                selected = await self._select_parallel(
+                    plan.question, plan.suspect_id, revealed
                 )
         except (RuntimeError, TimeoutError, ValueError) as error:
             if not self.settings.fallback_on_error:
@@ -193,42 +234,5 @@ class QuestionSearch:
         """
         candidates = public_candidates(self.catalog, suspect, flags)
         ranked = self.rank(question, candidates)
-        minute = exact_minute(question)
-        eligible = [
-            (score, candidate)
-            for score, candidate in ranked
-            if minute is None or not candidate.entries or fits_time(candidate, minute)
-        ]
-        best, first = eligible[0]  # 사건 외 비교 문장은 시각과 관계없이 남는다.
-        if best < self.settings.rag_min_score or not first.entries:
-            return None
-        if first.topic:
-            return list(first.entries), first.topic
-
-        individual = [
-            (score, hit) for score, hit in eligible if hit.entries and not hit.topic
-        ]
-        cutoff = max(self.settings.rag_min_score, best - MAX_SCORE_GAP)
-        pool = [i for i, (score, _) in enumerate(individual) if score >= cutoff]
-        if self.reranker is not None and len(pool) > 1:
-            documents = tuple(
-                dict.fromkeys(
-                    hit.text for hit in candidates if hit.entries and not hit.topic
-                )
-            )
-            ranked_texts = [hit.text for _, hit in individual]
-            try:
-                pool = self.reranker.rerank(question, documents, ranked_texts, pool)
-            except (RuntimeError, ValueError) as error:
-                if not self.settings.fallback_on_error:
-                    raise
-                logger.warning(
-                    "Kiwi BM25 reranking recovered: %s", type(error).__name__
-                )
-        selected = [
-            entry
-            for i in pool[: self.settings.rag_top_k]
-            for entry in individual[i][1].entries
-        ]
-        topics = {entry.get("_topic") for entry in selected}
-        return selected, topics.pop() if len(topics) == 1 else None
+        scores = self._bm25_scores(question, candidates)
+        return select_ranked(question, ranked, scores, self.settings, self.reranker)

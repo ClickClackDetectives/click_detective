@@ -37,7 +37,7 @@ class Settings(BaseSettings):
         rag_top_k (int): 자유 질문에서 고를 개별 진술 수의 상한.
         rag_min_score (float): 자유 질문에 적용하는 E5 코사인 유사도 하한.
         rag_embedding_dir (Path | None): E5 파일 경로. local 기본값은 models/retrieval.
-        rag_bm25_enabled (bool): 유사도 기준을 통과한 후보의 Kiwi BM25 재정렬 사용 여부.
+        rag_bm25_enabled (bool): Kiwi BM25 병렬 검색과 가중 RRF 결합 사용 여부.
         rag_dense_weight (float): 가중 RRF에서 E5 순위에 줄 비중.
         rag_rrf_k (int): 가중 RRF에서 순위 분모에 더하는 상수.
         history_limit (int): 프롬프트에 담을 최근 대화 항목 수.
