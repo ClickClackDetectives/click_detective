@@ -1,5 +1,7 @@
 # LLM·양자화·멀티에이전트 API만 실서버로 검사하기
 
+CUDA와 실제 Qwen을 준비한 뒤 local 서버에서 일반 심문 또는 내부 에이전트 검사 경로를 호출한다. HTTP 성공과 검증을 통과한 모델 대사를 구분해 기록한다.
+
 ## 1. 무엇을 검사하는가
 
 검증 대상은 **`POST /v1/games/{game_id}/interrogations`**입니다. 실제 local 서버에서는 이 API가 승인 계획 → LangGraph 전처리 → 양자화 Qwen 생성 → 검증 → 수사 저장으로 이어집니다.
@@ -147,7 +149,7 @@ python scripts/test_llm_api_live.py \
 
 API 키·수사 토큰은 필드와 문자열에서 마스킹합니다. 파일 권한은 소유자 읽기·쓰기인 600으로 저장합니다. 대사·수사 상태·자료 내용은 보고서에 남으므로 공유할 때 내용을 확인하세요.
 
-`agent_timings`의 `calls_ms`는 각 에이전트의 호출별 처리 시간이고, `total_ms`는 재생성에 따른 반복 호출을 포함한 합계입니다. 검증 에이전트의 한 호출에는 내부 배치 처리와 보고서 재요청 시간이 포함됩니다. 서버에서 진단을 활성화하고 실제 진단 경로를 `--trace-path`로 지정해야 이 항목이 채워집니다. 일치하는 진단에 시간 이벤트가 없으면 빈 객체가 기록됩니다.
+`agent_timings`의 `calls_ms`는 각 에이전트의 호출별 처리 시간이고, `total_ms`는 에이전트 호출 시간의 합계다. 검증 노드 시간은 내부 배치 처리와 모델을 호출한 경우 그 시간도 포함한다. 서버에서 진단을 활성화하고 실제 진단 경로를 `--trace-path`로 지정해야 이 항목이 채워집니다. 일치하는 진단에 시간 이벤트가 없으면 빈 객체가 기록됩니다.
 
 ## 게임을 거치지 않는 에이전트 검사
 
@@ -164,7 +166,7 @@ python scripts/test_llm_api_live.py \
 
 기본 입력은 132건입니다. 먼저 10개 상황과 12가지 질문 유형을 조합한 생성 사례 120건을 실행합니다. 이어서 승인 사실이 없는 중립 사례 12건을 실행합니다. 중립 사례의 카테고리는 시간, 장소·동선, 인물, 관계, 증거·자료, 목격·청취, 연락·대화, 행동, 동기, 추측·가설, 기타, 수사 범위 밖입니다.
 
-중립 사례는 v2.1 또는 v2.2에서 `finish_reason=neutral`과 빈 `used_fact_ids`를 기대합니다. 실제 모델이 검증 가능한 공개 답변이나 확인 질문을 내어 `stop`으로 끝나면 중립 경로를 검사하지 못한 것으로 기록합니다. `--validation-version`과 `--trace-path`를 지정하면 선택된 카테고리도 검사합니다. 수사 범위 밖 사례는 전처리·추론·검증 모델을 호출하지 않는 것이 기대 결과입니다. 서버에 한 건씩 요청하며 각 사례에 새 요청 UUID를 부여합니다. 중간에 실패한 사례가 있어도 나머지 입력을 실행합니다.
+중립 사례는 `finish_reason=neutral`과 빈 `used_fact_ids`를 검사한다. `--trace-path`를 지정하면 요청 UUID가 일치하는 진단을 결과에 연결한다.
 
 `--agent-limit 5`를 추가하면 처음 5건만 실행합니다. `--agent-input inputs.json`으로 기본 입력을 대체할 수 있습니다. 파일은 입력 객체 하나 또는 객체 배열을 담을 수 있고, 여러 파일은 `--agent-input`을 반복해서 지정한 순서대로 실행합니다. 입력 형식은 보고서의 `cases[0].exchanges[0].input.body`에서 확인할 수 있습니다. 서버는 이미 로드한 모델로 전처리·추론·검증을 실행하며 게임 상태를 만들거나 저장하지 않습니다.
 
@@ -198,35 +200,12 @@ python -m pytest -q tests/dialogue/test_runner.py tests/dialogue/test_trace_and_
 
 현재 기본값과 strict 검사의 차이, 복구 대화의 질문 차감은 [질문 응답 정책](../에이전트/응답과_복구_정책.md)을 참고하세요. fallback으로 사용자에게 답을 제공한 결과를 실제 모델 stop 성공으로 합산하지 않습니다.
 
-## 검증 에이전트 버전 선택
+## 내부 검사 배치와 결과 파일
 
-서버의 `.env`에서 `CLICK_VALIDATION_AGENT_VERSION`을 바꾸고 서버를 재시작한다. 실제 모델을 쓰는 서버는 `CLICK_GENERATION_MODE=local`로 실행한다.
-
-| 설정값 | 동작 |
-|---|---|
-| `v1` | 기존 검증. 기본값이며 기존의 대사 재생성과 복구 정책을 사용한다. |
-| `v2.1` | 문장별 필터와 규칙 검사를 적용한 뒤, 규칙으로 확정하기 어려운 경우 서버에 로드된 오픈 LLM을 검증 목적으로 호출한다. |
-| `v2.2` | 같은 필터와 규칙 검사로 검증하며, 검증 단계에 생성형 모델 호출이 없다. |
-
-v2.1과 v2.2는 전처리가 생성 프롬프트에 사용한 승인 문장 단위를 그래프 상태에서 받는다. 자유 질문에서 검색으로 선정된 사실은 이 단위로 후보 대사를 검증한 뒤 전달하며, 질문과 사실의 어휘 중복을 별도 조건으로 요구하지 않는다. 필수 사실이 지정되면 그중 하나 이상이 검증되어야 한다.
-
-v2.1과 v2.2의 문장 비교에는 SentenceTransformer가 기본으로 적용된다. 승인 사실과 후보 문장을 함께 임베딩한 뒤 정규화된 벡터의 코사인 유사도를 구한다. 기존 문자 2그램 방식은 `CLICK_VALIDATION_SIMILARITY_BACKEND=char_ngram`으로 선택할 수 있다.
-
-SentenceTransformer를 쓰려면 서버 가상환경에 `python -m pip install -e '.[local,embeddings]'`로 의존성을 설치한다. 기본 모델 ID는 `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`이다. 서버는 이미 다운로드된 모델만 로드한다. 캐시를 미리 채우거나 `CLICK_VALIDATION_EMBEDDING_MODEL=./models/문장임베딩모델`처럼 로컬 경로를 지정한다. `CLICK_VALIDATION_EMBEDDING_DEVICE`의 기본값은 `cpu`이다.
-
-`CLICK_VALIDATION_SIMILARITY_THRESHOLD`의 초기값은 `0.35`이고 평가 세트로 보정하기 전의 값이다. 유사도 기준을 통과한 문장은 필수 사실과 중요 표현을 재검증한다. v2의 결과는 완전 응답(`stop`), 부분 응답(`partial`), 사전 정의된 중립 응답(`neutral`)으로 기록된다. 기존 실서버 검사의 완전 응답 통과율에는 `stop`만 포함된다.
-
-진단을 연결하면 `trace.record.settings.validation_agent_version`으로 실제 선택 버전을 확인할 수 있다. `verification_policy`는 v2 정책 실행을, `verification`은 검증 모델 호출을 나타낸다. 부분·중립 응답의 `validation_outcome`에는 전달한 사실과 보류한 필수 사실의 ID가 기록된다.
-
-### v2.1과 v2.2 각각 132건 실행
-
-테스트 서버의 `.env`에 `CLICK_GENERATION_MODE=local`, `CLICK_AGENT_TEST_ENABLED=true`, `CLICK_DIAGNOSTICS_ENABLED=true`를 설정한다. 한 서버를 재사용할 경우 먼저 `CLICK_VALIDATION_AGENT_VERSION=v2.1`로 서버를 띄워 첫 명령을 실행한다. 이어서 `CLICK_VALIDATION_AGENT_VERSION=v2.2`로 바꾸고 서버를 재시작한 뒤 두 번째 명령을 실행한다.
+`CLICK_AGENT_TEST_ENABLED=true`와 `CLICK_DIAGNOSTICS_ENABLED=true`를 설정한 local 서버를 시작한 뒤 실행한다.
 
 ```bash
-python scripts/test_llm_api_live.py --agents-only --validation-version v2.1 --trace-path .data/dialogue-traces.jsonl
-python scripts/test_llm_api_live.py --agents-only --validation-version v2.2 --trace-path .data/dialogue-traces.jsonl
+python scripts/test_llm_api_live.py --agents-only --trace-path .data/dialogue-traces.jsonl --report .reports/llm-agents-live.json
 ```
 
-두 명령은 동일한 기본 입력 132건을 각 서버에 순서대로 보낸다. 요청 UUID는 실행별로 새로 생성한다. `--validation-version`은 서버의 실제 버전을 확인하는 옵션이다. 버전 또는 진단 설정이 일치하지 않으면 대화 요청을 시작하기 전에 오류를 보고서에 기록한다. 진단 경로는 해당 서버가 실제로 쓰는 JSONL 파일을 가리켜야 한다.
-
-기본 출력 경로는 `.reports/llm-agents-v2.1-live.json`과 `.reports/llm-agents-v2.2-live.json`이다. 각 사례의 `exchanges[0].input.body`는 입력, `exchanges[0].output.body`는 출력, `exchanges[0].elapsed_ms`는 HTTP 왕복 시간이다. `agent_timings`에는 세 에이전트의 호출별 시간과 합계가 기록된다. 진단의 검증 버전과 중립 카테고리가 기대값과 일치해야 한다. 수사 범위 밖 사례에는 에이전트 호출 시간 기록이 없고, 다른 사례에는 세 에이전트의 호출 시간 기록이 있어야 한다.
+기본 입력 132건의 HTTP 요청과 응답, 왕복 시간, 서버의 에이전트별 시간을 확인할 수 있다. 진단에는 정책 실행과 선택적으로 호출한 검증 모델의 시간이 기록된다.

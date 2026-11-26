@@ -6,7 +6,7 @@ from uuid import uuid4
 import pytest
 from pymongo import MongoClient
 
-from app.config import Settings
+from app.runtime.runtime_settings import Settings
 
 
 @pytest.fixture(scope="session")

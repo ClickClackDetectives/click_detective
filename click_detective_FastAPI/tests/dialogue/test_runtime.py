@@ -6,9 +6,9 @@ from uuid import uuid4
 import pytest
 from fastapi import HTTPException
 
-from app.dialogue.interrogation_graph import InterrogationGraph
-from app.dialogue.schemas import CharacterReplyResponse
-from app.investigation.api.schemas import Interrogate, Notes
+from app.dialogue.dto.dialogue_reply_dto import CharacterReplyResponse
+from app.dialogue.services.reply.dialogue_interrogation_graph import InterrogationGraph
+from app.investigation.dto.investigation_command_dto import Interrogate, Notes
 
 from .models import ApprovedModel
 
@@ -49,7 +49,7 @@ async def test_three_agents_execute_with_backend_approval(client, game, tmp_path
     response = await graph.generate(request)
     assert response.finish_reason == "stop"
     assert response.used_fact_ids == approved_ids
-    assert len(model.calls) == 2
+    assert len(model.calls) == 1
     assert [fact["id"] for fact in model.calls[0]["approved_facts"]] == approved_ids
     assert service.read(game["game_id"], game["game_token"])["questions"] == 0
 
@@ -90,7 +90,7 @@ def test_generation_failure_charges_the_question_once(api, client, game, monkeyp
 
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
-    monkeypatch.setattr(service, "graph", FailingGraph())
+    monkeypatch.setattr(service.reply_service, "graph", FailingGraph())
     path = f"/v1/games/{game['game_id']}"
     body = {
         "request_id": str(uuid4()),
@@ -157,7 +157,7 @@ async def test_state_change_during_generation_rejects_stale_reply(
 
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
-    monkeypatch.setattr(service, "graph", WaitingGraph())
+    monkeypatch.setattr(service.reply_service, "graph", WaitingGraph())
     command = Interrogate(
         request_id=uuid4(),
         expected_revision=0,

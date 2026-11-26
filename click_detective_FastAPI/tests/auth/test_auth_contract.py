@@ -12,11 +12,11 @@ from psycopg import connect, sql
 from psycopg.conninfo import make_conninfo
 from sqlalchemy import func, update
 
-from app.auth.deletion import process_one
-from app.auth.routes import current_user
-from app.auth.schema import DeletionJob
-from app.auth.service import AuthService
-from app.auth.tokens import access_identity, issue_pair
+from app.auth.controllers.auth_request_context import current_user
+from app.auth.repositories.auth_schema import DeletionJob
+from app.auth.services.auth_deletion_service import process_one
+from app.auth.services.auth_service import AuthService
+from app.auth.services.auth_tokens import access_identity, issue_pair
 
 EMAIL = "detective@example.com"
 PASSWORD = "Detective1!"

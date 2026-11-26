@@ -2,7 +2,7 @@
 
 [에이전트 목차](../README.md) · 이전: [전처리](../전처리/README.md) · 다음: [검증](../검증/README.md)
 
-생성 에이전트는 준비된 사실을 인물의 자연스러운 대사로 표현한다. 반환된 문장은 아직 사용자에게 보낼 최종 대사가 아니라 **검사를 받아야 하는 후보**다.
+생성 노드는 전처리 결과로 후보 대사를 만든다. fixture는 고정 응답을 사용하고 local은 같은 프로세스의 로컬 모델을 호출한다.
 
 ## 시작 메서드
 
@@ -11,7 +11,7 @@ async def inference_agent(self, state: InterrogationState) -> dict:
     ...
 ```
 
-담당: `InferenceAgent.inference_agent` — [실제 코드](../../../app/dialogue/inference_agent/agent.py) · [코드 참조](../../코드참조/app/dialogue/inference_agent/agent.md)
+담당: `InferenceAgent.inference_agent` — [실제 코드](../../../app/dialogue/services/inference_agent/dialogue_inference_agent.py) · [코드 참조](../../코드참조/app/dialogue/services/inference_agent/dialogue_inference_agent.md)
 
 - `state`: 질문, 생성용 프롬프트와 이전 거절 코드가 들어 있는 작업 기록
 - 반환값: 시도 횟수와 후보 원문 또는 실행 오류 상태를 담은 딕셔너리
@@ -20,11 +20,9 @@ async def inference_agent(self, state: InterrogationState) -> dict:
 
 1. 승인 사실이 없으면 모델을 호출하지 않는다. `assemble_reply`로 중립 대사를 준비한다.
 2. 승인 사실이 있으면 전처리가 만든 `messages`를 복사한다.
-3. 재생성이라면 이전 `rejection_code`를 참고해 다시 작성하라는 지시를 추가한다.
 4. `attempt`를 1 증가시키고 모델에 `purpose="dialogue"`로 요청한다.
 5. 모델 원문을 `raw_output`에 담아 검증 단계로 넘긴다.
 
-재생성 때 생성 프롬프트에 추가하는 것은 거절 코드와 작성 지시다. 이전 모델 원문 전체를 덧붙이는 구조는 아니다.
 
 ## 생성 목적과 검증 목적의 차이
 
@@ -52,6 +50,6 @@ async def inference_agent(self, state: InterrogationState) -> dict:
 | 모델 실행 시간 초과 | `error_status=504` |
 | 모델 실행 오류 | `error_status=502` |
 
-오류 상태는 검증 단계의 최종 실패 처리로 넘긴다. 그래프 밖으로 전달된 생성·검증 예외도 서비스 복구 설정에 따라 승인 원문으로 처리될 수 있다. 모든 실패를 무조건 재생성하는 것은 아니다.
+오류 상태는 검증 단계의 최종 실패 처리로 넘긴다. 그래프 밖으로 전달된 예외도 서비스 복구 설정에 따라 중립 응답으로 처리될 수 있다.
 
 모델 실제 실행과 GPU 잠금은 [공용 모델](../공용_모델.md), 최종 처리 조건은 [응답·복구 정책](../응답과_복구_정책.md)에서 확인한다.

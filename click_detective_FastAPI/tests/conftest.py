@@ -6,8 +6,8 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 
-from app.config import PROJECT_ROOT
 from app.main import create_app
+from app.runtime.runtime_settings import PROJECT_ROOT
 from tests.investigation.player import Player
 from tests.mongo_fixture import fixture_settings as fixture_settings
 

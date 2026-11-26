@@ -2,7 +2,7 @@
 
 import pytest
 
-from app.dialogue.interrogation_graph import InterrogationGraph
+from app.dialogue.services.reply.dialogue_interrogation_graph import InterrogationGraph
 from tests.investigation.test_minimum_success_route import prepare_shared_case
 
 from .test_v2 import ScriptedModel
@@ -35,9 +35,10 @@ def test_revisit_requires_a_verified_return_or_concealment(
     """
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
-    monkeypatch.setattr(service.settings, "validation_agent_version", "v2.1")
     monkeypatch.setattr(
-        service, "graph", InterrogationGraph(service.settings, ScriptedModel(line))
+        service.reply_service,
+        "graph",
+        InterrogationGraph(service.settings, ScriptedModel(line)),
     )
     play.act("examinations", evidence_id="1-13")
     result = play.act(
@@ -132,9 +133,10 @@ def test_core_sentence_unlocks_other_findings(
         )
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
-    monkeypatch.setattr(service.settings, "validation_agent_version", "v2.1")
     monkeypatch.setattr(
-        service, "graph", InterrogationGraph(service.settings, ScriptedModel(line))
+        service.reply_service,
+        "graph",
+        InterrogationGraph(service.settings, ScriptedModel(line)),
     )
     result = play.act(
         "interrogations",

@@ -5,7 +5,7 @@ from uuid import uuid4
 
 import pytest
 
-from app.config import PROJECT_ROOT
+from app.runtime.runtime_settings import PROJECT_ROOT
 
 
 def selections():

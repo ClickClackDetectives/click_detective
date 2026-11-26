@@ -8,12 +8,16 @@ from unittest.mock import Mock
 
 import pytest
 
-from app.config import Settings
-from app.dialogue.interrogation_graph import InterrogationGraph
-from app.dialogue.schemas import CharacterReplyRequest
-from app.dialogue.validation_agent_v2 import rules
-from app.dialogue.validation_agent_v2.neutral import NEUTRAL_REPLIES
-from app.dialogue.validation_agent_v2.rules import preserves_anchors
+from app.dialogue.dto.dialogue_reply_dto import CharacterReplyRequest
+from app.dialogue.services.reply.dialogue_interrogation_graph import InterrogationGraph
+from app.dialogue.services.validation_agent.evidence import dialogue_rules as rules
+from app.dialogue.services.validation_agent.evidence.dialogue_rules import (
+    preserves_anchors,
+)
+from app.dialogue.services.validation_agent.output.dialogue_neutral import (
+    NEUTRAL_REPLIES,
+)
+from app.runtime.runtime_settings import Settings
 from scripts.live_dialogue.agent_inputs import load_agent_inputs
 
 
@@ -58,29 +62,11 @@ class ScriptedModel:
         return self.dialogue if purpose == "dialogue" else json.dumps(self.judgment)
 
 
-@pytest.mark.parametrize(
-    ("version", "line", "judgment", "calls"),
-    [
-        ("v2.2", "예약해 둔 책을 받으러 왔어요.", None, ["dialogue"]),
-        (
-            "v2.1",
-            "예약했던 책을 수령하러 왔습니다.",
-            {"matches": [[0, [0]]]},
-            ["dialogue", "verification"],
-        ),
-    ],
-)
-async def test_v2_delivers_only_verified_facts(
-    fixture_settings, version, line, judgment, calls
-):
+async def test_delivers_only_verified_facts(fixture_settings):
     """유효한 방문 목적을 남기고 잘못된 시각은 부분 중립으로 처리한다.
 
     Args:
         fixture_settings: 모의 실행에 사용할 설정.
-        version: 선택할 v2 버전.
-        line: 검증할 방문 목적 표현.
-        judgment: 모의 오픈 LLM의 검증 결과.
-        calls: 예상되는 모델 호출 순서.
 
     Returns:
         None: 부분 응답과 전달 사실 ID를 검사한다.
@@ -93,22 +79,21 @@ async def test_v2_delivers_only_verified_facts(
     ]
     body["required_fact_ids"] = ["visit-reason", "arrival"]
     request = CharacterReplyRequest.model_validate(body)
-    settings = fixture_settings.model_copy(update={"validation_agent_version": version})
-    model = ScriptedModel(f"{line} 오후 7시에 도착했습니다.", judgment)
+    settings = fixture_settings
+    line = "예약했던 책을 수령하러 왔습니다."
+    model = ScriptedModel(f"{line} 오후 7시에 도착했습니다.", {"matches": [[0, [0]]]})
     reply = await InterrogationGraph(settings, model).generate(request)
     assert reply.reply == f"{line} 도착 시각은 지금 말씀드리기 어렵습니다."
     assert reply.finish_reason == "partial"
     assert reply.used_fact_ids == ["visit-reason"]
-    assert model.calls == calls
+    assert model.calls == ["dialogue", "verification"]
 
 
-@pytest.mark.parametrize("version", ["v2.1", "v2.2"])
-async def test_v2_public_scope_checks_no_fact_candidates(fixture_settings, version):
+async def test_public_scope_checks_no_fact_candidates(fixture_settings):
     """승인 사실 없는 후보를 생성하고 질문의 전제를 긍정하지 않는다.
 
     Args:
         fixture_settings: 모의 실행에 사용할 설정.
-        version: 선택할 v2 버전.
 
     Returns:
         None: 명확한 확인 질문은 통과하고 근거 없는 긍정은 중립으로 바뀐다.
@@ -120,7 +105,7 @@ async def test_v2_public_scope_checks_no_fact_candidates(fixture_settings, versi
         question="오후 9시에 서재에 있었죠?",
     )
     request = CharacterReplyRequest.model_validate(body)
-    settings = fixture_settings.model_copy(update={"validation_agent_version": version})
+    settings = fixture_settings
     for candidate, reason in [
         ("어떤 시간대를 말씀하시는 건가요?", "stop"),
         ("네, 맞아요.", "neutral"),
@@ -134,7 +119,7 @@ async def test_v2_public_scope_checks_no_fact_candidates(fixture_settings, versi
             assert response.reply in NEUTRAL_REPLIES["timeline"]
 
 
-def test_v2_neutral_does_not_unlock_unspoken_finding(client, play, monkeypatch):
+def test_neutral_does_not_unlock_unspoken_finding(client, play, monkeypatch):
     """실제 심문 API에서 중립 대사가 미전달 쟁점을 공개하지 않는지 확인한다.
 
     Args:
@@ -147,9 +132,10 @@ def test_v2_neutral_does_not_unlock_unspoken_finding(client, play, monkeypatch):
     """
     service = client.app.state.service
     monkeypatch.setattr(service.settings, "generation_mode", "local")
-    monkeypatch.setattr(service.settings, "validation_agent_version", "v2.2")
     model = ScriptedModel("할 말이 없어요.")
-    monkeypatch.setattr(service, "graph", InterrogationGraph(service.settings, model))
+    monkeypatch.setattr(
+        service.reply_service, "graph", InterrogationGraph(service.settings, model)
+    )
     play.act("examinations", evidence_id="S-Y")
     result = play.act(
         "interrogations",
@@ -164,23 +150,22 @@ def test_v2_neutral_does_not_unlock_unspoken_finding(client, play, monkeypatch):
     assert model.calls == ["dialogue"]
 
 
-def test_validator_version_can_be_selected_from_env(tmp_path):
-    """설정 파일이 v2.1과 v2.2를 선택하는지 확인한다.
+def test_legacy_validator_setting_does_not_select_an_implementation(tmp_path):
+    """이전 환경 파일의 검증 버전 값이 단일 검증 구현에 영향을 주지 않는지 확인한다.
 
     Args:
-        tmp_path: 테스트용 .env 파일을 저장할 임시 경로.
+        tmp_path: 이전 환경 설정 파일을 작성할 임시 디렉터리.
 
     Returns:
-        None: 각 버전의 문자열이 그대로 환경 설정에 반영되는지 검사한다.
+        None: 설정이 로드되며 검증 버전 필드가 없음을 확인한다.
     """
     path = tmp_path / ".env"
-    for version in ("v1", "v2.1", "v2.2"):
-        path.write_text(f"CLICK_VALIDATION_AGENT_VERSION={version}\n")
-        settings = Settings(api_key="test-service-secret", _env_file=path)
-        assert settings.validation_agent_version == version
+    path.write_text("CLICK_VALIDATION_AGENT_VERSION=v1\n")
+    settings = Settings(api_key="test-service-secret", _env_file=path)
+    assert "validation_agent_version" not in settings.model_dump()
 
 
-def test_v2_rejects_changed_meridiem():
+def test_rejects_changed_meridiem():
     """숫자가 같아도 오전·오후를 바꾼 대사는 거절한다.
 
     Args:
@@ -192,16 +177,12 @@ def test_v2_rejects_changed_meridiem():
     assert not preserves_anchors("오후 6시에 도착했습니다.", "오전 6시에 도착했습니다.")
 
 
-@pytest.mark.parametrize("version", ["v2.1", "v2.2"])
-async def test_v2_embeds_candidates_and_facts_in_one_batch(
-    fixture_settings, monkeypatch, version
-):
-    """두 v2 버전이 임베딩을 한 번 계산하고 근거 없는 문장을 제거하는지 확인한다.
+async def test_embeds_candidates_and_facts_in_one_batch(fixture_settings, monkeypatch):
+    """검증 에이전트가 임베딩을 한 번 계산하고 근거 없는 문장을 제거하는지 확인한다.
 
     Args:
         fixture_settings: 테스트 서버 설정.
         monkeypatch: SentenceTransformer 모듈을 모의 구현으로 교체하는 도구.
-        version: 실행할 검증 버전.
 
     Returns:
         None: 임베딩 배치, 최종 대사 및 모델 호출 순서를 검사한다.
@@ -225,7 +206,6 @@ async def test_v2_embeds_candidates_and_facts_in_one_batch(
     model = ScriptedModel(f"{approved} {extra}")
     settings = fixture_settings.model_copy(
         update={
-            "validation_agent_version": version,
             "validation_similarity_backend": "sentence_transformer",
         }
     )

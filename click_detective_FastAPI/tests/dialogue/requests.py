@@ -2,7 +2,7 @@
 
 from uuid import uuid4
 
-from app.investigation.api.schemas import Interrogate
+from app.investigation.dto.investigation_command_dto import Interrogate
 
 
 def profile_request(service):

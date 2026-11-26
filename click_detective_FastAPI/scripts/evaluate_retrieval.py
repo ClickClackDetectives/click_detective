@@ -5,8 +5,10 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-from app.dialogue.preprocess_agent.free_questions import movement
-from app.dialogue.text_relevance import text_relevance
+from app.dialogue.services.text.dialogue_text_relevance import text_relevance
+from app.investigation.services.interrogation.investigation_free_questions import (
+    movement,
+)
 
 from .retrieval_metrics import calibrate, measure, summarize
 

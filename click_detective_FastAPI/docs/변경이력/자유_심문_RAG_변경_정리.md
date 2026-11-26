@@ -1,6 +1,6 @@
 # 자유 심문 검색 개선
 
-아래 비교는 `a199f18` 시점의 기록입니다. 이후 검색 실행 위치는 LangGraph 첫 노드로 이동했습니다. [현재 전처리 흐름](../에이전트/전처리/README.md)
+자유 심문에 E5 검색, Chroma 인덱스와 Kiwi BM25 재정렬을 도입한 기록이다. 현재 구현 진입점은 [대화 provider](../../app/dialogue/providers/dialogue_provider.py)와 [진술 검색기](../../app/dialogue/services/preprocess_agent/rag/dialogue_fact_retriever.py)다.
 
 팀 원본 **`af115f2`**에서 현재 **`feat/rag-free-questions`** 작업 트리까지의 변경을 정리합니다. 자유 질문을 받으면 현재 용의자가 말할 수 있는 진술 중에서 E5와 ChromaDB로 관련 후보를 찾고, Kiwi BM25로 순서를 조정합니다. 그렇게 선택한 원문을 바탕으로 Qwen이 인물의 대사를 작성합니다.
 
@@ -39,19 +39,19 @@ flowchart TD
     N --> M
 ```
 
-- **공개 범위**는 서버가 정합니다. 현재 인물의 동선, 관계, 자기소개, 이미 공개된 인정 진술에서 후보를 만듭니다. ChromaDB에는 그 요청에서 허용된 벡터 ID만 넘깁니다. 근사 검색에서 일부 ID가 빠지면 해당 ID를 재조회하고, 그래도 누락되면 ChromaDB에서 해당 벡터만 읽어 코사인 거리를 직접 계산합니다. 인덱스는 백엔드 메모리에 있으며, 서버 재시작 후 필요한 벡터를 다시 적재합니다. [후보 구성](../../app/dialogue/preprocess_agent/question_search.py) · [ChromaDB 연결](../../app/dialogue/preprocess_agent/chroma_index.py)
-- **E5 검색**에서 질문에는 `query: `, 진술에는 `passage: ` 접두어를 붙입니다. 개별 동선과 인정 진술은 제목, 가능한 경우 시각, 본문을 합쳐 임베딩합니다. 예를 들어 질문에 정확한 시각이 있으면 해당 시각과 맞는 진술만 남깁니다. [E5 인코더](../../app/dialogue/preprocess_agent/embeddings.py) · [진술 시각 검사](../../app/dialogue/preprocess_agent/testimony_time.py)
-- **Kiwi BM25 재정렬**은 질문과 진술에서 형태소를 뽑습니다. “코를 골던”과 “코 고는”은 둘 다 `코`와 `골`로 연결할 수 있습니다. 가중 RRF는 개별 진술의 E5 순위와 BM25 순위를 **65%와 35%**로 결합합니다. E5 유사도 하한은 **0.8322**, 1위와의 점수 차이는 **0.02 이내**입니다. 이 기준을 통과한 후보를 재정렬한 뒤 최대 **3개**를 선택합니다. 전체 동선이 1위라면 조건에 맞는 동선 묶음을 사용합니다. [Kiwi 재정렬](../../app/dialogue/preprocess_agent/kiwi_reranker.py)
-- **생성과 검증**에는 선택된 승인 사실, 필수 사실 ID, 인물의 이름·역할·말투, 질문, 최근 대화를 전달합니다. Qwen은 승인 사실을 자연스러운 대사로 재서술하고, 검증 단계는 필수 사실의 누락이나 승인되지 않은 내용의 추가를 검사합니다. 현재 사건 데이터에는 인물별 `speech_style` 값이 없어 기본 말투가 적용됩니다. [생성 프롬프트](../../app/dialogue/preprocess_agent/prompt.py) · [심문 요청 조립](../../app/investigation/service.py) · [검증 에이전트](../../app/dialogue/validation_agent_v1/agent.py)
+- **공개 범위**는 서버가 정합니다. 현재 인물의 동선, 관계, 자기소개, 이미 공개된 인정 진술에서 후보를 만듭니다. ChromaDB에는 그 요청에서 허용된 벡터 ID만 넘깁니다. 근사 검색에서 일부 ID가 빠지면 해당 ID를 재조회하고, 그래도 누락되면 ChromaDB에서 해당 벡터만 읽어 코사인 거리를 직접 계산합니다. 인덱스는 백엔드 메모리에 있으며, 서버 재시작 후 필요한 벡터를 다시 적재합니다. [후보 구성](../../app/dialogue/services/preprocess_agent/rag/dialogue_fact_retriever.py) · [ChromaDB 연결](../../app/dialogue/repositories/dialogue_chroma_index.py)
+- **E5 검색**에서 질문에는 `query: `, 진술에는 `passage: ` 접두어를 붙입니다. 개별 동선과 인정 진술은 제목, 가능한 경우 시각, 본문을 합쳐 임베딩합니다. 예를 들어 질문에 정확한 시각이 있으면 해당 시각과 맞는 진술만 남깁니다. [E5 인코더](../../app/dialogue/services/preprocess_agent/rag/dialogue_embeddings.py) · [진술 시각 검사](../../app/dialogue/services/preprocess_agent/rag/dialogue_testimony_time.py)
+- **Kiwi BM25 재정렬**은 질문과 진술에서 형태소를 뽑습니다. “코를 골던”과 “코 고는”은 둘 다 `코`와 `골`로 연결할 수 있습니다. 가중 RRF는 개별 진술의 E5 순위와 BM25 순위를 **65%와 35%**로 결합합니다. E5 유사도 하한은 **0.8322**, 1위와의 점수 차이는 **0.02 이내**입니다. 이 기준을 통과한 후보를 재정렬한 뒤 최대 **3개**를 선택합니다. 전체 동선이 1위라면 조건에 맞는 동선 묶음을 사용합니다. [Kiwi 재정렬](../../app/dialogue/services/preprocess_agent/rag/dialogue_kiwi_reranker.py)
+- **생성과 검증**에는 선택된 승인 사실, 필수 사실 ID, 인물의 이름·역할·말투, 질문, 최근 대화를 전달합니다. Qwen은 승인 사실을 자연스러운 대사로 재서술하고, 검증 단계는 필수 사실의 누락이나 승인되지 않은 내용의 추가를 검사합니다. 현재 사건 데이터에는 인물별 `speech_style` 값이 없어 기본 말투가 적용됩니다. [생성 프롬프트](../../app/dialogue/services/preprocess_agent/dialogue_preprocess_prompt.py) · [심문 요청 조립](../../app/investigation/services/investigation_game_service.py) · [검증 에이전트](../../app/dialogue/services/validation_agent/workflow/dialogue_validation_agent.py)
 
 ## 코드와 설정에서 달라진 점
 
 | 위치 | 변경 내용 |
 | --- | --- |
-| [서버 시작 코드](../../app/bootstrap.py) | E5, ChromaDB, Kiwi BM25를 서버에서 준비하고 심문 서비스에 연결합니다. |
-| [전처리 에이전트](../../app/dialogue/preprocess_agent/agent.py) | 이전 `rag/retriever.py` 호출을 제거했습니다. 이제 승인 사실을 그대로 받아 프롬프트와 검증용 문장을 구성합니다. |
-| [심문 서비스](../../app/investigation/service.py) · [진술 기록](../../app/investigation/rules/testimony.py) | 생성 전에 검색 결과를 승인 계획에 반영하고, 관계 진술은 개별 항목의 주제로 기록합니다. |
-| [서버 설정](../../app/config.py) · [환경 변수 예시](../../.env.example) | E5 모델 경로, 최소 유사도, BM25 사용 여부, E5 가중치, RRF 상수를 설정할 수 있습니다. |
+| [서버 시작 코드](../../app/runtime/runtime_lifespan.py) | E5, ChromaDB, Kiwi BM25를 서버에서 준비하고 심문 서비스에 연결합니다. |
+| [전처리 에이전트](../../app/dialogue/services/preprocess_agent/dialogue_preprocess_agent.py) | 이전 `rag/retriever.py` 호출을 제거했습니다. 이제 승인 사실을 그대로 받아 프롬프트와 검증용 문장을 구성합니다. |
+| [심문 서비스](../../app/investigation/services/investigation_game_service.py) · [진술 기록](../../app/investigation/services/rules/investigation_testimony_rules.py) | 생성 전에 검색 결과를 승인 계획에 반영하고, 관계 진술은 개별 항목의 주제로 기록합니다. |
+| [서버 설정](../../app/runtime/runtime_settings.py) · [환경 변수 예시](../../.env.example) | E5 모델 경로, 최소 유사도, BM25 사용 여부, E5 가중치, RRF 상수를 설정할 수 있습니다. |
 | [검색 평가 도구](../../scripts/retrieval_eval.md) | 질문과 정답 진술을 담은 데이터와 검색 지표 계산기를 추가했습니다. 코드에 포함된 평가 도구는 팀 원본의 어휘 점수 및 선택한 임베딩 모델의 비교에 사용합니다. 아래 ChromaDB·Kiwi 실험은 같은 질문에 실제 검색을 적용한 별도 평가입니다. |
 
 Git 이력상 `71577c3`에서 E5 자유 검색을 도입했습니다. 그 뒤 작업 트리에서 진술의 제목·시각·본문을 검색에 활용하고, 기존 후단 검색을 제거한 다음 ChromaDB와 Kiwi BM25를 연결했습니다. Windows에서도 CSS 규칙 검사가 같은 결과를 내도록 테스트에서 읽는 파일의 줄바꿈을 통일했습니다. [프런트엔드 CSS 테스트 도우미](../../../click_detective_Next_js/tests/support/ui-contract.ts)

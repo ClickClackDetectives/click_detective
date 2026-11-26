@@ -9,13 +9,16 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from app.config import Settings
-from app.dialogue.interrogation_graph import InterrogationGraph
-from app.dialogue.local_model import decoding_options
-from app.dialogue.preprocess_agent.prompt import build_messages
-from app.dialogue.validation_agent_v1.critical_facts import critical_claim_error
-from app.dialogue.validation_agent_v1.prompt import build_verification_messages
-from app.investigation.api.schemas import Interrogate
+from app.dialogue.services.model.dialogue_local_model import decoding_options
+from app.dialogue.services.preprocess_agent.dialogue_preprocess_prompt import (
+    build_messages,
+)
+from app.dialogue.services.reply.dialogue_interrogation_graph import InterrogationGraph
+from app.dialogue.services.validation_agent.evidence.dialogue_critical_facts import (
+    critical_claim_error,
+)
+from app.investigation.dto.investigation_command_dto import Interrogate
+from app.runtime.runtime_settings import Settings
 
 
 def make_request(client):
@@ -143,17 +146,8 @@ async def test_nonverbatim_reply_passes_graph_with_semantic_evidence(client):
             if purpose == "dialogue":
                 return reply
             context = json.loads(messages[1]["content"])
-            assert len(context["verification_units"]) == 2
-            return json.dumps(
-                {
-                    "checks": [[0, True, [0]], [1, True, [1]]],
-                    "has_contradiction": False,
-                    "has_unsupported_claims": False,
-                    "history_consistent": True,
-                    "persona_consistent": True,
-                    "uncertain": False,
-                }
-            )
+            assert len(context["sentences"]) == 2
+            return json.dumps({"matches": [[0, [0]], [1, [1]]]})
 
     model = ParaphraseModel()
     response = await InterrogationGraph(
@@ -202,13 +196,11 @@ def test_prompts_preserve_facts_but_allow_rewording(client):
     assert context["required_fact_ids"] == request.required_fact_ids
     assert "항목 하나마다 완결된 대사 한 문장" in messages[0]["content"]
     assert "동의어·어순·종결어미" in messages[0]["content"]
-    verification = build_verification_messages(request, settings, "대사 예시")
-    assert "같은 의미이면 허용" in verification[0]["content"]
 
 
 @pytest.mark.parametrize("style", ["  짧은 문장으로 답하세요.  ", "  ", None])
-def test_character_speech_style_reaches_both_prompts(client, monkeypatch, style):
-    """인물 지침이 생성·검증에 전달되고 미작성 상태에서는 공통 지침이 적용된다.
+def test_character_speech_style_reaches_generation_prompt(client, monkeypatch, style):
+    """인물 지침이 생성에 전달되고 미작성 상태에서는 공통 지침이 적용된다.
 
     Args:
         client: 실제 사건 카탈로그를 읽은 FastAPI 테스트 클라이언트.
@@ -228,12 +220,10 @@ def test_character_speech_style_reaches_both_prompts(client, monkeypatch, style)
     ).strip() or "존댓말. 승인 원문의 말투와 관찰 한계를 유지하세요."
     request = make_request(client)
     generation = build_messages(request, service.settings)
-    verification = build_verification_messages(request, service.settings, "대사 예시")
 
-    for messages in (generation, verification):
-        persona = json.loads(messages[1]["content"])["persona"]
-        assert persona == {
-            "name": person["name"],
-            "role": person["role"],
-            "speech_style": expected,
-        }
+    persona = json.loads(generation[1]["content"])["persona"]
+    assert persona == {
+        "name": person["name"],
+        "role": person["role"],
+        "speech_style": expected,
+    }

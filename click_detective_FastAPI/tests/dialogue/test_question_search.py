@@ -5,14 +5,13 @@ from uuid import uuid4
 
 import pytest
 
-from app.dialogue.interrogation_graph import InterrogationGraph
-from app.dialogue.preprocess_agent.question_search import (
+from app.dialogue.services.preprocess_agent.rag.dialogue_fact_retriever import (
     OFF_TOPIC,
     OVERVIEW,
     QuestionSearch,
     public_candidates,
 )
-from app.dialogue.reply_validation import NO_FACTS
+from app.dialogue.services.reply.dialogue_interrogation_graph import InterrogationGraph
 from tests.dialogue.models import ApprovedModel
 
 
@@ -70,7 +69,9 @@ def vector_route(client, monkeypatch, tmp_path):
     monkeypatch.setattr(service.settings, "diagnostics_path", tmp_path / "trace.jsonl")
     monkeypatch.setattr(service, "search_free", True)
     monkeypatch.setattr(
-        service, "graph", InterrogationGraph(service.settings, model, search)
+        service.reply_service,
+        "graph",
+        InterrogationGraph(service.settings, model, search),
     )
     return service, index, model
 
@@ -136,10 +137,9 @@ def test_vector_search_selects_the_fact_before_generation(
     assert index.questions == [question]
     assert passage in index.passages
     assert snoring["text"] not in index.passages
-    generation, verification = model.calls
+    (generation,) = model.calls
     assert generation["question"] == question
     assert generation["approved_facts"][0]["text"] == snoring["text"]
-    assert verification["required_fact_ids"] == ["yoon-snoring"]
     trace = json.loads(service.settings.diagnostics_path.read_text(encoding="utf-8"))
     assert [item["stage"] for item in trace["events"][:4]] == [
         "retrieval",
@@ -161,10 +161,10 @@ def test_vector_search_selects_the_fact_before_generation(
         ("내일 날씨가 어때요?", False, False),
     ],
 )
-def test_no_match_goes_directly_to_validation(
+def test_no_match_uses_empty_approval_and_neutral_reply(
     api, game, vector_route, question, reject, minute_conflict
 ):
-    """관련 없음, 시각 불일치, 낮은 점수는 검증 노드에서 고정 응답으로 확정한다.
+    """검색 결과가 없으면 승인 사실 없는 대사를 검증하고 중립 응답을 확정한다.
 
     Args:
         api: 심문 API 호출 함수.
@@ -174,7 +174,7 @@ def test_no_match_goes_directly_to_validation(
         reject: 사건 외 비교 문장을 1위에 올린다.
         minute_conflict: 질문과 시각이 다른 진술을 1위에 올린다.
     Returns:
-        None: 검증 직행과 LLM 호출 없이 확정된 수사 상태를 검사한다.
+        None: 승인 사실이 빈 생성 문맥과 확정된 수사 상태를 검사한다.
     """
     service, index, model = vector_route
     if reject or minute_conflict:
@@ -183,14 +183,14 @@ def test_no_match_goes_directly_to_validation(
     if reject:
         index.scores[OFF_TOPIC] = 0.92
     result = ask(api, game, question)
-    assert result["finish_reason"] == "fixed"
-    assert result["reply"] == NO_FACTS
-    assert result["used_fact_ids"] == model.calls == []
+    assert result["finish_reason"] == "neutral"
+    assert result["used_fact_ids"] == []
+    assert model.calls[0]["approved_facts"] == []
     assert index.questions == [question]
     trace = json.loads(service.settings.diagnostics_path.read_text(encoding="utf-8"))
     assert [
         event["agent"] for event in trace["events"] if event["stage"] == "agent_timing"
-    ] == ["preprocess_agent", "validation_agent"]
+    ] == ["preprocess_agent", "inference_agent", "validation_agent"]
     state = service.read(game["game_id"], game["game_token"])
     assert state["questions"] == 1 and not state["statements"] and not state["revealed"]
 

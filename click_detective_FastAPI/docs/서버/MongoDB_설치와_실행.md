@@ -1,6 +1,6 @@
 # MongoDB 설치와 실행
 
-FastAPI는 익명 수사와 계정 수사를 모두 MongoDB에 저장합니다. 수사 상태와 요청 기록을 함께 확정하기 위해 **replica set**이 필요합니다. 아래 예시는 FastAPI와 MongoDB가 같은 컴퓨터에서 실행되는 개발 환경입니다.
+FastAPI 수사 저장소는 MongoDB 트랜잭션을 사용하므로 replica set 연결이 필요하다. 시스템 설치와 작업공간의 사용자 설치 중 해당하는 절차를 따른다.
 
 ## Ubuntu에서 새로 설치하기
 

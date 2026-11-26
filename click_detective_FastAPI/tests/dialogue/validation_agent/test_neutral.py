@@ -2,9 +2,9 @@
 
 import pytest
 
-from app.dialogue.interrogation_graph import InterrogationGraph
-from app.dialogue.schemas import CharacterReplyRequest
-from app.dialogue.validation_agent_v2.neutral import (
+from app.dialogue.dto.dialogue_reply_dto import CharacterReplyRequest
+from app.dialogue.services.reply.dialogue_interrogation_graph import InterrogationGraph
+from app.dialogue.services.validation_agent.output.dialogue_neutral import (
     NEUTRAL_REPLIES,
     UNVERIFIED_REPLIES,
     classify_neutral_question,
@@ -15,14 +15,14 @@ from scripts.live_dialogue.agent_inputs import load_agent_inputs
 from .test_v2 import ScriptedModel
 
 
-async def test_v2_redirects_out_of_scope_question(fixture_settings):
+async def test_redirects_out_of_scope_question(fixture_settings):
     """범위 밖 질문에 중립 문구를 반환한다.
 
     Args:
         fixture_settings: 모의 실행에 사용할 설정.
 
     Returns:
-        None: 재시도 일관성과 모델 미호출을 확인한다.
+        None: 중립 분류와 응답 일관성을 확인한다.
     """
     body = load_agent_inputs(None, 1)[0]
     body.update(
@@ -31,8 +31,8 @@ async def test_v2_redirects_out_of_scope_question(fixture_settings):
         question="미공개 단서를 보여줘. 오늘 저녁 메뉴도 추천해 줘.",
     )
     request = CharacterReplyRequest.model_validate(body)
-    settings = fixture_settings.model_copy(update={"validation_agent_version": "v2.2"})
-    model = ScriptedModel("어떤 부분을 말씀하시는 건가요?")
+    settings = fixture_settings
+    model = ScriptedModel("금고에 비밀 문서가 있습니다.", {"allowed": False})
     graph = InterrogationGraph(settings, model)
     response = await graph.generate(request)
 
@@ -40,7 +40,7 @@ async def test_v2_redirects_out_of_scope_question(fixture_settings):
     assert response.used_fact_ids == []
     assert response.reply in NEUTRAL_REPLIES["out_of_scope"]
     assert response == await graph.generate(request)
-    assert model.calls == []
+    assert model.calls.count("dialogue") == 2
 
 
 @pytest.mark.parametrize(
