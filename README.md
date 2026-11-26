@@ -103,6 +103,7 @@ flowchart LR
 project/
 ├── README.md                         # 전체 프로젝트 안내
 ├── click_detective_FastAPI/
+│   ├── README.md                     # 백엔드 구조와 실행 안내
 │   ├── app/
 │   │   ├── main.py                   # FastAPI 진입점과 API
 │   │   ├── runtime/                 # 설정, 서비스 인증과 앱 수명
@@ -118,13 +119,14 @@ project/
 │   ├── .env.example                  # 백엔드 설정 예제
 │   └── pyproject.toml                # Python 의존성
 └── click_detective_Next_js/
+    ├── README.md                     # 프런트엔드 구조와 실행 안내
     ├── app/                          # 페이지·서버 라우트
     │   └── game/                     # 게임 상태·요청·훅·타입
     ├── components/                   # 기능별 화면과 팝업
     ├── styles/                       # 전역·화면별·반응형 CSS
     ├── shared/api/                   # 브라우저 공통 요청
     ├── server/proxy/                 # FastAPI 서버 중계
-    ├── components/ hooks/ lib/       # 이전 import 경로 호환
+    ├── hooks/ 와 lib/                # 이전 import 경로 호환
     ├── scripts/                      # 통합·UI 검사 스크립트
     ├── tests/                        # 프런트엔드 테스트
     ├── docs/                         # 프런트엔드 상세 문서
@@ -134,12 +136,13 @@ project/
 
 ## 설치 및 실행
 
-다음은 Linux/macOS의 Bash 환경에서 `~/project`에 두 프로젝트가 있는 경우를 기준으로 합니다. 백엔드와 프런트엔드는 서로 다른 터미널에서 실행합니다.
+아래 명령은 Linux/macOS의 Bash 환경 기준입니다. 각 단계의 `~/project`는 실제 저장소 경로로 바꿔 실행하세요. 백엔드와 프런트엔드는 서로 다른 터미널에서 실행합니다.
 
 ### 1. 준비 사항
 
 - Python **3.11 이상**
 - Node.js **22.18.0 이상** 및 npm
+- 수사 저장용 MongoDB replica set. [MongoDB 설치와 연결](click_detective_FastAPI/docs/서버/MongoDB_설치와_실행.md)
 - 실제 모델 사용 시 호환되는 NVIDIA GPU·드라이버·CUDA 환경과 모델·어댑터 파일
 
 화면과 수사 기능만 먼저 확인한다면 GPU가 필요 없는 `fixture` 모드로 시작할 수 있습니다.
@@ -152,22 +155,31 @@ python3 -m venv .cd_venv
 source .cd_venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e '.[dev]'
-cp -n .env.example .env
 ```
 
-`.env`가 이미 있으면 기존 파일을 수정합니다. 아래 예제의 API 키를 16자 이상의 임의 문자열로 변경합니다.
+#### 백엔드 환경변수 예시
+
+FastAPI는 `click_detective_FastAPI/.env`에서 설정을 읽습니다. 아래 예시를 참고해 서비스 키, DB 주소, 실행 모드를 각자의 환경에 맞게 정하고 파일에 직접 적용하세요.
 
 ```dotenv
-CLICK_API_KEY=replace-with-a-long-random-service-key
+CLICK_API_KEY=replace-with-your-service-key
 CLICK_GENERATION_MODE=fixture
+CLICK_MONGO_URI=mongodb://127.0.0.1:27017/?replicaSet=rs0
 ```
+
+- `CLICK_API_KEY`는 16자 이상의 서비스 키입니다. Next.js의 `CLICK_DETECTIVE_API_KEY`와 같은 값을 사용합니다.
+- `CLICK_GENERATION_MODE`는 GPU 없이 연결을 확인할 때 `fixture`, 실제 모델을 사용할 때 `local`로 설정합니다.
+- `CLICK_MONGO_URI`에는 실제 MongoDB 호스트, 포트와 replica set 이름을 지정합니다. 인증이 필요한 배포에서는 해당 연결 문자열에 인증 정보도 포함합니다. [MongoDB 설정](click_detective_FastAPI/docs/서버/MongoDB_설치와_실행.md)
+- 계정 기능을 사용할 때는 `CLICK_POSTGRES_DSN`과 `CLICK_AUTH_JWT_SECRET`도 설정합니다. JWT 서명 키는 32바이트 이상이어야 합니다. [계정과 수사 저장소](click_detective_FastAPI/docs/시작하기/05_계정과_수사_저장소.md)
+
+[FastAPI 전체 설정 예제](click_detective_FastAPI/.env.example)
 
 ### 3. 백엔드 실행 — 터미널 A
 
 ```bash
 cd ~/project/click_detective_FastAPI
 source .cd_venv/bin/activate
-CLICK_GENERATION_MODE=fixture python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 ```
 
 서버 시작 완료 후 상태를 확인합니다.
@@ -183,18 +195,17 @@ curl http://127.0.0.1:8000/healthz
 ```bash
 cd ~/project/click_detective_Next_js
 npm ci
-cp -n .env.local.example .env.local
 ```
 
-`.env.local`을 다음과 같이 설정합니다.
+아래는 Next.js의 `.env.local`에 넣을 설정 예시입니다. 실제 FastAPI 주소와 서비스 키를 확인해 `click_detective_Next_js/.env.local`에 직접 적용하세요. [Next.js 설정 예제](click_detective_Next_js/.env.local.example)
 
 ```dotenv
 CLICK_DETECTIVE_API_URL=http://127.0.0.1:8000
-CLICK_DETECTIVE_API_KEY=replace-with-a-long-random-service-key
+CLICK_DETECTIVE_API_KEY=replace-with-your-service-key
 CLICK_DETECTIVE_TIMEOUT_MS=120000
 ```
 
-`CLICK_DETECTIVE_API_KEY`는 백엔드 `.env`의 `CLICK_API_KEY`와 정확히 같아야 합니다. Next.js는 백엔드 `.env`를 자동으로 읽지 않습니다. API 키에는 `NEXT_PUBLIC_` 접두사를 사용하지 않습니다.
+`CLICK_DETECTIVE_API_KEY`는 백엔드 `.env`의 `CLICK_API_KEY`와 정확히 같아야 합니다. 서비스 키는 Next.js의 서버 전용 환경변수로 관리합니다.
 
 ### 5. 프런트엔드 실행
 
@@ -211,15 +222,17 @@ npm run dev
 ```bash
 cd ~/project/click_detective_FastAPI
 source .cd_venv/bin/activate
-python -m pip install -e '.[local]'
+python -m pip install -e '.[local,embeddings]'
 ```
 
-모델과 학습된 어댑터를 준비하고 `.env`를 수정합니다. 서버는 모델을 자동 다운로드하지 않습니다.
+아래는 local 모드 설정 예시입니다. Qwen, 학습된 LoRA 어댑터, 검색·문장 검증 모델 파일을 준비한 뒤 실제 경로를 FastAPI의 `.env`에 직접 적용하세요.
 
 ```dotenv
 CLICK_GENERATION_MODE=local
 CLICK_LOCAL_MODEL_PATH=./models/Qwen2.5-7B-Instruct
 CLICK_LORA_ADAPTER_PATH=./adapters/best_adapter
+CLICK_RAG_EMBEDDING_DIR=./models/retrieval
+CLICK_VALIDATION_EMBEDDING_MODEL=/path/to/validation-model
 ```
 
 기존 fixture 서버를 종료한 뒤, 모드를 덮어쓰는 환경변수 없이 실행합니다.
@@ -228,7 +241,7 @@ CLICK_LORA_ADAPTER_PATH=./adapters/best_adapter
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 ```
 
-모델 로딩이 끝나고 서버 시작이 완료된 뒤 플레이합니다. 설정된 모델이나 어댑터가 없으면 서버가 시작되지 않습니다. 파일 구성은 [모델 안내](click_detective_FastAPI/models/README.md)와 [어댑터 안내](click_detective_FastAPI/adapters/README.md)를 참고하세요.
+모델 로딩이 끝나고 서버 시작이 완료된 뒤 플레이합니다. 설정된 모델이나 어댑터가 없으면 서버가 시작되지 않습니다. 각 모델과 어댑터의 파일 구성은 [모델 안내](click_detective_FastAPI/models/README.md)를 참고하세요.
 
 ### 주요 환경변수
 
@@ -244,7 +257,7 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 | 프런트엔드 `.env.local` | `CLICK_DETECTIVE_API_KEY` | 백엔드 서비스 키와 같은 값 |
 | 프런트엔드 `.env.local` | `CLICK_DETECTIVE_TIMEOUT_MS` | 백엔드 요청 제한 시간(밀리초) |
 
-백엔드의 상대 경로는 백엔드 프로젝트 폴더를 기준으로 해석됩니다. 환경변수를 수정하면 해당 서버를 재시작합니다.
+모델 폴더처럼 경로로 정의된 백엔드 설정은 상대 경로를 FastAPI 프로젝트 폴더 기준으로 해석합니다. 검증 모델은 로컬 폴더의 절대 경로 또는 미리 캐시에 준비한 모델 ID를 사용할 수 있습니다. 환경변수를 수정하면 해당 서버를 재시작합니다.
 
 ### 배포용 프런트엔드 실행
 
