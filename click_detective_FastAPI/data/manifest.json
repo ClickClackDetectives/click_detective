@@ -23,8 +23,8 @@
     },
     {
       "path": "case/characters.json",
-      "bytes": 8311,
-      "sha256": "39bed5bbb5655ba9da2b80183e474472526fee71c0ff1a35daafcb3ef6dd9966"
+      "bytes": 9746,
+      "sha256": "289a3b63656fce0d5bbf9ff632fb93c76556d19f6966f7da03e6dc2e41d0dca2"
     },
     {
       "path": "case/dialogue-rules.private.json",
