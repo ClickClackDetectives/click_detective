@@ -37,7 +37,12 @@ export async function handle(
 ### resolveTarget
 
 ```ts
-export function resolveTarget(parts: string[], method: string, gameId: string): Target | null
+export function resolveTarget(
+  parts: string[],
+  method: string,
+  gameId: string,
+  investigation?: string,
+): Target | null
 ```
 
 역할: 브라우저가 임의의 URL이나 다른 게임 ID를 지정하지 못하도록 경로를 만듭니다.
@@ -46,7 +51,8 @@ export function resolveTarget(parts: string[], method: string, gameId: string): 
 
 - `parts`: 요청 경로를 나눈 문자열 목록.
 - `method`: HTTP 요청 메서드.
-- `gameId`: 현재 수사의 ID.
+- `gameId`: 익명 쿠키에 저장된 수사 ID.
+- `investigation`: 계정 수사 ID 또는 새 수사를 뜻하는 `new`.
 
 반환: 허용된 백엔드 경로. 지원하지 않으면 null.
 
@@ -149,17 +155,19 @@ export async function upstreamError(upstream: Response, target: Target)
 ### gameCreated
 
 ```ts
-export async function gameCreated(upstream: Response, request: NextRequest)
+export async function gameCreated(upstream: Response, request: NextRequest, account = false)
 ```
 
-역할: 생성 응답의 수사 ID와 토큰은 HttpOnly 쿠키로 보관한다.
+역할: 익명 수사의 ID와 토큰을 쿠키에 저장하거나 계정 수사 ID를 공개한다.
 
 입력:
 
 - `upstream`: FastAPI에서 받은 HTTP 응답.
 - `request`: 확인하거나 전달할 요청.
 
-반환: 수사 ID와 토큰을 쿠키에 보관하고 공개 상태만 담은 응답.
+- `account`: 계정 수사 생성 여부.
+
+반환: 계정 수사 ID와 상태 또는 익명 상태와 익명 쿠키.
 
 ### streamResponse
 

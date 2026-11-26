@@ -1,5 +1,7 @@
 # LLM·양자화·멀티에이전트 API만 실서버로 검사하기
 
+CUDA와 실제 Qwen을 준비한 뒤 local 서버에서 일반 심문 또는 내부 에이전트 검사 경로를 호출한다. HTTP 성공과 검증을 통과한 모델 대사를 구분해 기록한다.
+
 ## 1. 무엇을 검사하는가
 
 검증 대상은 **`POST /v1/games/{game_id}/interrogations`**입니다. 실제 local 서버에서는 이 API가 승인 계획 → LangGraph 전처리 → 양자화 Qwen 생성 → 검증 → 수사 저장으로 이어집니다.
@@ -82,7 +84,7 @@ python scripts/test_llm_api_live.py \
 
 스크립트는 해당 심문의 request_id와 일치하는 기록만 찾습니다. 다음 두 묶음을 함께 확인합니다.
 
-- `generation_mode=local`이며 retrieval·generation·verification 이벤트가 있음: 전처리 검색·생성·검증 호출 경로의 증거
+- `generation_mode=local`이고 `preprocess`·`generation`·`verification` 이벤트가 있으면 전처리·생성·검증 경로가 실행된 것이다. 과거 보고서의 전처리 이벤트 이름은 `retrieval`이다.
 - model_resources에 `loaded_in_4bit=true`, `quantization=nf4-double`이 있음: 그 요청에서 서버가 기록한 실제 모델 양자화 상태
 
 `--require-trace`를 켜면 이 증거가 부족해도 실패입니다. `--trace-path`만 사용하면 참고 정보를 붙이고 진단 부족 자체를 필수 실패 조건으로 만들지는 않습니다.
@@ -141,10 +143,32 @@ python scripts/test_llm_api_live.py \
 | elapsed_ms                 | 해당 HTTP 왕복 시간                                |
 | cases[].checks             | 응답·저장 검증별 true/false                        |
 | cases[].trace              | 선택적으로 연결한 같은 요청의 실행 진단            |
+| cases[].agent_timings      | 진단을 연결했을 때 에이전트별 호출 시간과 합계(ms)  |
 | quantization               | HTTP만 확인했는지, 서버 NF4 실행 진단도 확인했는지 |
 | passed                     | 전체 성공 여부                                     |
 
 API 키·수사 토큰은 필드와 문자열에서 마스킹합니다. 파일 권한은 소유자 읽기·쓰기인 600으로 저장합니다. 대사·수사 상태·자료 내용은 보고서에 남으므로 공유할 때 내용을 확인하세요.
+
+`agent_timings`의 `calls_ms`는 각 에이전트의 호출별 처리 시간이고, `total_ms`는 에이전트 호출 시간의 합계다. 검증 노드 시간은 내부 배치 처리와 모델을 호출한 경우 그 시간도 포함한다. 서버에서 진단을 활성화하고 실제 진단 경로를 `--trace-path`로 지정해야 이 항목이 채워집니다. 일치하는 진단에 시간 이벤트가 없으면 빈 객체가 기록됩니다.
+
+## 게임을 거치지 않는 에이전트 검사
+
+테스트 서버의 `.env`에 `CLICK_AGENT_TEST_ENABLED=true`와 `CLICK_DIAGNOSTICS_ENABLED=true`를 설정하고 local 모드로 재시작합니다. 이 옵션은 기본적으로 꺼져 있고, 요청에는 기존 Bearer API 키가 필요합니다. 켜진 테스트 API는 전달받은 승인 사실을 그대로 사용하므로 개발·테스트 서버에서 사용합니다.
+
+```bash
+python scripts/test_llm_api_live.py \
+  --agents-only \
+  --backend-url http://127.0.0.1:8000 \
+  --trace-path .data/dialogue-traces.jsonl \
+  --require-trace \
+  --report .reports/llm-agents-live.json
+```
+
+기본 입력은 132건입니다. 먼저 10개 상황과 12가지 질문 유형을 조합한 생성 사례 120건을 실행합니다. 이어서 승인 사실이 없는 중립 사례 12건을 실행합니다. 중립 사례의 카테고리는 시간, 장소·동선, 인물, 관계, 증거·자료, 목격·청취, 연락·대화, 행동, 동기, 추측·가설, 기타, 수사 범위 밖입니다.
+
+중립 사례는 `finish_reason=neutral`과 빈 `used_fact_ids`를 검사한다. `--trace-path`를 지정하면 요청 UUID가 일치하는 진단을 결과에 연결한다.
+
+`--agent-limit 5`를 추가하면 처음 5건만 실행합니다. `--agent-input inputs.json`으로 기본 입력을 대체할 수 있습니다. 파일은 입력 객체 하나 또는 객체 배열을 담을 수 있고, 여러 파일은 `--agent-input`을 반복해서 지정한 순서대로 실행합니다. 입력 형식은 보고서의 `cases[0].exchanges[0].input.body`에서 확인할 수 있습니다. 서버는 이미 로드한 모델로 전처리·추론·검증을 실행하며 게임 상태를 만들거나 저장하지 않습니다.
 
 ## 8. 오류와 대기시간
 
@@ -164,10 +188,10 @@ python scripts/test_llm_api_live.py --help
 
 주요 옵션은 `--backend-url`, 반복 가능한 `--case`, `--timeout`, `--report`, `--env-file`, `--api-key-env`, `--data-dir`, `--expected-model-version`, `--trace-path`, `--require-trace`입니다. API 키를 평문 CLI 인수로 받는 옵션은 없습니다. HTTP 프록시 환경변수는 자동 사용하지 않습니다.
 
-도구 자체의 자동 검사는 `tests/live_dialogue/`입니다. 모의 HTTP·임시 FastAPI·가짜 응답으로 판정과 마스킹을 검사하며, 이 pytest 성공이 실제 모델 추론 성공은 아닙니다.
+도구 자체의 자동 검사는 `tests/dialogue/test_runner.py`와 `tests/dialogue/test_trace_and_timeout.py`에 있습니다. 모의 HTTP·임시 FastAPI·가짜 응답으로 판정과 마스킹을 검사하며, 이 pytest 성공이 실제 모델 추론 성공은 아닙니다.
 
 ```bash
-python -m pytest -q tests/live_dialogue/
+python -m pytest -q tests/dialogue/test_runner.py tests/dialogue/test_trace_and_timeout.py
 ```
 
 ## 플레이 응답과 엄격한 LLM 품질 검사의 구분
@@ -175,3 +199,13 @@ python -m pytest -q tests/live_dialogue/
 플레이 기본값 CLICK_FALLBACK_ON_ERROR=true에서는 모델 실패에도 승인 원문으로 답합니다. 사용자는 200과 대사를 받지만, 이 검사 도구는 여전히 fallback을 실제 모델 성공으로 세지 않습니다. 따라서 UI 정상 응답과 실서버 LLM 품질 검사 실패가 동시에 관찰될 수 있습니다. stop·fixed·fallback을 구분해 읽으세요. 별도 모델 진단 서버에서 오류 자체를 관찰하려면 false를 명시할 수 있습니다.
 
 현재 기본값과 strict 검사의 차이, 복구 대화의 질문 차감은 [질문 응답 정책](../에이전트/응답과_복구_정책.md)을 참고하세요. fallback으로 사용자에게 답을 제공한 결과를 실제 모델 stop 성공으로 합산하지 않습니다.
+
+## 내부 검사 배치와 결과 파일
+
+`CLICK_AGENT_TEST_ENABLED=true`와 `CLICK_DIAGNOSTICS_ENABLED=true`를 설정한 local 서버를 시작한 뒤 실행한다.
+
+```bash
+python scripts/test_llm_api_live.py --agents-only --trace-path .data/dialogue-traces.jsonl --report .reports/llm-agents-live.json
+```
+
+기본 입력 132건의 HTTP 요청과 응답, 왕복 시간, 서버의 에이전트별 시간을 확인할 수 있다. 진단에는 정책 실행과 선택적으로 호출한 검증 모델의 시간이 기록된다.

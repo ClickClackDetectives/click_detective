@@ -11,10 +11,12 @@ import httpx
 from dotenv import dotenv_values
 
 if __package__:
+    from .live_dialogue.agent_inputs import load_agent_inputs
     from .live_dialogue.errors import LiveTestFailure as LiveTestFailure
     from .live_dialogue.tester import LiveLlmTester
     from .live_dialogue.traces import attach_traces
 else:
+    from live_dialogue.agent_inputs import load_agent_inputs
     from live_dialogue.errors import LiveTestFailure as LiveTestFailure
     from live_dialogue.tester import LiveLlmTester
     from live_dialogue.traces import attach_traces
@@ -45,8 +47,18 @@ def parser():
         "--timeout", type=float, default=240, help="요청별 초 단위 대기시간"
     )
     result.add_argument(
-        "--report", type=Path, default=PROJECT_ROOT / ".reports/llm-api-live.json"
+        "--agents-only", action="store_true", help="게임 API 없이 대화 에이전트만 검사"
     )
+    result.add_argument(
+        "--agent-input",
+        type=Path,
+        action="append",
+        help="객체 또는 객체 배열을 담은 입력 JSON 파일. 여러 번 지정 가능",
+    )
+    result.add_argument(
+        "--agent-limit", type=int, help="agents-only 검사에서 실행할 최대 입력 수"
+    )
+    result.add_argument("--report", type=Path, help="결과 JSON 경로")
     result.add_argument("--env-file", type=Path, default=PROJECT_ROOT / ".env")
     result.add_argument("--data-dir", type=Path, default=PROJECT_ROOT / "data")
     result.add_argument("--api-key-env", default="CLICK_API_KEY")
@@ -59,13 +71,15 @@ def parser():
     result.add_argument(
         "--require-trace",
         action="store_true",
-        help="local 3단계 진단 증거도 성공 필수 조건으로 검사",
+        help="local 실행과 기대 중립 분류의 진단을 성공 필수 조건으로 검사",
     )
     return result
 
 
 def main(argv=None):
-    """실행 결과를 권한 600 JSON으로 저장하고 성공 0·실패 1·설정 오류 2를 반환한다.
+    """실행 결과를 JSON으로 저장하고 성공 0·실패 1·설정 오류 2를 반환한다.
+
+    POSIX에서는 결과 파일 권한을 600으로 제한한다.
 
     Args:
         argv: 명령행 인수 목록. None이면 실제 명령행에서 읽는다.
@@ -92,8 +106,22 @@ def main(argv=None):
         arguments.error("timeout은 0보다 큰 유한한 초 값이어야 합니다.")
     if args.require_trace and not args.trace_path:
         arguments.error("require-trace에는 trace-path가 필요합니다.")
+    if (args.agent_input or args.agent_limit is not None) and not args.agents_only:
+        arguments.error("agent-input과 agent-limit은 agents-only와 함께 사용하세요.")
+    if args.agent_limit is not None and args.agent_limit < 1:
+        arguments.error("agent-limit은 1 이상이어야 합니다.")
+    if args.agents_only and args.cases:
+        arguments.error("agents-only에서는 case 옵션을 사용할 수 없습니다.")
+    if args.report is None:
+        args.report = PROJECT_ROOT / ".reports" / "llm-api-live.json"
     if args.report.suffix.lower() != ".json":
         arguments.error("report에는 .json 파일을 지정하세요.")
+    agent_inputs = None
+    if args.agents_only:
+        try:
+            agent_inputs = load_agent_inputs(args.agent_input, args.agent_limit)
+        except (OSError, ValueError) as error:
+            arguments.error(f"agent-input JSON을 읽을 수 없습니다: {error}")
     key = os.environ.get(args.api_key_env) or dotenv_values(args.env_file).get(
         args.api_key_env
     )
@@ -109,14 +137,18 @@ def main(argv=None):
         follow_redirects=False,
     ) as client:
         tester = LiveLlmTester(client, key, args.data_dir, args.expected_model_version)
-        report = tester.run(list(dict.fromkeys(args.cases or CASE_NAMES)))
+        if agent_inputs is not None:
+            report = tester.run_agents(agent_inputs, progress=True)
+        else:
+            report = tester.run(list(dict.fromkeys(args.cases or CASE_NAMES)))
     if args.trace_path:
         attach_traces(report, args.trace_path, args.require_trace)
     report = tester.redact(report)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     descriptor = os.open(args.report, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
     with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
-        os.fchmod(stream.fileno(), 0o600)
+        if hasattr(os, "fchmod"):
+            os.fchmod(stream.fileno(), 0o600)
         stream.write(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     for case in report["cases"]:
         print(

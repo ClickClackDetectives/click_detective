@@ -1,16 +1,14 @@
 # 10. 열람한 원본 자료의 이미지
 
-[API 목차](README.md) · [공통 규칙](../공통규칙.md)
-
-## 역할과 호출 시점
-
 `GET /v1/games/{game_id}/evidence-assets/{evidence_id}`
 
-열람한 원본 자료의 이미지에 사용하는 실제 구현 경로입니다. 공개 상태나 파일을 조회합니다. GET은 게임 상태를 변경하지 않습니다.
+현재 수사에서 접근 가능한 증거 이미지를 파일로 받는다.
 
-## 인증
+[API 목차](README.md) · [인증·재시도 공통 규칙](../공통규칙.md)
 
-`Authorization: Bearer <CLICK_API_KEY 값>`이 필요합니다. 수사별 `X-Game-Token: <생성 응답의 game_token>`도 필요합니다.
+## 접근 조건
+
+서버 간 Bearer 서비스 키를 보낸다. 익명 수사는 `X-Game-Token`, 계정 수사는 `X-Access-Token`과 해당 계정 문맥으로 접근한다.
 
 ## 입력
 
@@ -35,10 +33,5 @@ JSON이 아니라 이미지·영상 파일 응답입니다. content-type·파일
 - 422: 미열람·미공개 원본.
 - 404: 이미지 정보나 파일 없음.
 - 클라이언트가 임의 파일 경로를 넘기는 API가 아닙니다.
-- 공통 인증 실패는 401입니다. 수사 경로에서는 권한이 없으면 404, 버전이 다르면 409가 날 수 있습니다.
 
-## 코드에서 따라가기
-
-현재 API 진입점은 [app/investigation/api/material_routes.py의 `evidence_asset`](../../../app/investigation/api/material_routes.py#L86)다.
-
-처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/persistence/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.
+처리 진입점은 `evidence_asset()`이다. [컨트롤러 소스](../../../app/investigation/controllers/investigation_material_controller.py#L95)

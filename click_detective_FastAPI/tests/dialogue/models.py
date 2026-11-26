@@ -27,7 +27,7 @@ class ApprovedModel:
         self.calls = []
 
     async def generate(self, messages, *, purpose="dialogue"):
-        """생성은 평문, 검증은 후보 문장 번호를 갖는 엄격한 JSON으로 응답한다.
+        """생성은 승인 원문을 연결하고 추가 모델 판정에서는 불확실한 문장을 보류한다.
 
         Args:
             messages: 모델에 전달할 역할별 프롬프트 목록.
@@ -38,31 +38,8 @@ class ApprovedModel:
         """
         context = json.loads(messages[1]["content"])
         self.calls.append(context)
-        if "candidate_sentences" not in context:
+        if purpose == "dialogue":
             return " ".join(fact["text"] for fact in context["approved_facts"])
-        sources = {
-            unit["index"]: unit["text"]
-            for fact in context["approved_facts"]
-            for unit in fact["units"]
-        }
-        return json.dumps(
-            {
-                "checks": [
-                    [
-                        unit["index"],
-                        True,
-                        [
-                            part["id"]
-                            for part in context["candidate_sentences"]
-                            if sources[unit["index"]] in part["text"]
-                        ],
-                    ]
-                    for unit in context["verification_units"]
-                ],
-                "has_contradiction": False,
-                "has_unsupported_claims": False,
-                "history_consistent": True,
-                "persona_consistent": True,
-                "uncertain": False,
-            }
-        )
+        if "public_sources" in context:
+            return json.dumps({"allowed": False})
+        return json.dumps({"matches": []})

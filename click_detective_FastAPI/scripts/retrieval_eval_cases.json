@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "case_id": "thirteenth-bell-v1",
+  "scope": "public_movement",
+  "groups": [
+    {
+      "id": "yoon-missing-draft",
+      "split": "calibration",
+      "suspect_id": "yoon",
+      "expected_fact_ids": ["yoon-missing-draft"],
+      "questions": [
+        {"kind": "direct", "text": "초안이 사라진 걸 언제 알았나요?"},
+        {"kind": "paraphrase", "text": "가방을 열었더니 안에 있어야 할 서류가 어떻게 됐던가요?"},
+        {"kind": "typo", "text": "유언장 초안이 업어진 걸 몇 시에 아셧나요?"}
+      ]
+    },
+    {
+      "id": "kang-room",
+      "split": "calibration",
+      "suspect_id": "kang",
+      "expected_fact_ids": ["kang-room"],
+      "questions": [
+        {"kind": "direct", "text": "밤 10시부터 11시까지 어디에 계셨나요?"},
+        {"kind": "paraphrase", "text": "회장님을 보고 나온 뒤 다음 한 시간은 어디에서 보냈나요?"},
+        {"kind": "typo", "text": "22시부터 23시까진 어딧었어요?"}
+      ]
+    },
+    {
+      "id": "seo-baek-corridor",
+      "split": "calibration",
+      "suspect_id": "seo",
+      "expected_fact_ids": ["seo-baek-corridor"],
+      "questions": [
+        {"kind": "direct", "text": "2층 복도에서 백세라 씨를 봤나요?"},
+        {"kind": "paraphrase", "text": "윗층 복도에서 서둘러 지나간 사람이 있었나요?"},
+        {"kind": "typo", "text": "2층 복도에서 백세라 씨와 마주쳣나요?"}
+      ]
+    },
+    {
+      "id": "baek-off-topic",
+      "split": "calibration",
+      "suspect_id": "baek",
+      "expected_fact_ids": [],
+      "questions": [
+        {"kind": "off_topic", "text": "내일 비가 올까요?"},
+        {"kind": "off_topic", "text": "중고 노트북은 어떤 걸 사면 좋을까요?"}
+      ]
+    },
+    {
+      "id": "kang-unsupported",
+      "split": "calibration",
+      "suspect_id": "kang",
+      "expected_fact_ids": [],
+      "questions": [
+        {"kind": "near_miss", "text": "밤 11시 45분에는 2층 방에서 어떤 전화를 했나요?"},
+        {"kind": "near_miss", "text": "회장님에게 전한 혈압약의 제품명은 뭐였나요?"}
+      ]
+    },
+    {
+      "id": "yoon-snoring",
+      "split": "test",
+      "suspect_id": "yoon",
+      "expected_fact_ids": ["yoon-snoring"],
+      "questions": [
+        {"kind": "direct", "text": "코 고는 소리를 들었나요?"},
+        {"kind": "paraphrase", "text": "혹시 무슨 소리 못 들으셨나요?"},
+        {"kind": "paraphrase", "text": "서재 문 밖에서 잠든 사람이 내는 소리가 났나요?"},
+        {"kind": "typo", "text": "혹시 코골이 소리 들으셧나여?"}
+      ]
+    },
+    {
+      "id": "baek-white-glove",
+      "split": "test",
+      "suspect_id": "baek",
+      "expected_fact_ids": ["baek-white-glove"],
+      "questions": [
+        {"kind": "direct", "text": "22시 40분에 흰 장갑을 봤나요?"},
+        {"kind": "paraphrase", "text": "거실 쪽으로 사라진 손에 뭐가 씌워져 있었나요?"},
+        {"kind": "typo", "text": "흰 장갑을 낀 손을 목겯했나요?"}
+      ]
+    },
+    {
+      "id": "baek-knock",
+      "split": "test",
+      "suspect_id": "baek",
+      "expected_fact_ids": ["baek-knock"],
+      "questions": [
+        {"kind": "direct", "text": "22시 50분에 서재 문을 두드렸나요?"},
+        {"kind": "paraphrase", "text": "서재 문을 두드린 뒤 안에서 누가 대답했나요?"},
+        {"kind": "typo", "text": "서재에 노크하고 대답이 업엇나요?"}
+      ]
+    },
+    {
+      "id": "cha-breathing",
+      "split": "test",
+      "suspect_id": "cha",
+      "expected_fact_ids": ["cha-breathing"],
+      "questions": [
+        {"kind": "direct", "text": "22시 20분에 회장님이 숨을 쉬고 있었나요?"},
+        {"kind": "paraphrase", "text": "서재에서 나오면서 본 회장님의 상태가 어땠나요?"},
+        {"kind": "typo", "text": "나올 때 회장님 호흡이 어땟어요?"}
+      ]
+    },
+    {
+      "id": "cha-fireplace",
+      "split": "test",
+      "suspect_id": "cha",
+      "expected_fact_ids": ["cha-fireplace"],
+      "questions": [
+        {"kind": "direct", "text": "22시 45분에 벽난로에서 무엇을 봤나요?"},
+        {"kind": "paraphrase", "text": "불에 무언가를 넣던 사람의 얼굴을 확인했나요?"},
+        {"kind": "typo", "text": "벽난로 압에서 본 사람 얼굴은 아라보셨어요?"}
+      ]
+    },
+    {
+      "id": "seo-dining-claim",
+      "split": "test",
+      "suspect_id": "seo",
+      "expected_fact_ids": ["seo-dining-claim"],
+      "questions": [
+        {"kind": "direct", "text": "식당에서 뭘 마셨나요?"},
+        {"kind": "paraphrase", "text": "위층에 올라가기 전 식당에서 무슨 음료를 마셨다고 했나요?"},
+        {"kind": "typo", "text": "식당에서 머 마셧어요?"}
+      ]
+    },
+    {
+      "id": "kang-sleeping-pill-before",
+      "split": "test",
+      "suspect_id": "kang",
+      "expected_fact_ids": [],
+      "questions": [
+        {"kind": "locked", "text": "와인잔에 수면제를 몇 알 넣었나요?"}
+      ]
+    },
+    {
+      "id": "kang-sleeping-pill-after",
+      "split": "test",
+      "suspect_id": "kang",
+      "revealed_flags": ["gang_drug"],
+      "expected_fact_ids": ["kang-admit-gang_drug"],
+      "questions": [
+        {"kind": "direct", "text": "와인잔에 수면제를 몇 알 넣었나요?"},
+        {"kind": "paraphrase", "text": "잠들게 하는 약을 잔에 넣었다고 했는데 양이 얼마나 됐나요?"}
+      ]
+    },
+    {
+      "id": "yoon-off-topic",
+      "split": "test",
+      "suspect_id": "yoon",
+      "expected_fact_ids": [],
+      "questions": [
+        {"kind": "off_topic", "text": "오늘 점심 뭐 드셨어요?"},
+        {"kind": "off_topic", "text": "요즘 어떤 운동을 하세요?"},
+        {"kind": "off_topic", "text": "내 휴대전화 배터리를 오래 쓰는 방법을 알려주세요."}
+      ]
+    },
+    {
+      "id": "cha-wrong-speaker",
+      "split": "test",
+      "suspect_id": "cha",
+      "expected_fact_ids": [],
+      "questions": [
+        {"kind": "wrong_speaker", "text": "22시 25분에 서재 문 밖에서 코 고는 소리를 들었나요?"},
+        {"kind": "wrong_speaker", "text": "22시 50분에 서재 문에 노크했을 때 답이 없었나요?"}
+      ]
+    },
+    {
+      "id": "yoon-unsupported",
+      "split": "test",
+      "suspect_id": "yoon",
+      "expected_fact_ids": [],
+      "questions": [
+        {"kind": "near_miss", "text": "정오에 서재 밖에 있을 때 무슨 소리를 들었나요?"},
+        {"kind": "near_miss", "text": "식당에서 마신 위스키 브랜드가 무엇이었나요?"}
+      ]
+    }
+  ]
+}

@@ -1,16 +1,14 @@
 # 06. 새 수사와 게임 토큰 생성
 
-[API 목차](README.md) · [공통 규칙](../공통규칙.md)
-
-## 역할과 호출 시점
-
 `POST /v1/games`
 
-새 수사와 게임 토큰 생성에 사용하는 실제 구현 경로입니다. 새 수사를 생성하고 이후 호출에 사용할 비밀 토큰을 발급합니다.
+지정한 사건 버전으로 수사를 생성하고 첫 공개 상태를 받는다.
 
-## 인증
+[API 목차](README.md) · [인증·재시도 공통 규칙](../공통규칙.md)
 
-`Authorization: Bearer <CLICK_API_KEY 값>`이 필요합니다.
+## 접근 조건
+
+서버 간 Bearer 서비스 키를 보낸다. 계정 소유 수사를 만들 때는 `X-Access-Token`을 함께 보낸다. 익명 수사에는 새 게임 토큰이 발급되고 계정 수사의 `game_token`은 null이다.
 
 ## 입력
 
@@ -20,7 +18,7 @@
 | case_id | 문자열 | thirteenth-bell-v1 | 실제 사건 ID |
 | scenario_version | 문자열 | 필수 | 카탈로그에서 받은 현재 버전 |
 
-입력 형식 예시입니다. 버전·ID·revision은 자신의 응답 값으로 바꾸고 UUID는 새로 생성하세요. 본문의 ID와 값은 자신의 현재 수사 및 카탈로그와 맞춰 사용하세요.
+예시의 UUID는 새로 생성하고, 사건 ID와 버전은 카탈로그에서 가져온다.
 
 ```json
 {
@@ -39,7 +37,7 @@
 
 ## 응답
 
-아래는 구조를 설명하기 위해 일부 필드를 줄인 예시입니다. 생략한 배열·state가 실제 응답에서도 비어 있다는 뜻은 아닙니다.
+응답에서 주로 쓰는 필드를 발췌한 예시다.
 
 ```json
 {
@@ -58,10 +56,5 @@
 - 409: 오래된 시나리오 버전·같은 UUID의 다른 내용.
 - 404: 제공하지 않는 사건.
 - 현재 기본 상태 코드는 201이 아니라 200입니다.
-- 공통 인증 실패는 401입니다. 수사 경로에서는 권한이 없으면 404, 버전이 다르면 409가 날 수 있습니다.
 
-## 코드에서 따라가기
-
-현재 API 진입점은 [app/investigation/api/routes.py의 `create_game`](../../../app/investigation/api/routes.py#L12)다.
-
-처리 순서는 [GameService](../../코드참조/app/investigation/service.md), 저장 조건은 [Repository](../../코드참조/app/investigation/persistence/repository.md), 공개 응답은 [Presenter](../../코드참조/app/investigation/views/presentation.md)에서 확인한다.
+처리 진입점은 `create_game()`이다. [컨트롤러 소스](../../../app/investigation/controllers/investigation_game_controller.py#L26)

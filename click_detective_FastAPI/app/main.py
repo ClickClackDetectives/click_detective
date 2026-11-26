@@ -1,16 +1,32 @@
 """FastAPI 애플리케이션을 만들고 도메인별 API를 연결한다."""
 
+from functools import partial
+
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pymongo.errors import PyMongoError
 
-from app.investigation.api.material_routes import router as material_router
-from app.investigation.api.routes import router as investigation_router
-from app.investigation.api.view_routes import router as view_router
+from app.auth.controllers.auth_controller import router as auth_router
+from app.dialogue.controllers.dialogue_agent_test_controller import (
+    router as agent_test_router,
+)
+from app.investigation.controllers.investigation_account_controller import (
+    router as account_router,
+)
+from app.investigation.controllers.investigation_game_controller import (
+    router as investigation_router,
+)
+from app.investigation.controllers.investigation_material_controller import (
+    router as material_router,
+)
+from app.investigation.controllers.investigation_view_controller import (
+    router as view_router,
+)
 
-from .bootstrap import lifespan
-from .cases.routes import router as case_router
-from .config import Settings
+from .cases.controllers.cases_controller import router as case_router
+from .runtime.runtime_lifespan import lifespan
+from .runtime.runtime_settings import Settings
 
 
 def create_app(settings: Settings | None = None):
@@ -25,17 +41,16 @@ def create_app(settings: Settings | None = None):
     app = FastAPI(
         title="Click Detective",
         version="0.1.0",
-        lifespan=lifespan,
+        lifespan=partial(lifespan, settings=settings),
         description="사건 데이터·규칙·수사 저장·양자화 Qwen 대사 생성을 담당하는 백엔드",
     )
-    app.state.initial_settings = settings
 
     @app.exception_handler(RequestValidationError)
-    async def invalid_input(request, error):
+    async def invalid_input(_request, error):
         """원문·토큰을 오류 응답에 복사하지 않고 위치·오류 종류만 반환한다.
 
         Args:
-            request: 앱 서비스와 인증·수사 토큰 헤더에 접근할 HTTP 요청.
+            _request: FastAPI가 오류 처리기에 전달하는 HTTP 요청.
             error: 현재 처리할 예외 또는 입력 검증 오류.
 
         Returns:
@@ -48,6 +63,27 @@ def create_app(settings: Settings | None = None):
                     {"loc": item["loc"], "type": item["type"]}
                     for item in error.errors()
                 ]
+            },
+        )
+
+    @app.exception_handler(PyMongoError)
+    async def investigation_store_unavailable(request, error):
+        """수사 저장 오류를 재시도 가능한 공개 응답으로 변환한다.
+
+        Args:
+            request: 저장소 오류가 발생한 요청.
+            error: 접속 정보가 포함될 수 있는 저장소 예외.
+
+        Returns:
+            JSONResponse: 기존 요청 UUID를 유지해 재시도할 수 있는 503 응답.
+        """
+        return JSONResponse(
+            status_code=503,
+            content={
+                "detail": {
+                    "code": "INVESTIGATION_STORE_UNAVAILABLE",
+                    "message": "수사 저장소에 연결할 수 없습니다. 같은 요청으로 다시 확인하세요.",
+                }
             },
         )
 
@@ -78,7 +114,15 @@ def create_app(settings: Settings | None = None):
         """
         return {"status": "ok"}
 
-    for router in (case_router, investigation_router, material_router, view_router):
+    for router in (
+        auth_router,
+        account_router,
+        case_router,
+        investigation_router,
+        material_router,
+        view_router,
+        agent_test_router,
+    ):
         app.include_router(router)
     return app
 

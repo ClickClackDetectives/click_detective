@@ -2,7 +2,9 @@
 
 증거를 읽고, 용의자의 진술을 비교하고, 흩어진 단서를 연결해 사건의 진실을 밝혀내는 웹 기반 탐정 게임입니다. 플레이어는 사건 자료를 직접 조사하고 용의자에게 질문하며, 수집한 근거를 바탕으로 추론을 완성하고 최종 고발을 제출합니다.
 
-이 저장소는 **Next.js 기반 게임 화면**과 **FastAPI 기반 수사 엔진·로컬 AI 대사 생성 서버**를 함께 포함합니다. 브라우저에서 수행한 조사는 백엔드의 게임 규칙에 따라 처리되고, 수사 상태와 메모는 SQLite에 저장됩니다.
+이 저장소는 **Next.js 기반 게임 화면**과 **FastAPI 기반 수사 엔진·로컬 AI 대사 생성 서버**를 함께 포함합니다. 브라우저에서 수행한 조사는 백엔드의 게임 규칙에 따라 처리되고, 수사 상태와 메모는 MongoDB에 저장됩니다.
+
+코드를 수정할 때는 [기여 가이드](CONTRIBUTING.md)에서 작업 규칙과 검증 절차를 확인하세요.
 
 ## 목차
 
@@ -46,7 +48,7 @@ flowchart LR
     Player[플레이어 브라우저] --> Web[Next.js 화면 및 서버 중계]
     Web --> API[FastAPI 수사 API]
     API --> Rules[사건 데이터 및 게임 규칙]
-    API --> DB[(SQLite 수사 저장)]
+    API --> DB[(MongoDB 수사 저장)]
     API --> Graph[LangGraph 대사 워크플로]
     Graph --> Model[로컬 Qwen 모델 및 LoRA]
 ```
@@ -59,7 +61,7 @@ flowchart LR
 
 ### FastAPI: 수사 엔진과 데이터 관리
 
-`click_detective_FastAPI`는 사건·인물·자료 조회, 증거 열람, 심문, 추론, 조사 단계 전환, 메모 저장, 고발 판정을 처리합니다. 사건의 정적 데이터와 비공개 규칙을 읽고 SQLite에 수사 상태를 보관합니다.
+`click_detective_FastAPI`는 사건·인물·자료 조회, 증거 열람, 심문, 추론, 조사 단계 전환, 메모 저장, 고발 판정을 처리합니다. 사건의 정적 데이터와 비공개 규칙을 읽고 MongoDB에 수사 상태를 보관합니다.
 
 변경 요청에는 요청 식별자와 상태 버전을 사용해 중복 요청과 오래된 상태에서의 변경을 처리합니다. 자료와 이미지도 현재 수사에서 열람할 수 있는지 확인한 뒤 제공합니다.
 
@@ -67,7 +69,7 @@ flowchart LR
 
 실제 모델 모드에서는 로컬 **Qwen2.5-7B-Instruct**를 NF4 4비트로 로딩하고, 기존에 학습된 **LoRA 어댑터**를 적용합니다. 이 저장소에서 새 학습을 수행하지는 않습니다.
 
-심문에서는 백엔드가 먼저 공개 가능한 사실과 진행 계획을 정합니다. LangGraph 워크플로는 이 정보를 바탕으로 입력을 구성하고, 대사를 생성한 뒤 의미와 응답 형식을 검증합니다. RAG는 승인된 사실을 선별하여 대사에 필요한 문맥을 제공하는 데 사용합니다.
+심문에서는 백엔드가 현재 수사에서 공개 가능한 진술을 먼저 정합니다. 자유 질문은 E5와 ChromaDB로 관련 진술을 찾고, Kiwi BM25로 후보의 순서를 조정합니다. LangGraph 워크플로는 선택된 진술을 바탕으로 대사를 생성하고 의미와 응답 형식을 검증합니다. [자유 심문 RAG 변경 정리](click_detective_FastAPI/docs/변경이력/자유_심문_RAG_변경_정리.md)
 
 게임 상태 변경과 정답 판정은 게임 규칙이 담당합니다. 모델 생성 실패 시에는 기본 설정에 따라 승인된 원문 응답으로 복구합니다.
 
@@ -87,7 +89,7 @@ flowchart LR
 | 서버 중계 | Next.js App Router, Route Handlers, Fetch API |
 | 백엔드 | Python 3.11 이상, FastAPI, Uvicorn |
 | 데이터 검증·설정 | Pydantic, pydantic-settings |
-| 저장 | SQLite |
+| 저장 | MongoDB replica set 및 계정용 PostgreSQL |
 | 대화 워크플로 | LangGraph |
 | 모델 실행 | Qwen2.5-7B-Instruct, PyTorch, Transformers, Accelerate |
 | 양자화·어댑터 | bitsandbytes(NF4), PEFT(LoRA) |
@@ -103,10 +105,11 @@ project/
 ├── click_detective_FastAPI/
 │   ├── app/
 │   │   ├── main.py                   # FastAPI 진입점과 API
-│   │   ├── config.py                 # 환경변수 및 경로 설정
-│   │   ├── domain/                   # 수사 규칙과 행동 계획
-│   │   ├── dialogue/                 # LLM·검색·검증 워크플로
-│   │   └── repository.py             # 수사 상태 저장
+│   │   ├── runtime/                 # 설정, 서비스 인증과 앱 수명
+│   │   ├── auth/                    # 계정 인증과 PostgreSQL 저장
+│   │   ├── cases/                   # 사건 원본과 공개 카탈로그
+│   │   ├── dialogue/                # LLM·검색·검증 워크플로
+│   │   └── investigation/           # 수사 규칙과 MongoDB 저장
 │   ├── data/                         # 사건 데이터와 자산
 │   ├── models/                       # 별도로 준비하는 로컬 모델
 │   ├── adapters/                     # 기존 LoRA 어댑터
@@ -233,7 +236,7 @@ python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 | --- | --- | --- |
 | 백엔드 `.env` | `CLICK_API_KEY` | Next.js 서버 인증용 키, 16자 이상 |
 | 백엔드 `.env` | `CLICK_GENERATION_MODE` | `fixture` 또는 `local` |
-| 백엔드 `.env` | `CLICK_DATABASE_PATH` | 기본값 `./.data/games.sqlite3` |
+| 백엔드 `.env` | `CLICK_MONGO_URI` | 필수 MongoDB replica set 연결 문자열 |
 | 백엔드 `.env` | `CLICK_DATA_DIR` | 기본값 `./data` |
 | 백엔드 `.env` | `CLICK_LOCAL_MODEL_PATH` | 로컬 모델 폴더 |
 | 백엔드 `.env` | `CLICK_LORA_ADAPTER_PATH` | LoRA 어댑터 폴더 |

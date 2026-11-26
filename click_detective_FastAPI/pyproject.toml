@@ -7,10 +7,32 @@ name = "click-detective"
 version = "0.1.0"
 description = "FastAPI investigation engine and quantized Qwen LangGraph dialogue"
 requires-python = ">=3.11"
-dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.34,<1", "httpx>=0.28,<1", "pydantic-settings>=2.8,<3", "langgraph>=1,<2"]
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.34,<1",
+    "httpx>=0.28,<1",
+    "pydantic-settings>=2.8,<3",
+    "langgraph>=1,<2",
+    "SQLAlchemy>=2.0.51,<2.1",
+    "psycopg[binary]>=3.2,<4",
+    "pwdlib[argon2]>=0.2,<1",
+    "PyJWT>=2.10,<3",
+    "email-validator>=2,<3",
+    "pymongo>=4.10,<5",
+    "mongoengine>=0.29.3,<0.30",
+]
 
 [project.optional-dependencies]
-local = ["torch>=2.6,<3", "transformers>=4.51,<5", "accelerate>=1,<2", "bitsandbytes>=0.45,<1", "peft>=0.15,<1"]
+local = ["torch>=2.6,<3", "transformers>=4.51,<5", "accelerate>=1,<2", "bitsandbytes>=0.45,<1", "peft>=0.15,<1", "click-detective[retrieval]"]
+retrieval = [
+    "numpy>=1.26,<3",
+    "onnxruntime>=1.20,<2",
+    "tokenizers>=0.21,<1",
+    "chromadb>=1.5.9,<1.6",
+    "kiwipiepy>=0.23.2,<0.24",
+    "bm25s>=0.3.16,<0.4",
+]
+embeddings = ["sentence-transformers>=5,<6", "sentencepiece>=0.2,<1"]
 dev = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.17,<1"]
 
 [tool.setuptools.packages.find]

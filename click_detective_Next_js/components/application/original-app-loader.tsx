@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import CaseApp from './case-app';
+import { AccountControls } from '../auth/account-controls';
 import { api, assetUrl } from '@/shared/api/client';
 import { installCatalog } from '@/app/game/catalog/catalog';
 import type { PublicCatalog } from '@/app/game/catalog/types';
@@ -40,6 +41,11 @@ export function OriginalAppLoader() {
   if (ready) return <CaseApp />;
   return (
     <div className="app">
+      <header className="topbar">
+        <div className="top-right">
+          <AccountControls />
+        </div>
+      </header>
       <main className="desk">
         <p role={error ? 'alert' : 'status'}>{error || '사건 기록을 불러오고 있습니다.'}</p>
         {error && (

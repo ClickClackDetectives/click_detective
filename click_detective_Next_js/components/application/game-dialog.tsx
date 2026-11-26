@@ -8,6 +8,7 @@ type Props = Pick<
 >;
 
 const dialogContent: Record<string, { title: string; description: string }> = {
+  login: { title: '로그인을 하세요', description: '사건을 진행하려면 로그인이 필요합니다.' },
   confirm: {
     title: '고발을 확정하시겠습니까?',
     description:
@@ -77,7 +78,11 @@ export function GameDialog({
         <h2 id="modal-title">{content.title}</h2>
         <p>{content.description}</p>
         <div className="modal-actions">
-          {modal === 'confirm' ? (
+          {modal === 'login' ? (
+            <a className="primary" href="/login">
+              로그인
+            </a>
+          ) : modal === 'confirm' ? (
             <>
               <button className="outline" onClick={() => setModal(null)} disabled={busy}>
                 다시 검토

@@ -2,7 +2,7 @@
 
 [서버 목차](README.md) · [프런트엔드 문서](../../../click_detective_Next_js/docs/README.md)
 
-화면 프로젝트는 이 저장소의 `click_detective_Next_js`다. Next.js의 서버 경로가 FastAPI를 호출하고 공개 응답을 화면에 전달한다.
+브라우저는 Next.js를 호출하고 Next.js 서버가 서비스 키와 인증 문맥을 FastAPI에 전달한다. 두 앱을 별도로 시작한 뒤 같은 서비스 키와 백엔드 주소를 사용한다.
 
 | 위치 | 책임 |
 |---|---|
@@ -16,4 +16,4 @@
 
 대사 결과는 `finish_reason`으로 구분한다. `stop`은 모델 생성·검증 성공, `fixed`는 고정 대사, `fallback`은 승인 원문 복구다. 화면이 대사를 받았다는 사실과 실제 모델 생성 성공 여부는 별개다.
 
-API의 입력과 응답은 [API 목차](../API/README.md), 서버의 저장 조건은 [상태와 SQLite](상태와_SQLite_저장.md)에서 확인한다. 원본 UI 비교 등 프런트엔드 범위는 프런트엔드 문서를 따른다.
+API의 입력과 응답은 [API 목차](../API/README.md), 서버의 저장 조건은 [수사 저장](수사_저장.md)에서 확인한다. 원본 UI 비교 등 프런트엔드 범위는 프런트엔드 문서를 따른다.

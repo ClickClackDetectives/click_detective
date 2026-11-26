@@ -28,6 +28,11 @@ npm run dev
 
 `http://localhost:3000`에 접속합니다. 배포용 실행은 `npm run build` 후 `npm run start`입니다.
 
+## 대시보드
+
+- `/agent-dashboard`에서 에이전트 실행 기록을 확인합니다.
+- `/rag-dashboard`에서 E5·ChromaDB와 Kiwi BM25 결합의 오프라인 평가를 비교합니다. 평가 세트와 유사도·가중치 설정을 선택하면 저장된 측정 결과가 바뀝니다. [평가 방법과 결과](../click_detective_FastAPI/docs/변경이력/자유_심문_RAG_변경_정리.md)
+
 ## 구조
 
 ```text

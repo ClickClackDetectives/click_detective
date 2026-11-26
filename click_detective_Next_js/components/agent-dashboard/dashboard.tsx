@@ -66,7 +66,10 @@ export function Dashboard({
   return (
     <main className="agent-board">
       <header>
-        <Link href="/">← 게임으로</Link>
+        <div className="agent-controls">
+          <Link href="/">← 게임으로</Link>
+          <Link href="/rag-dashboard">RAG 개선 대시보드</Link>
+        </div>
         <h1>에이전트 대시보드</h1>
         <p role="status">
           <strong>{demo ? '예시 데이터' : '실측 데이터'}</strong> · {message}
