@@ -1,4 +1,4 @@
-"""Kiwi BM25 순위와 E5 순위를 결합해 승인된 진술 후보를 재정렬한다."""
+"""Kiwi BM25로 승인된 개별 진술을 검색하고 E5 순위와 결합한다."""
 
 from functools import lru_cache
 from threading import Lock
@@ -8,6 +8,7 @@ from bm25s import BM25
 from kiwipiepy import Kiwi
 
 CONTENT_TAGS = frozenset({"NNG", "NNP", "NR", "VV", "VA", "MAG", "SL", "SN", "XR"})
+MIN_BM25_SCORE = 1.25
 
 
 class KiwiBM25Reranker:
@@ -17,7 +18,7 @@ class KiwiBM25Reranker:
         dense_weight: RRF에서 E5 순위에 줄 가중치.
         rank_constant: 순위 분모에 더하는 RRF 상수.
     Returns:
-        KiwiBM25Reranker: E5가 고른 후보 범위 안에서 순서를 조정하는 검색기.
+        KiwiBM25Reranker: E5가 고른 후보에 BM25 후보를 합치는 검색기.
     """
 
     def __init__(self, dense_weight, rank_constant):
@@ -63,31 +64,44 @@ class KiwiBM25Reranker:
         index.index([self.terms(text) for text in texts], show_progress=False)
         return index
 
-    def rerank(self, question, documents, ranked, pool):
-        """E5 점수 조건을 통과한 후보만 가중 RRF 점수로 정렬한다.
+    def scores(self, question, documents):
+        """공개된 개별 진술의 BM25 점수를 구한다.
 
         Args:
             question: 플레이어가 입력한 원문.
-            documents: 공개 가능한 전체 개별 진술의 검색용 텍스트.
-            ranked: 시각 조건을 통과한 개별 진술 텍스트의 E5 순서 목록.
-            pool: 유사도 하한과 1위 점수 차이를 통과한 항목의 ranked 인덱스.
+            documents: 중복 없는 개별 진술 텍스트.
         Returns:
-            list[int]: 기존 pool의 인덱스를 RRF로 재정렬한 목록.
+            dict: 진술 텍스트별 BM25 점수.
         """
-        if len(pool) < 2 or self._dense_weight == 1:
-            return pool
+        if not documents or self._dense_weight == 1:
+            return {}
         with self._lock:
             query = sorted(set(self.terms(question)))
             if not query:
-                return pool
+                return {}
             scores = self._corpus(documents).get_scores(query)
+        return dict(zip(documents, scores, strict=True))
 
-        by_text = dict(zip(documents, scores, strict=True))
+    def fuse(self, ranked, dense_pool, scores):
+        """BM25 상위 진술을 후보에 추가하고 가중 RRF로 정렬한다.
+
+        Args:
+            ranked: 시각 조건을 통과한 개별 진술 텍스트의 E5 순서 목록.
+            dense_pool: E5 유사도 하한과 1위 점수 차이를 통과한 인덱스.
+            scores: 전체 개별 진술의 BM25 점수.
+        Returns:
+            list[int]: 두 검색 후보를 합친 뒤 RRF로 정렬한 인덱스.
+        """
+        if not scores:
+            return dense_pool
         sparse = sorted(
-            (i for i, text in enumerate(ranked) if by_text[text] > 0),
-            key=lambda i: by_text[ranked[i]],
+            (i for i, text in enumerate(ranked) if scores[text] > 0),
+            key=lambda i: scores[ranked[i]],
             reverse=True,
         )
+        pool = set(dense_pool)
+        if sparse and scores[ranked[sparse[0]]] >= MIN_BM25_SCORE:
+            pool.add(sparse[0])
         sparse_ranks = {index: rank for rank, index in enumerate(sparse, 1)}
         k = self._rank_constant
         weight = self._dense_weight
@@ -96,4 +110,4 @@ class KiwiBM25Reranker:
             + ((1 - weight) / (k + sparse_ranks[index]) if index in sparse_ranks else 0)
             for index in pool
         }
-        return sorted(pool, key=fused.__getitem__, reverse=True)
+        return sorted(pool, key=lambda i: (-fused[i], i))
