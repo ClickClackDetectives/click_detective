@@ -1,15 +1,13 @@
-# 서버와 수사 저장
+# DB 연결과 서버 운영
 
-[전체 목차](../README.md)
+MongoDB replica set은 수사의 진행 상태를 저장합니다. 계정 기능을 활성화하면 PostgreSQL에서 계정과 세션을 관리하고, Next.js 서버가 인증 정보를 전달합니다.
 
-게임 데이터와 수사 상태의 저장 위치, 계정에 필요한 PostgreSQL 연결, Next.js 중계 경로를 한곳에서 찾을 수 있다.
+## 읽을 문서
 
-| 문서 | 내용 |
-|---|---|
-| [PostgreSQL 설치와 실행](PostgreSQL_설치와_실행.md) | Ubuntu 설치, 앱 역할·DB 생성, 서비스 및 로컬 소켓 확인 |
-| [MongoDB 설치와 실행](MongoDB_설치와_실행.md) | Ubuntu 설치, replica set·인증 설정, 서비스 및 로컬 프로세스 확인 |
-| [수사 저장](수사_저장.md) | 사건 데이터·내부 상태·수사 토큰·예약·확정·충돌 |
-| [Next.js 연결](Nextjs_연결.md) | 화면 서버와 FastAPI의 책임 구분 |
-| [전체 처리 흐름](../시작하기/03_전체_처리_흐름.md) | 시작·조회·변경 요청의 호출 순서 |
+- replica set 초기화와 연결 문자열을 확인합니다. [MongoDB 설정](MongoDB_설치와_실행.md)
+- 계정용 DB와 역할을 만들고 접속을 확인합니다. [PostgreSQL 설정](PostgreSQL_설치와_실행.md)
+- 수사 토큰, 상태 버전, 요청 예약과 확정의 저장 흐름을 읽습니다. [수사 저장](수사_저장.md)
+- FastAPI 주소와 서비스 키 설정을 맞춥니다. [Next.js 연결](Nextjs_연결.md)
+- 초기화 또는 요청 중 어느 단계에서 문제가 발생했는지 찾습니다. [전체 처리 흐름](../시작하기/03_전체_처리_흐름.md)
 
-읽기 시작할 소스는 [GameService](../../app/investigation/services/investigation_game_service.py), [MongoRepository](../../app/investigation/repositories/investigation_mongo_repository.py), [Catalog](../../app/cases/repositories/cases_file_repository.py)다.
+[상위 목차](../README.md)
